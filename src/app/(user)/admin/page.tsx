@@ -4,7 +4,7 @@ import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useAuth } from "@/context/auth-context";
 
 export default function Page(){
-    const { userInfo,resetToken } = useAuth();
+    const { userInfo, resetToken } = useAuth();
     
   const handleLogout = async () => {
     const response = await fetch("/api/auth/logout", {
@@ -19,7 +19,7 @@ export default function Page(){
   return(
       <>
       <PageWrapper>
-        admin
+        admin {userInfo?.fName}
         <Button onClick={handleLogout}>
           logout
         </Button>

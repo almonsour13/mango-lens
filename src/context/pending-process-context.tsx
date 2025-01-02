@@ -7,15 +7,8 @@ import {
     ScanResult,
     Tree,
     Image,
+    PendingItem,
 } from "@/type/types";
-import {
-    deleteProcessedResult,
-    deleteSelectedPendingProcessItems,
-    getAllPendingProcessItems,
-    getProcessedResultItem,
-    saveProcessedResult,
-    updatePendingProcessItem,
-} from "@/utils/indexedDB/indexedDB";
 import React, {
     createContext,
     useState,
@@ -29,21 +22,14 @@ import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { useScanResult } from "./scan-result-context";
 import { usePathname } from "next/navigation";
-
-interface PendingProcess {
-    pendingID: number;
-    userID?: number;
-    treeCode: string;
-    imageUrl: string;
-    status: number;
-    addedAt: Date;
-}
+import { deleteSelectedPendingProcessItems, getAllPendingProcessItems, updatePendingProcessItem } from "@/utils/indexedDB/store/pending-store";
+import { deleteProcessedResult, getProcessedResultItem, saveProcessedResult } from "@/utils/indexedDB/store/result-store";
 
 interface PendingProcessContextType {
     processPendingID: number;
     setProcessPendingID: React.Dispatch<React.SetStateAction<number>>;
-    pendings: PendingProcess[];
-    setPendings: React.Dispatch<React.SetStateAction<PendingProcess[]>>;
+    pendings: PendingItem[];
+    setPendings: React.Dispatch<React.SetStateAction<PendingItem[]>>;
     selected: number[];
     setSelected: React.Dispatch<React.SetStateAction<number[]>>;
     isSelected: boolean;
@@ -69,7 +55,7 @@ export const usePendingProcess = () => {
 export const PendingProcessProvider: React.FC<{ children: ReactNode }> = ({
     children,
 }) => {
-    const [pendings, setPendings] = useState<PendingProcess[]>([]);
+    const [pendings, setPendings] = useState<PendingItem[]>([]);
     const [selected, setSelected] = useState<number[]>([]);
     const [isSelected, setIsSelected] = useState(false);
     const [processPendingID, setProcessPendingID] = useState(0);
@@ -225,6 +211,7 @@ export const PendingProcessProvider: React.FC<{ children: ReactNode }> = ({
                                 : item
                         )
                     );
+                    console.log(result)
                     await saveProcessedResult(pendingId, result);
                     await updatePendingProcessItem(pendingId, 2);
 
@@ -243,6 +230,7 @@ export const PendingProcessProvider: React.FC<{ children: ReactNode }> = ({
             }
         } else if (action == 2) {
             await deleteSelectedPendingProcessItems([pendingId]);
+            await deleteProcessedResult([pendingId]);
             setPendings((prevPending) =>
                 prevPending.filter((pending) => pending.pendingID !== pendingId)
             );

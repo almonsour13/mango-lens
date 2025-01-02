@@ -10,7 +10,7 @@ export async function emailExists(email: string): Promise<boolean> {
     const result = (await query(
         "SELECT COUNT(*) as count FROM user WHERE email = ?",
         [email]
-    )) as any[];
+    )) as {count:number}[];
 
     return result[0].count > 0;
 }
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
             },
             process.env.JWT_SECRET_KEY
         );
-        await sendVerificationEmail(email, code);
+         await sendVerificationEmail(email, code);
 
         const response = NextResponse.json({
             success: true,

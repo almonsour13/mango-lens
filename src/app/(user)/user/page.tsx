@@ -48,8 +48,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { set } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getPendingTotalCount } from "@/utils/indexedDB/indexedDB";
 import { usePendingProcess } from "@/context/pending-process-context";
+import { getPendingTotalCount } from "@/utils/indexedDB/store/pending-store";
 
 export default function Dashboard() {
     const { userInfo,resetToken } = useAuth();
@@ -98,7 +98,7 @@ export default function Dashboard() {
                                         src={userInfo?.profileImage}
                                         alt="@shadcn"
                                     />
-                                    <AvatarFallback>{(userInfo?.fName?.charAt(0) ?? '') + (userInfo?.lName?.charAt(0) ?? '')}</AvatarFallback>
+                                    <AvatarFallback className="text-xs">{(userInfo?.fName?.charAt(0) ?? '') + (userInfo?.lName?.charAt(0) ?? '')}</AvatarFallback>
                                 </Avatar>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
@@ -267,6 +267,8 @@ const Metrics = () => {
                 }
             } catch (error) {
                 console.error("Error retrieving metrics:", error);
+            }finally{
+                setLoading(false)
             }
         };
         if (userInfo?.userID !== undefined && userInfo?.userID !== null) {
@@ -283,12 +285,12 @@ const Metrics = () => {
                 {loading
                     ? Array.from({ length: 4 }).map(
                           (_: unknown, index: number) => (
-                              <Card key={index}>
+                              <Card key={index} className="overflow-hidden">
                                   <div className="h-24 w-full flex items-center justify-center p-8 animate-pulse bg-muted"></div>
                               </Card>
                           )
                       )
-                    : metrics.length > 0 &&
+                    : 
                       metrics.map((metric, index) => (
                           <Card key={index} className="bg-card border-0 shadow-none">
                               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

@@ -17,13 +17,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-    Select,
-    SelectTrigger,
-    SelectValue,
-    SelectContent,
-    SelectItem,
-} from "@/components/ui/select";
-import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
@@ -32,9 +25,6 @@ import {
 
 // Icons
 import { ArrowLeft, TreeDeciduous } from "lucide-react";
-
-// Custom Components
-import ConfirmationModal from "@/components/modal/confirmation-modal";
 
 // Contexts
 import { useAuth } from "@/context/auth-context";
@@ -54,7 +44,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
-import { Tree } from "@/type/types";
 import React from "react";
 
 const formSchema = z.object({
@@ -66,7 +55,6 @@ const formSchema = z.object({
     treeImage: z.string().optional(),
 });
 
-type EditTree = Tree & { imagesLength?: number; treeImage?: string };
 
 export default function Page() {
     const [loading, setLoading] = useState(false);

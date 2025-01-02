@@ -10,8 +10,8 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { formatDate } from "@/lib/formatter";
 import type { Image as ImageType } from "@/type/types";
+import { formatDate } from "date-fns";
 
 type TreeImage = ImageType & {
     diseases: { likelihoodScore: number; diseaseName: string }[];
@@ -31,7 +31,7 @@ export const TreeImagesTable = ({ images }: TreeImagesTableProps) => {
             "bg-orange-100 text-orange-800 border-orange-200",
             "bg-yellow-100 text-yellow-800 border-yellow-200",
         ],
-        [],
+        []
     );
 
     const handleRowClick = (imageId: number) => {
@@ -56,7 +56,7 @@ export const TreeImagesTable = ({ images }: TreeImagesTableProps) => {
                             key={image.imageID}
                             onClick={() => handleRowClick(image.imageID)}
                             className="cursor-pointer"
-                        >   
+                        >
                             <TableCell className="w-10">
                                 <ImageIcon className="opacity-20" />
                             </TableCell>
@@ -78,7 +78,7 @@ export const TreeImagesTable = ({ images }: TreeImagesTableProps) => {
                                 </div>
                             </TableCell>
                             <TableCell>
-                                {formatDate(image.uploadedAt)}
+                                {formatDate(image.uploadedAt, "MMM dd, yyyy")}
                             </TableCell>
                         </TableRow>
                     ))}

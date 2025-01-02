@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { format } from "date-fns";
+import { format, formatDate } from "date-fns";
 import {
     Edit,
     Trash2,
@@ -31,7 +31,6 @@ import {
     diseaseIdentified,
     Disease,
 } from "@/type/types";
-import { formatDate } from "@/lib/formatter";
 import ResultImage from "./result-image";
 import { Separator } from "../ui/separator";
 import { useAuth } from "@/context/auth-context";
@@ -57,18 +56,17 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
     const { toast } = useToast();
     const router = useRouter();
     const [imageDetails, setImageDetails] = useState<ImageDetailsProps | null>(
-        null,
+        null
     );
     const { userInfo } = useAuth();
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [isMigrateModalOpen, setIsMigrateModalOpen] = useState(false);
 
-
     useEffect(() => {
         const fetchImageDetails = async () => {
             try {
                 const response = await fetch(
-                    `/api/user/${userInfo?.userID}/images/${imageID}`,
+                    `/api/user/${userInfo?.userID}/images/${imageID}`
                 );
                 if (!response.ok)
                     throw new Error("Failed to fetch image details");
@@ -95,7 +93,7 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ imageID: imageDetails?.imageID }),
-                },
+                }
             );
 
             const result = await response.json();
@@ -103,7 +101,7 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
             if (result.success) {
                 toast({
                     title: `Image Move to trash`,
-                    description: `Move to Trash action performed on tree ${imageDetails?.imageID }`,
+                    description: `Move to Trash action performed on tree ${imageDetails?.imageID}`,
                 });
             }
         } catch (error) {
@@ -119,7 +117,7 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
         router.back();
     };
     const handleMigrateImage = async (newTreeCode: string) => {
-        setImageDetails(prevDetails => 
+        setImageDetails((prevDetails) =>
             prevDetails ? { ...prevDetails, treeCode: newTreeCode } : null
         );
     };
@@ -134,7 +132,7 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
                     </button>
                     <Separator orientation="vertical" />
                     <h1 className="text-md">
-                        {formatDate(imageDetails.analyzedAt)}
+                        {formatDate(imageDetails.analyzedAt, "MMM dd, yyyy")}
                     </h1>
                 </div>
                 <div className="flex gap-2 ">
@@ -186,7 +184,10 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
                 openDialog={isMigrateModalOpen}
                 setOpenDialog={setIsMigrateModalOpen}
                 onMigrate={handleMigrateImage}
-                initialData={{ imageID: imageDetails?.imageID, currentTreeCode: imageDetails?.treeCode }}
+                initialData={{
+                    imageID: imageDetails?.imageID,
+                    currentTreeCode: imageDetails?.treeCode,
+                }}
             />
         </>
     );
@@ -199,7 +200,10 @@ function ResultDetails({ imageDetails }: { imageDetails: ImageDetailsProps }) {
                 <div className="flex space-x-2">
                     <Trees className="h-5 w-5 text-muted-foreground" />
                     <span className="text-base font-medium">Tree Code:</span>
-                    <Link href={`/user/tree/${imageDetails.treeCode}`} className="text-base font-semibold hover:underline">
+                    <Link
+                        href={`/user/tree/${imageDetails.treeCode}`}
+                        className="text-base font-semibold hover:underline"
+                    >
                         {imageDetails.treeCode || "N/A"}
                     </Link>
                 </div>
@@ -209,7 +213,7 @@ function ResultDetails({ imageDetails }: { imageDetails: ImageDetailsProps }) {
                         Analyzed Date:
                     </span>
                     <span className="text-base font-semibold">
-                        {formatDate(imageDetails.analyzedAt)}
+                        {formatDate(imageDetails.analyzedAt, "MMM dd, yyyy")}
                     </span>
                 </div>
             </div>

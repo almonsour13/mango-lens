@@ -15,15 +15,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useAuth } from "@/context/auth-context";
 import useOnlineStatus from "@/hooks/use-online";
-import { toast } from "@/hooks/use-toast";
-import {
-    deleteProcessedResult,
-    deleteSelectedPendingProcessItems,
-    getAllPendingProcessItems,
-    getProcessedResultItem,
-    saveProcessedResult,
-    updatePendingProcessItem,
-} from "@/utils/indexedDB/indexedDB";
 import { useEffect, useState } from "react";
 import {
     ArrowDownUp,

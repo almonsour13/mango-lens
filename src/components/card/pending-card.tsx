@@ -5,27 +5,11 @@ import { Card } from "../ui/card";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { Check, Edit, Eye, MoreHorizontal, MoreVertical, RefreshCcw, Save, Scan, Trash2, TreeDeciduous } from "lucide-react";
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from "../ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import { PendingActionMenu } from "../action menu/pending-action-menu";
+import { PendingItem } from "@/type/types";
 
 
-interface PendingProcess {
-    pendingID: number;
-    userID?:number;
-    treeCode: string;
-    imageUrl: string;
-    status:number;
-    addedAt: Date;
-}
 export default function PendingCard({
     processPendingID,
     pending,
@@ -35,7 +19,7 @@ export default function PendingCard({
     handleAction
 }:{
     processPendingID:number;
-    pending:PendingProcess,
+    pending:PendingItem,
     isSelected: boolean;
     selected: number[];
     setSelected: (value: number[]) => void;

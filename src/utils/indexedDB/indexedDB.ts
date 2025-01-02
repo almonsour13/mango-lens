@@ -1,16 +1,8 @@
-import { Disease, diseaseIdentified, Tree } from "@/type/types";
+import { boundingBox, Disease, diseaseIdentified, PendingItem, ScanResult, Tree } from "@/type/types";
 import { convertBlobToBase64, convertImageToBlob } from "../image-utils";
 
 // Define the structure of our data
-interface PendingItem {
-    pendingID: number;
-    userID?: number;
-    treeCode: string;
-    imageUrl: string;
-    status: number;
-    addedAt: Date;
-}
-type boundingBox = {diseaseName:string, x:number, y:number, w:number, h:number}
+
 
 interface ProcessedResult {
     tree: Tree;
@@ -30,7 +22,7 @@ const DB_VERSION = 2; // Increment this when changing the database structure
 let dbInstance: IDBDatabase | null = null;
 
 // Open and initialize the database
-async function openDB(): Promise<IDBDatabase> {
+export async function openDB(): Promise<IDBDatabase> {
     if (dbInstance) return dbInstance;
 
     return new Promise((resolve, reject) => {
@@ -61,7 +53,7 @@ async function openDB(): Promise<IDBDatabase> {
 }
 
 // Helper function to perform a database operation
-async function dbOperation<T>(
+export async function dbOperation<T>(
     storeName: string, 
     mode: IDBTransactionMode, 
     operation: (store: IDBObjectStore) => IDBRequest
@@ -76,85 +68,7 @@ async function dbOperation<T>(
         request.onsuccess = () => resolve(request.result);
     });
 }
-export async function getPendingTotalCount(): Promise<number> {
-    return dbOperation<number>(PENDING_STORE, 'readonly', (store) => store.count());
-}
-export async function getAllPendingProcessItems(userID: number): Promise<PendingItem[]> {
-    const allItems = await dbOperation<PendingItem[]>(PENDING_STORE, 'readonly', (store) => store.getAll());
-    const processedItems = allItems.map((pending) => ({
-        ...pending,
-        imageUrl: convertBlobToBase64(pending.imageUrl)
-    })) as PendingItem[];
 
-    return processedItems.filter(item => item.userID === userID);
-}
-
-export async function storePendingProcessItem(data: Omit<PendingItem, 'pendingID' | 'status' | 'addedAt'>): Promise<number> {
-    const imageUrl = convertImageToBlob(data.imageUrl)
-    return dbOperation<number>(PENDING_STORE, 'readwrite', (store) => 
-        store.add({
-            ...data,
-            imageUrl:imageUrl,
-            status: 1,
-            addedAt: new Date(),
-        })
-    );
-}
-
-export async function updatePendingProcessItem(pendingID: number, newStatus: number): Promise<void> {
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-        const transaction = db.transaction(PENDING_STORE, "readwrite");
-        const store = transaction.objectStore(PENDING_STORE);
-
-        const getRequest = store.get(pendingID);
-
-        getRequest.onerror = () => {
-            console.error(`Error fetching item with ID ${pendingID}:`, getRequest.error);
-            reject(getRequest.error);
-        };
-
-        getRequest.onsuccess = () => {
-            const item = getRequest.result;
-            if (!item) {
-                const error = new Error(`Pending item with ID ${pendingID} not found`);
-                console.error(error);
-                reject(error);
-                return;
-            }
-
-            console.log(`Current status for item ${pendingID}:`, item.status);
-            item.status = newStatus;
-            console.log(`Updating status for item ${pendingID} to:`, newStatus);
-
-            const putRequest = store.put(item);
-
-            putRequest.onerror = () => {
-                console.error(`Error updating item with ID ${pendingID}:`, putRequest.error);
-                reject(putRequest.error);
-            };
-
-            putRequest.onsuccess = () => {
-                console.log(`Successfully updated status for item ${pendingID} to ${newStatus}`);
-                resolve();
-            };
-        };
-    });
-}
-
-export async function deleteSelectedPendingProcessItems(pendingIDs: number[]): Promise<void> {
-    const db = await openDB();
-    const transaction = db.transaction(PENDING_STORE, 'readwrite');
-    const store = transaction.objectStore(PENDING_STORE);
-
-    await Promise.all(pendingIDs.map(id => 
-        new Promise<void>((resolve, reject) => {
-            const request = store.delete(id);
-            request.onerror = () => reject(request.error);
-            request.onsuccess = () => resolve();
-        })
-    ));
-}
 
 export async function saveProcessedResult(pendingID: number, result: ProcessedResult): Promise<void> {
     await dbOperation<void>(RESULT_STORE, 'readwrite', (store) => 
@@ -162,10 +76,6 @@ export async function saveProcessedResult(pendingID: number, result: ProcessedRe
     );
 }
 
-// Function to get a specific pending item
-export async function getProcessedResultItem(pendingID: number): Promise<ProcessedResult | null> {
-    return dbOperation<ProcessedResult | null>(RESULT_STORE, 'readonly', (store) => store.get(pendingID));
-}
 export async function deleteProcessedResult(pendingIDs: number[]): Promise<void> {
     const db = await openDB();
     const transaction = db.transaction(RESULT_STORE, 'readwrite');

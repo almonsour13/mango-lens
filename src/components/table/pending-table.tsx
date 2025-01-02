@@ -7,35 +7,10 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { formatDate } from "@/lib/formatter";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import {
-    Check,
-    Edit,
-    Eye,
-    ImageIcon,
-    LoaderCircle,
-    MoreHorizontal,
-    RefreshCcw,
-    RefreshCw,
-    Save,
-    Scan,
-    Trash2,
-    TreeDeciduous,
-} from "lucide-react";
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "../ui/button";
-import Image from "next/image";
+import { Check, ImageIcon, LoaderCircle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { PendingActionMenu } from "../action menu/pending-action-menu";
+import { formatDate } from "date-fns";
 
 interface PendingProcess {
     pendingID: number;
@@ -67,16 +42,16 @@ export const PendingTable = ({
                 setSelected(
                     selected.includes(trashID)
                         ? selected.filter((id: number) => id !== trashID)
-                        : [...selected, trashID],
+                        : [...selected, trashID]
                 );
             }
         },
-        [isSelected, selected, setSelected],
+        [isSelected, selected, setSelected]
     );
 
     const isItemSelected = useCallback(
         (trashID: number) => selected.includes(trashID),
-        [selected],
+        [selected]
     );
 
     return (
@@ -99,24 +74,34 @@ export const PendingTable = ({
                             <TableRow
                                 key={index}
                                 onClick={() => handleCheck(pending.pendingID)}
-                                className={`${isItemSelected(pending.pendingID) ? "bg-muted" : ""}`}
+                                className={`${
+                                    isItemSelected(pending.pendingID)
+                                        ? "bg-muted"
+                                        : ""
+                                }`}
                             >
                                 <TableCell className="w-10">
-                                    {processPendingID == (pending.pendingID)? (
+                                    {processPendingID == pending.pendingID ? (
                                         <div className="w-4">
-                                            <LoaderCircle className="text-primary animate-spin"/>
+                                            <LoaderCircle className="text-primary animate-spin" />
                                         </div>
                                     ) : isSelected ? (
                                         <div
-                                            className={`h-4 w-4 flex items-center justify-center rounded border-primary border-2 ${isItemSelected(pending.pendingID) ? "bg-primary" : ""}`}
+                                            className={`h-4 w-4 flex items-center justify-center rounded border-primary border-2 ${
+                                                isItemSelected(
+                                                    pending.pendingID
+                                                )
+                                                    ? "bg-primary"
+                                                    : ""
+                                            }`}
                                             role="checkbox"
                                             aria-checked={isItemSelected(
-                                                pending.pendingID,
+                                                pending.pendingID
                                             )}
                                             tabIndex={0}
                                         >
                                             {isItemSelected(
-                                                pending.pendingID,
+                                                pending.pendingID
                                             ) && (
                                                 <Check
                                                     className="h-4 w-4 text-primary-foreground"
@@ -134,14 +119,21 @@ export const PendingTable = ({
                                     {pending.treeCode}
                                 </TableCell>
                                 <TableCell
-                                    className={`hidden md:table-cell ${pending.status == 1 ? "text-red-500" : "text-green-500"}`}
+                                    className={`hidden md:table-cell ${
+                                        pending.status == 1
+                                            ? "text-red-500"
+                                            : "text-green-500"
+                                    }`}
                                 >
                                     {pending.status == 1
                                         ? "Pending"
                                         : "Processed"}
                                 </TableCell>
                                 <TableCell className="table-cell">
-                                    {formatDate(pending.addedAt)}
+                                    {formatDate(
+                                        pending.addedAt,
+                                        "MMM dd, yyyy"
+                                    )}
                                 </TableCell>
                                 <TableCell className="flex gap-2 justify-end">
                                     <PendingActionMenu

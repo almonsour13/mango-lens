@@ -1,15 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     File,
     Edit,
     Trash2,
     Search,
     FileImage,
-    ChevronDown,
-    MoreHorizontal,
-    Download,
     PlusCircle,
     SlidersHorizontal,
     ArrowDownUp,
@@ -44,8 +41,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import PageWrapper from "@/components/wrapper/page-wrapper";
-import { formatDate } from "@/lib/formatter";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import DiseaseModal from "@/components/modal/disease-modal";
 import ConfirmationModal from "@/components/modal/confirmation-modal";
 import Link from "next/link";
@@ -94,7 +90,7 @@ export default function DiseasesPage() {
 
     useEffect(() => {
         fetchDiseases();
-    }, []);
+    }, [userInfo?.userID]);
 
     const filteredDiseases = diseases
         .filter((disease) => {
@@ -250,7 +246,7 @@ export default function DiseasesPage() {
                                 <DropdownMenuLabel>Sort by: </DropdownMenuLabel>
                                 <DropdownMenuCheckboxItem
                                     checked={sortBy == "Newest"}
-                                    onCheckedChange={(checked) => {
+                                    onCheckedChange={() => {
                                         setSortBy("Newest");
                                     }}
                                 >
@@ -258,7 +254,7 @@ export default function DiseasesPage() {
                                 </DropdownMenuCheckboxItem>
                                 <DropdownMenuCheckboxItem
                                     checked={sortBy == "Oldest"}
-                                    onCheckedChange={(checked) => {
+                                    onCheckedChange={() => {
                                         setSortBy("Oldest");
                                     }}
                                 >
@@ -367,7 +363,6 @@ interface ActionMenuProps {
     handleAction: (action: string, diseaseID: number) => void;
 }
 function ActionMenu({ diseaseID, handleAction }: ActionMenuProps) {
-    const router = useRouter();
     const pathname = usePathname();
     return (
         <DropdownMenu>

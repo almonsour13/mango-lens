@@ -21,9 +21,9 @@ import { Tree } from "@/type/types";
 import AddPendingModal from "@/components/modal/add-pending-modal";
 import useOnlineStatus from "@/hooks/use-online";
 import { toast } from "@/hooks/use-toast";
-import { storePendingProcessItem } from "@/utils/indexedDB/indexedDB";
 import TreeModal from "@/components/modal/tree-modal";
 import { useCameraContext } from "@/context/camera-context";
+import { storePendingProcessItem } from "@/utils/indexedDB/store/pending-store";
 
 
 interface FooterProps {
@@ -87,7 +87,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
             imageUrl: capturedImage,
         };
 
-        if (isOnline) {
+        if (false) {
             setIsScanning(true);
             try {
                 const response = await fetch("/api/scan/newScan", {

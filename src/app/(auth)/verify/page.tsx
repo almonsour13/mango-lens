@@ -6,7 +6,6 @@ import { REGEXP_ONLY_DIGITS } from "input-otp";
 import {
     InputOTP,
     InputOTPGroup,
-    InputOTPSeparator,
     InputOTPSlot,
 } from "@/components/ui/input-otp";
 import {
@@ -47,7 +46,7 @@ export default function Verify() {
             const data = await res.json();
 
             if (res.ok) {
-                const { role, user, redirect } = data
+                const { user, redirect } = data
                 if(await getUserCredentials(user.userID)){
                     await deleteUserCredentials(user.userID)
                 }
@@ -72,7 +71,7 @@ export default function Verify() {
         }
     }, [value, verifyEmail]);
 
-    const handleResend = useCallback(async () => {}, [email]);
+    const handleResend = async () => {};
 
     return (
         <div className="w-full flex h-screen flex-row-reverse">
@@ -115,7 +114,7 @@ export default function Verify() {
                             </p>
                         )}
                         <div className="text-sm text-muted-foreground text-center">
-                            Didn't receive the code?{" "}
+                            {"Didn't"} receive the code?{" "}
                             <Button
                                 variant="link"
                                 className="p-0 h-auto"

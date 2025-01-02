@@ -26,7 +26,6 @@ import { useAuth } from "@/context/auth-context";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateUserCredentials } from "@/utils/indexedDB/indexedDB";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -34,6 +33,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCameraContext } from "@/context/camera-context";
+import { updateUserCredentials } from "@/utils/indexedDB/store/user-info-store";
 
 const formSchema = z.object({
     profileImage: z.string().optional(),

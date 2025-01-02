@@ -47,7 +47,7 @@ export async function GET(
         ).length;
 
         const diseasesDetected = (await query(
-            `SELECT *, analyzedAt as identifiedDate FROM diseaseIdentified di 
+            `SELECT *, analyzedAt as identifiedDate FROM diseaseidentified di 
             INNER JOIN analysis a ON di.analysisID = a.analysisID
             INNER JOIN image i ON a.imageID = i.imageID
             WHERE i.userID = ?`,

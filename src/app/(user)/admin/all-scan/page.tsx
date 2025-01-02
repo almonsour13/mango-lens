@@ -13,7 +13,7 @@ export default function Page() {
                     <h1 className="text-md">Gallery</h1>
                 </div>
                 <div className="flex items-center gap-2">
-                    
+                    {userInfo?.fName}
                 </div>
             </div>
             <PageWrapper>
