@@ -1,6 +1,6 @@
 import { createDBConnection } from "@/db/connection";
 
-export async function query(sqlQuery: string, params: (string | number | Buffer<ArrayBuffer>)[] = []) {
+export async function query(sqlQuery: string, params: (string | number | Buffer)[] = []) {
     const connection = await createDBConnection();
     console.log(process.env.NODE_ENV);
 

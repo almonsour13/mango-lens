@@ -40,12 +40,14 @@ export async function GET(
             WHERE di.analysisID = ?`,
             [imageAnalysis[0].analysisID]
         )) as (diseaseIdentified & Disease)[];
-
+        
         const analyzedImage = (await query(
-            `SELECT analyzedImageID, imageData FROM analyzedimage WHERE analysisID = ?`,
-            [imageAnalysis[0].analysisID]
+            `SELECT ai.analyzedImageID, ai.imageData FROM image i 
+                                            INNER JOIN analysis a ON i.imageID = a.imageID
+                                            INNER JOIN analyzedimage ai ON a.analysisID = ai.analysisID
+                                            WHERE i.imageID = ?`,
+            [imageAnalysis[0].imageID]
         )) as { analyzedImageID: number; imageData: string }[];
-
         const boundingBoxes =
             analyzedImage.length > 0
                 ? ((await query(
@@ -64,13 +66,13 @@ export async function GET(
 
         const imageDetails = {
             ...imageAnalysis[0],
-            imageData:convertBlobToBase64(imageAnalysis[0].imageData),
+            imageData: convertBlobToBase64(imageAnalysis[0].imageData),
             analyzedImage: convertBlobToBase64(analyzedImage[0].imageData),
             boundingBoxes: boundingBoxes,
             diseases,
         };
 
-        console.log(imageDetails)
+        console.log(imageDetails);
         return NextResponse.json(imageDetails);
     } catch (error) {
         console.error("Database query error:", error);
@@ -83,20 +85,23 @@ export async function GET(
 
 export async function PUT(
     request: Request,
-    { params }: { params: Promise<{ imageID: string }>}
+    { params }: { params: Promise<{ imageID: string }> }
 ) {
     const { imageID } = await params;
 
-    const {newTreeCode} = await request.json();
+    const { newTreeCode } = await request.json();
 
     try {
-        const tree = await query(`SELECT treeID from tree WHERE treeCode = ?`,[newTreeCode]) as {treeID:number}[]
+        const tree = (await query(
+            `SELECT treeID from tree WHERE treeCode = ?`,
+            [newTreeCode]
+        )) as { treeID: number }[];
 
         const result = await query(
             `UPDATE image set treeID = ? WHERE imageID = ?`,
             [tree[0].treeID, imageID]
         );
-        console.log(result)
+        console.log(result);
         return NextResponse.json(
             { message: "Tree code updated successfully" },
             { status: 200 }
