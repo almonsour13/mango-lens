@@ -15,6 +15,7 @@ import React, {
     ReactNode,
     useRef,
     useEffect,
+    useCallback,
 } from "react";
 import Image from "next/image";
 
@@ -80,37 +81,40 @@ const CameraPage = ({
     const [facingMode, setFacingMode] = useState<"user" | "environment">(
         "environment"
     );
-    useEffect(() => {
-        const startCamera = async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: facingMode },
-                });
-                if (videoRef.current) {
-                    videoRef.current.srcObject = stream;
-                    streamRef.current = stream;
-                    setHasPermission(true);
-                }
-            } catch (err) {
-                console.log(err)
-                setHasPermission(false);
-            }
-        };
 
-        const stopCamera = async () => {
-            const stream = streamRef.current;
-            if (stream) {
-                stream.getTracks().forEach((track) => track.stop());
-                streamRef.current = null;
-            }
+    const startCamera = useCallback(async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: facingMode },
+            });
+            
             if (videoRef.current) {
-                videoRef.current.srcObject = null;
+                videoRef.current.srcObject = stream;
+                streamRef.current = stream;
+                setHasPermission(true);
+                setIsCameraReady(true)
             }
-        };
+        } catch (err) {
+            console.log(err)
+            setHasPermission(false);
+        }
+    },[]);
+
+    const stopCamera = useCallback(async () => {
+        const stream = streamRef.current;
+        if (stream) {
+            stream.getTracks().forEach((track) => track.stop());
+            streamRef.current = null;
+        }
+        if (videoRef.current) {
+            videoRef.current.srcObject = null;
+        }
+    },[]);
+
+    useEffect(() => {
+
         if (!capturedImage && isCameraOpen) {
             startCamera();
-        }else{
-            stopCamera();
         }
         return () => {
             stopCamera();
@@ -148,6 +152,7 @@ const CameraPage = ({
         }
     };
     const handleCheck = () => {
+        stopCamera();
         setIsCameraOpen(false);
     };
     const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -184,7 +189,7 @@ const CameraPage = ({
                 </div>
                 <div className="w-full px-4">
                     <div className="relative w-full h-full overflow-hidden aspect-square rounded-lg bg-black">
-                        {!capturedImage && hasPermission && isCameraReady && (
+                        {!capturedImage && (
                             <>
                                 <video
                                     ref={videoRef}

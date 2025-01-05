@@ -71,6 +71,7 @@ export default function Page() {
     const { userInfo } = useAuth();
     const { setIsCameraOpen } = useCameraContext();
 
+    const router = useRouter()
     const handleImageUpload = (file: File) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -104,10 +105,18 @@ export default function Page() {
                     body: JSON.stringify(payload),
                 }
             );
+            const data = await response.json();
             if (response.ok) {
                 toast({
-                    title: "Tree Updated",
-                    description: `Tree updated successfully.`,
+                    title: "Tree Added",
+                    description: `Tree Added successfully.`,
+                });
+                router.back();
+            }else{
+                const error = data.error
+                toast({
+                    title: "Error Adding",
+                    description: error,
                 });
             }
         } catch (error) {
@@ -117,7 +126,6 @@ export default function Page() {
             setLoading(false);
         }
     };
-    const router = useRouter();
 
     const handleBack = () => {
         router.back();
@@ -290,7 +298,7 @@ export default function Page() {
                                         Cancel
                                     </Button>
                                     <Button type="submit" disabled={loading}>
-                                        {loading ? "Saving..." : "Update Tree"}
+                                        {loading ? "Adding..." : "Add Tree"}
                                     </Button>
                                 </div>
                             </div>

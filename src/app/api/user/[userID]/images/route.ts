@@ -12,7 +12,7 @@ export async function GET(
 
     try {
         const img = (await query(
-            `SELECT * FROM Image i 
+            `SELECT * FROM image i 
             INNER JOIN tree t ON i.treeID = t.treeID
             AND t.userID = ? AND t.status = 1 AND i.status = 1 
             ORDER BY i.uploadedAt DESC`,
@@ -33,10 +33,11 @@ export async function GET(
                 const analyzedImage = (await query(
                     `SELECT ai.analyzedImageID, ai.imageData FROM image i 
                                                     INNER JOIN analysis a ON i.imageID = a.imageID
-                                                    INNER JOIN analyzedImage ai ON a.analysisID = ai.analysisID
+                                                    INNER JOIN analyzedimage ai ON a.analysisID = ai.analysisID
                                                     WHERE i.imageID = ?`,
                     [image.imageID]
                 )) as { analyzedImageID: number; imageData: string }[];
+                
                 return {
                     ...image,
                     imageData: convertBlobToBase64(image.imageData),

@@ -27,16 +27,16 @@ export async function GET(
                 const image = (await query(
                     `SELECT imageData FROM image i WHERE i.treeID = ? AND i.status = 1  ORDER BY uploadedAt DESC`,
                     [tree.treeID]
-                )) as { imageData: string }[];  
+                )) as { imageData: string }[];
 
-                const treeImage = await query(
-                    `SELECT imageData FROM treeImage WHERE status = 1 AND treeID = ?`,
+                const treeImage = (await query(
+                    `SELECT imageData FROM treeimage WHERE status = 1 AND treeID = ?`,
                     [tree.treeID]
-                ) as { imageData: string }[];
-                
+                )) as { imageData: string }[];
+
                 return {
                     ...tree,
-                    treeImage:convertBlobToBase64(treeImage[0]?.imageData),
+                    treeImage: convertBlobToBase64(treeImage[0]?.imageData),
                     recentImage: convertBlobToBase64(image[0]?.imageData),
                     imagesLength: image.length,
                 };
@@ -57,7 +57,6 @@ export async function POST(
 ) {
     const { userID } = await params;
     const { treeCode, description } = await req.json();
-
     try {
         if (!treeCode || !userID) {
             return NextResponse.json(
@@ -67,7 +66,7 @@ export async function POST(
         }
 
         const checkIfExist = (await query(
-            `SELECT * FROM Tree t WHERE t.treeCode = ?`,
+            `SELECT * FROM tree t WHERE t.treeCode = ?`,
             [treeCode]
         )) as Tree[];
 
@@ -82,11 +81,13 @@ export async function POST(
             `INSERT INTO tree (treeCode, description, userID) VALUES (?, ?, ?)`,
             [treeCode, description, userID]
         )) as { insertId: number };
-        const newTree = (await query(`SELECT * FROM Tree WHERE treeID = ?`, [
+
+        const newTree = (await query(`SELECT * FROM tree WHERE treeID = ?`, [
             insertId.insertId,
         ])) as Tree[];
 
         return NextResponse.json({ success: true, tree: newTree[0] });
+
     } catch (error) {
         console.error("Error adding tree:", error);
         return NextResponse.json(
@@ -95,4 +96,3 @@ export async function POST(
         );
     }
 }
-

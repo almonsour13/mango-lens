@@ -16,7 +16,7 @@ export async function GET(
         const tree = await query(`SELECT * FROM tree WHERE treeID = ?`,[treeID]) as Tree[];
 
         const img = (await query(
-            `SELECT * FROM Image i 
+            `SELECT * FROM image i 
             INNER JOIN tree t ON i.treeID = t.treeID 
             WHERE t.treeID = ? AND t.userID = ? 
             AND t.status = 1 AND i.status = 1 
@@ -55,7 +55,7 @@ export async function GET(
         );
 
         const treeImage = await query(
-            `SELECT imageData FROM treeImage WHERE status = 1 AND treeID = ?`,
+            `SELECT imageData FROM treeimage WHERE status = 1 AND treeID = ?`,
             [treeID]
         ) as { imageData: string }[];
 
@@ -97,13 +97,13 @@ export async function PUT(
 
         if(treeImage){
             const hasTreeImage = await query(
-                `SELECT treeImageID FROM treeImage WHERE status = 1 AND treeID = ?`,
+                `SELECT treeImageID FROM treeimage WHERE status = 1 AND treeID = ?`,
                 [treeID]
             ) as { userprofileimageID: number }[];
 
             if (hasTreeImage.length > 0) {
                 await query(
-                    `UPDATE treeImage SET status = 2 WHERE treeID = ?`,
+                    `UPDATE treeimage SET status = 2 WHERE treeID = ?`,
                     [treeID]
                 );
             }
@@ -111,7 +111,7 @@ export async function PUT(
             const blobImageData = convertImageToBlob(treeImage);
 
             const result = await query(
-                `INSERT INTO treeImage (treeID, imageData) VALUES (?, ?)`,
+                `INSERT INTO treeimage (treeID, imageData) VALUES (?, ?)`,
                 [treeID, blobImageData]
             );
             console.log(result)
