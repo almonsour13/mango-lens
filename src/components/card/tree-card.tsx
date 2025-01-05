@@ -5,7 +5,6 @@ import { Leaf, TreeDeciduous } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { Image as img, Tree } from "@/type/types";
 import { TreeActionMenu } from "../action menu/tree-action-menu";
-import { formatDistanceToNow } from "date-fns";
 
 interface TreeWithImage extends Tree {
     treeImage: string;

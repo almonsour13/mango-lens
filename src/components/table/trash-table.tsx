@@ -9,13 +9,7 @@ import {
 } from "@/components/ui/table";
 import {
     Check,
-    Edit,
-    Eye,
     ImageIcon,
-    MoreHorizontal,
-    RefreshCw,
-    Scan,
-    Trash2,
     TreeDeciduous,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";

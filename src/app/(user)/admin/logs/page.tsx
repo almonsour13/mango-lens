@@ -20,7 +20,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { formatDate } from "@/lib/formatter";
 
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -154,7 +153,7 @@ export default function AdminActivityLogs() {
                                         <TableCell>{log.activity}</TableCell>
                                         <TableCell>{log.type}</TableCell>
                                         <TableCell>
-                                            {formatDate(log.createdAt)}
+                                            {/* {formatDate(log.createdAt)} */}
                                         </TableCell>
                                         <TableCell className="text-center">
                                             <ActionMenu

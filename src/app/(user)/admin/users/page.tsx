@@ -236,7 +236,7 @@ export default function Users() {
                                 <DropdownMenuLabel>Sort by: </DropdownMenuLabel>
                                 <DropdownMenuCheckboxItem
                                     checked={sortBy == "Newest"}
-                                    onCheckedChange={(checked) => {
+                                    onCheckedChange={() => {
                                         setSortBy("Newest");
                                     }}
                                 >
@@ -244,7 +244,7 @@ export default function Users() {
                                 </DropdownMenuCheckboxItem>
                                 <DropdownMenuCheckboxItem
                                     checked={sortBy == "Oldest"}
-                                    onCheckedChange={(checked) => {
+                                    onCheckedChange={() => {
                                         setSortBy("Oldest");
                                     }}
                                 >

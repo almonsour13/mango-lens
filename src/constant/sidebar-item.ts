@@ -1,4 +1,4 @@
-import { Home, Users, Leaf, Image, Settings, FileText,TreeDeciduous, Scan, GalleryHorizontal, LucideIcon, Trees, LayoutDashboard, Trash, Trash2 } from 'lucide-react';
+import { Home, Users, Leaf, Image, Settings, FileText,TreeDeciduous, Scan, GalleryHorizontal, LucideIcon, Trees, LayoutDashboard, Trash2 } from 'lucide-react';
 
 interface SidebarItem {
     href: string;

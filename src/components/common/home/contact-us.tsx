@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { Loader2, Mail, Phone, MapPin } from 'lucide-react'
+import { Loader2, Mail} from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -65,7 +65,7 @@ export default function ContactSection() {
           <div>
             <h3 className="text-xl font-semibold mb-4">Get in Touch</h3>
             <p className="text-muted-foreground mb-6">
-              Have questions about MangoCare? We're here to help! Fill out the form, and we'll get back to you as soon as possible.
+              Have questions about MangoCare? {"We're"} here to help! Fill out the form, and {"we'll"} get back to you as soon as possible.
             </p>
             <div className="space-y-4">
               <div className="flex items-center">

@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Dialog, DialogContent, DialogHeader, DialogFooter } from "@/components/ui/dialog"
-import { Drawer, DrawerContent, DrawerHeader, DrawerFooter } from "@/components/ui/drawer"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Drawer, DrawerContent } from "@/components/ui/drawer"
 import { cn } from "@/lib/utils"
 
 const ModalDrawer = React.forwardRef<

@@ -5,18 +5,16 @@ import { useEffect, useState } from "react";
 import { Image as img } from "@/type/types";
 import { TreeImageCard } from "@/components/card/tree-image-card";
 import PageWrapper from "@/components/wrapper/page-wrapper";
-import { ArrowDownUp, Check, Edit, Eye, Grid, List, MoreHorizontal, MoreVertical, Plus, RefreshCcw, Save, Scan, Search, Trash2, TreeDeciduous, Filter, SlidersHorizontal } from 'lucide-react';
+import { ArrowDownUp, Grid, List, Plus, SlidersHorizontal } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
-    DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
 import Link from "next/link";
 import { TreeImageSkeletonCard } from "@/components/skeleton/skeleton-card";
@@ -116,7 +114,7 @@ export default function Gallery() {
                                     <DropdownMenuLabel>Sort by: </DropdownMenuLabel>
                                     <DropdownMenuCheckboxItem
                                         checked={sortBy == "Newest"}
-                                        onCheckedChange={(checked) => {
+                                        onCheckedChange={() => {
                                             setSortBy("Newest");
                                         }}
                                     >
@@ -124,7 +122,7 @@ export default function Gallery() {
                                     </DropdownMenuCheckboxItem>
                                     <DropdownMenuCheckboxItem
                                         checked={sortBy == "Oldest"}
-                                        onCheckedChange={(checked) => {
+                                        onCheckedChange={() => {
                                             setSortBy("Oldest");
                                         }}
                                     >

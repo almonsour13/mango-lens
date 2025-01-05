@@ -13,7 +13,6 @@ type images = img & { analyzedImage: string | null } & { treeCode?: number } & {
 
 export const TreeImageCard = ({ image }: { image: images }) => {
     const pathname = usePathname();
-    const [open, setOpen] = useState(false);
     const isDisease =
         image.diseases &&
         image.diseases.filter(

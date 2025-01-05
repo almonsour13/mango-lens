@@ -19,12 +19,12 @@ const clearAuthCookies = (response: NextResponse) => {
 };
 
 // Helper function to check if token is expired
-const isTokenExpired = (payload: any): boolean => {
-    if (!payload.exp) return true;
-    const expirationTime = payload.exp * 1000; // Convert to milliseconds
-    const currentTime = Date.now();
-    return currentTime >= expirationTime;
-};
+// const isTokenExpired = (payload: any): boolean => {
+//     if (!payload.exp) return true;
+//     const expirationTime = payload.exp * 1000; // Convert to milliseconds
+//     const currentTime = Date.now();
+//     return currentTime >= expirationTime;
+// };
 
 export async function middleware(request: NextRequest) {
     if (!process.env.JWT_SECRET_KEY) {

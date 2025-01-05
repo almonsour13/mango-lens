@@ -1,16 +1,3 @@
-import { boundingBox, Disease, diseaseIdentified, PendingItem, ScanResult, Tree } from "@/type/types";
-import { convertBlobToBase64, convertImageToBlob } from "../image-utils";
-
-// Define the structure of our data
-
-
-interface ProcessedResult {
-    tree: Tree;
-    originalImage: string;
-    analyzedImage:string;
-    boundingBoxes:boundingBox[];
-    diseases: (diseaseIdentified & Disease)[];
-}
 
 // Database configuration
 const DB_NAME = 'mango-care-local-db';
@@ -69,14 +56,6 @@ export async function dbOperation<T>(
     });
 }
 
-
-interface UserDredentials {
-    userID: number;
-    fName: string;
-    lName: string;
-    email: string;
-    profileImage: string | null;
-}
 
 // export async function getUserCredentials(userID: number): Promise<UserDredentials | null> {
 //     const userCredentials = await dbOperation<UserDredentials | null>(USER_CREDENTIALS_STORE, 'readonly', (store) => store.get(userID));

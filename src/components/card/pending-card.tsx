@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Card } from "../ui/card";
-import { Button } from "../ui/button";
 import Image from "next/image";
-import { Check, Edit, Eye, MoreHorizontal, MoreVertical, RefreshCcw, Save, Scan, Trash2, TreeDeciduous } from "lucide-react";
+import { Check } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { PendingActionMenu } from "../action menu/pending-action-menu";
 import { PendingItem } from "@/type/types";

@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import {
-    Card,
     CardContent,
     CardDescription,
     CardHeader,
@@ -12,47 +11,29 @@ import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
-    DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import {
     ArrowDownUp,
-    ArrowLeft,
-    Edit,
-    Filter,
-    Folder,
     Grid,
     List,
-    ListFilter,
-    MoreHorizontal,
     Plus,
     PlusIcon,
-    Scan,
-    Search,
     SlidersHorizontal,
-    Trash2,
-    TreeDeciduous,
-    TreePine,
-    Trees,
 } from "lucide-react";
 import { Image as img, Tree } from "@/type/types";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { formatDate } from "@/lib/formatter";
 import { useAuth } from "@/context/auth-context";
-import { Separator } from "@/components/ui/separator";
 import TreeModal from "@/components/modal/tree-modal";
 import ConfirmationModal from "@/components/modal/confirmation-modal";
 import { Toggle } from "@/components/ui/toggle";
 import TreeCard from "@/components/card/tree-card";
 import { TreeSkeletonCard } from "@/components/skeleton/skeleton-card";
 import { TreeTable } from "@/components/table/tree-table";
-import { Input } from "@/components/ui/input";
 
 interface TreeWithImage extends Tree {
     treeImage:string;

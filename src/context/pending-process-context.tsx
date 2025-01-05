@@ -1,13 +1,7 @@
 "use client";
 
 import {
-    Analysis,
-    Disease,
-    diseaseIdentified,
-    ScanResult,
-    Tree,
-    Image,
-    PendingItem,
+    PendingItem
 } from "@/type/types";
 import React, {
     createContext,

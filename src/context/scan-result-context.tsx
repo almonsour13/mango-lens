@@ -1,5 +1,5 @@
 'use client';
-import { Analysis, Disease, diseaseIdentified, ScanResult, Tree, Image   } from '@/type/types';
+import { ScanResult} from '@/type/types';
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 interface ScanResultContextType {

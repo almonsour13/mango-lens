@@ -1,6 +1,6 @@
 import { createDBConnection } from "@/db/connection";
 import { runMigration } from "@/db/migration/migration";
-import mysql from "mysql2/promise";
+// import mysql from "mysql2/promise";
 
 export async function query(sqlQuery: string, params: any[] = []) {
     const connection = await createDBConnection();

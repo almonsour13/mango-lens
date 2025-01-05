@@ -5,14 +5,6 @@ export interface ScanResult {
     boundingBoxes: boundingBox[];
     diseases: (diseaseIdentified & Disease)[];
 };
-
-interface ProcessedResult {
-    tree: Tree;
-    originalImage: string;
-    analyzedImage: string;
-    boundingBoxes: boundingBox[];
-    diseases: (diseaseIdentified & Disease)[];
-}
 export interface PendingItem {
     pendingID: number;
     userID?: number;

@@ -1,5 +1,5 @@
 import { Button } from "../ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle } from "../ui/dialog";
+import { DialogHeader, DialogFooter, DialogTitle } from "../ui/dialog";
 import ModalDrawer from "./modal-drawer-wrapper"
 
 interface ConfirmationModalProps {

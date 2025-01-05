@@ -13,7 +13,6 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import {
     Table,
     TableBody,
@@ -25,13 +24,8 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
-    BarChart,
     Activity,
-    Users,
-    DollarSign,
-    MoreVertical,
     Eye,
     Bell,
     AlertCircle,
@@ -46,7 +40,6 @@ import { useState, useEffect } from "react";
 import { Image as Img } from "@/type/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { set } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePendingProcess } from "@/context/pending-process-context";
 import { getPendingTotalCount } from "@/utils/indexedDB/store/pending-store";

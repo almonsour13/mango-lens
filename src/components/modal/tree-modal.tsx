@@ -31,15 +31,6 @@ import { Textarea } from "../ui/textarea";
 import { Label } from "../ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ScrollArea } from "../ui/scroll-area";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-// Icons
-import { TreeDeciduous } from "lucide-react";
 
 // Custom Components
 import ModalDrawer from "./modal-drawer-wrapper";

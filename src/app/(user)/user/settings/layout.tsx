@@ -2,10 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import {
-    Settings,
     Shield,
     Link as LinkIcon,
     Bell,

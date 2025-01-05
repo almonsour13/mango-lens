@@ -1,22 +1,14 @@
 import { usePathname } from "next/navigation";
 import {
-    Check,
     Edit,
-    Eye,
-    MoreHorizontal,
     MoreVertical,
-    RefreshCcw,
-    Save,
     Scan,
     Trash2,
-    TreeDeciduous,
 } from "lucide-react";
 import {
     DropdownMenu,
-    DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";

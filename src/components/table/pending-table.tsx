@@ -1,4 +1,3 @@
-import { Image as img, Tree, Trash as TRS } from "@/type/types";
 import {
     Table,
     TableBody,
@@ -8,7 +7,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Check, ImageIcon, LoaderCircle } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { PendingActionMenu } from "../action menu/pending-action-menu";
 import { formatDate } from "date-fns";
 

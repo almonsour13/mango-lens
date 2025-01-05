@@ -36,9 +36,9 @@ interface ImageData {
 export const CameraProvider = ({ children }: { children: ReactNode }) => {
     const [isCameraOpen, setIsCameraOpen] = useState(false);
     const [capturedImage, setCapturedImage] = useState<string>("");
-    const [imageData, setImageData] = useState<ImageData | null>(null);
+    // const [imageData, setImageData] = useState<ImageData | null>(null);
 
-    const getImageData = () => {};
+    // const getImageData = () => {};
 
     return (
         <CameraContext.Provider

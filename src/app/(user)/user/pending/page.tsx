@@ -5,20 +5,18 @@ import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
-    DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 import PendingCard from "@/components/card/pending-card";
-import { Card, CardContent } from "@/components/ui/card";
+import {CardContent } from "@/components/ui/card";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useAuth } from "@/context/auth-context";
 import useOnlineStatus from "@/hooks/use-online";
 import { useEffect, useState } from "react";
 import {
     ArrowDownUp,
-    Filter,
     Grid,
     List,
     RefreshCw,
@@ -30,19 +28,10 @@ import {
 } from "lucide-react";
 import { Toggle } from "@/components/ui/toggle";
 import { PendingTable } from "@/components/table/pending-table";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { useScanResult } from "@/context/scan-result-context";
 import { usePendingProcess } from "@/context/pending-process-context";
 
-interface PendingProcess {
-    pendingID: number;
-    userID?: number;
-    treeCode: string;
-    imageUrl: string;
-    status: number;
-    addedAt: Date;
-}
 export default function Pending() {
     // const [selected, setSelected] = useState<number[]>([]);
     // const [isSelected, setIsSelected] = useState(false);

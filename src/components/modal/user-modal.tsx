@@ -63,8 +63,8 @@ export default function UserModal({openDialog, setOpenDialog, editingUser, setEd
                 email: editingUser.email,
                 password: undefined,
                 confirmPassword: undefined,
-                role: editingUser.role,
-                status:editingUser.status,
+                role: editingUser.role == 1? "Admin":"User",
+                status:editingUser.status == 1? "Active":"Inactive",
             })
         }else{
             form.reset({

@@ -20,7 +20,6 @@ import { Grid, Clock, ShieldCheck, Calendar, UserCircle } from "lucide-react";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import Link from "next/link";
 import React from "react";
-import { formatDate } from "@/lib/formatter";
 
 interface User {
     userID: number;
@@ -185,9 +184,7 @@ export default function UserDetails({
                                                         {log.activity}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {formatDate(
-                                                            log.createdAt,
-                                                        )}
+                                                      
                                                     </TableCell>
                                                 </TableRow>
                                             ))}
