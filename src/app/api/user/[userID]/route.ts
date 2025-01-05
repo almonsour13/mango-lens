@@ -76,7 +76,7 @@ export async function PUT(
 
                 const result = await query(
                     `INSERT INTO userprofileimage (userID, imageData) VALUES (?, ?)`,
-                    [userID, blobImageData.toString()]
+                    [userID, blobImageData]
                 );
                 console.log(result)
             }

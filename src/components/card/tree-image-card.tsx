@@ -46,7 +46,7 @@ export const TreeImageCard = ({ image }: { image: images }) => {
                                 {image.treeCode &&
                                     pathname.includes("gallery") && (
                                         <Link
-                                            href={`/user/tree/${image.treeCode}`}
+                                            href={`/user/tree/${image.treeID}`}
                                             className="font-semibold text-md text-white truncate hover:underline"
                                         >
                                             {image.treeCode}

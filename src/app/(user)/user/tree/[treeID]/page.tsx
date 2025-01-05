@@ -77,8 +77,12 @@ export default function Page({
                     throw new Error("Failed to fetch image details");
                 }
                 const data = await response.json();
-                setTree(data.tree);
-                setImages(data.images);
+                if(response.ok){
+                    setTree(data.tree);
+                    setImages(data.images);
+                }else{
+                    alert(data.error)
+                }
             } catch (error) {
                 console.error("Error fetching trees:", error);
             } finally {

@@ -42,7 +42,7 @@ export async function GET(
         )) as (diseaseIdentified & Disease)[];
 
         const analyzedImage = (await query(
-            `SELECT analyzedImageID, imageData FROM analyzedImage WHERE analysisID = ?`,
+            `SELECT analyzedImageID, imageData FROM analyzedimage WHERE analysisID = ?`,
             [imageAnalysis[0].analysisID]
         )) as { analyzedImageID: number; imageData: string }[];
 
@@ -70,6 +70,7 @@ export async function GET(
             diseases,
         };
 
+        console.log(imageDetails)
         return NextResponse.json(imageDetails);
     } catch (error) {
         console.error("Database query error:", error);

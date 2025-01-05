@@ -86,10 +86,9 @@ export async function POST(req: Request) {
 
             const insertAnalyzedImageResult = (await query(
                 `INSERT INTO analyzedimage (analysisID, imageData) VALUES (?, ?)`,
-                [analysisID, analyzedImageBlob.toString()]
+                [analysisID, analyzedImageBlob]
             )) as { insertId: number };
 
-            console.log(insertAnalyzedImageResult)
             return NextResponse.json({
                 message: "Analysis result and image saved successfully.",
             });
