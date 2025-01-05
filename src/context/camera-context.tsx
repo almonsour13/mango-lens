@@ -98,7 +98,7 @@ const CameraPage = ({
             console.log(err)
             setHasPermission(false);
         }
-    },[]);
+    },[facingMode]);
 
     const stopCamera = useCallback(async () => {
         const stream = streamRef.current;
@@ -119,7 +119,7 @@ const CameraPage = ({
         return () => {
             stopCamera();
         };
-    }, [capturedImage, facingMode, isCameraOpen]);
+    }, [capturedImage, facingMode, isCameraOpen, startCamera, stopCamera]);
 
     const handleCapture = async () => {
         const canvas = canvasRef.current;

@@ -37,7 +37,7 @@ export default function ResultDisplay() {
 
     if (!scanResult) return null;
 
-    const handleSave = useCallback(async () => {
+    const handleSave = async () => {
         try {
             setIsSaving(true);
             const saveResponse = await fetch("/api/scan/save", {
@@ -71,7 +71,7 @@ export default function ResultDisplay() {
             });
             setIsSaving(false);
         }
-    }, []);
+    };
 
     const handleDiscard = () => {
         setIsVisible(false);
