@@ -1,18 +1,18 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Button } from "@/components/ui/button"
 import { DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { useForm } from 'react-hook-form'
-import * as z from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from "@/components/ui/input"
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { Eye, EyeOff } from 'lucide-react'
-import ModalDrawer from './modal-drawer-wrapper'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "@/hooks/use-toast"
 import { User } from '@/type/types'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Eye, EyeOff } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import * as z from 'zod'
+import ModalDrawer from './modal-drawer-wrapper'
 
 const formSchema = z.object({
     fName: z.string().min(2, { message: "First name must be at least 2 characters." }),
@@ -76,7 +76,7 @@ export default function UserModal({openDialog, setOpenDialog, editingUser, setEd
               status: undefined
             });
         }
-    },[editingUser])
+    },[editingUser, form])
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         const method = editingUser ? 'PUT' : 'POST';

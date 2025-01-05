@@ -68,7 +68,7 @@ export default function ProfileSettings() {
                 profileImage: capturedImage
             });
         }
-    },[capturedImage])
+    },[capturedImage, form])
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -90,7 +90,7 @@ export default function ProfileSettings() {
         if (userInfo?.userID) {
             fetchUser();
         }
-    }, [userInfo]);
+    }, [userInfo, form]);
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setError(null)

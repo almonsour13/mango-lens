@@ -63,7 +63,7 @@ export default function DiseasesPage() {
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
 
-    const fetchDiseases = async () => {
+    const fetchDiseases = useCallback(async () => {
         setIsLoading(true);
         try {
             const response = await fetch(
@@ -86,11 +86,11 @@ export default function DiseasesPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    },[userInfo?.userID, toast]);
 
     useEffect(() => {
         fetchDiseases();
-    }, [userInfo?.userID]);
+    }, [fetchDiseases]);
 
     const filteredDiseases = diseases
         .filter((disease) => {

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     CardContent,
     CardDescription,
@@ -63,7 +63,7 @@ export default function TreePage() {
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [selectedTreeID, setSelectedTreeID] = useState(0);
 
-    const fetchTrees = async () => {
+    const fetchTrees = useCallback(async () => {
         setLoading(true);
         try {
             const response = await fetch(`/api/user/${userInfo?.userID}/tree`);
@@ -77,11 +77,11 @@ export default function TreePage() {
         } finally {
             setLoading(false);
         }
-    };
+    },[userInfo?.userID]);
 
     useEffect(() => {
         fetchTrees();
-    }, [userInfo?.userID]);
+    }, [userInfo?.userID, fetchTrees]);
 
     const filteredTree = trees
         .filter((tree) => filterStatus == 0 || tree.status == filterStatus)

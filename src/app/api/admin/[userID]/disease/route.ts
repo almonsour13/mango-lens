@@ -4,7 +4,7 @@ import { Disease } from "@/type/types";
 
 export async function GET(
     req: Request,
-    { params }: { params: { userID: number } }
+    { params }: { params: Promise<{ userID: number }>}
 ) {
     const { userID } = await params;
 

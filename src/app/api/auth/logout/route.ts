@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
-import { insertLog } from '../../log/route';
 import { JWTPayload, jwtVerify, JWTVerifyResult } from 'jose';
+import { insertLog } from '@/lib/logging/insert-log';
 
 export async function POST(req: NextRequest) {
   try {
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     const activity = `${fName} ${lName} logged out`;
 
     // Insert log
-    await insertLog(userID, 2, activity);
+    // await insertLog(userID, 2, activity);
 
     // Delete token cookie by setting an expired date
     const cookie = (await cookies());

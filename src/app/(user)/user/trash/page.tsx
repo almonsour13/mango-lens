@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { Image as img, Tree, Trash as TRS } from "@/type/types";
@@ -45,7 +45,7 @@ export default function Trash() {
 
     const [viewMode, setViewMode] = useState<'table' | 'grid'>('grid')
     
-    const fetchTrashes = async () => {
+    const fetchTrashes = useCallback(async () => {
         setLoading(true);
         try {
             const response = await fetch(`/api/user/${userInfo?.userID}/trash`);
@@ -59,11 +59,11 @@ export default function Trash() {
         } finally {
             setLoading(false);
         }
-    }
+    },[userInfo?.userID])
 
     useEffect(()=>{
         fetchTrashes();
-    },[userInfo?.userID])
+    },[userInfo?.userID, fetchTrashes])
 
     const filteredTrashes = trashes
         .filter((trash) => filterType === 0 || trash.type === filterType)

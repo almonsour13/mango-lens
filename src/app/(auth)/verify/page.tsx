@@ -13,12 +13,16 @@ import {
     InputOTPGroup,
     InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { deleteUserCredentials, getUserCredentials, storeUserCredentials } from "@/utils/indexedDB/store/user-info-store";
+import {
+    deleteUserCredentials,
+    getUserCredentials,
+    storeUserCredentials,
+} from "@/utils/indexedDB/store/user-info-store";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
-export default function Verify() {
+function VerifyForm() {
     const search = useSearchParams();
     const router = useRouter();
     const email = search.get("email");
@@ -42,24 +46,24 @@ export default function Verify() {
             const data = await res.json();
 
             if (res.ok) {
-                const { user, redirect } = data
-                if(await getUserCredentials(user.userID)){
-                    await deleteUserCredentials(user.userID)
+                const { user, redirect } = data;
+                if (await getUserCredentials(user.userID)) {
+                    await deleteUserCredentials(user.userID);
                 }
                 await storeUserCredentials(user);
 
-                router.push(redirect)
+                router.push(redirect);
             } else {
                 setError(data.error || data.message || "Verification failed");
                 return;
             }
         } catch (err) {
             setError((err as Error).message);
-            setValue(""); 
+            setValue("");
         } finally {
             setIsVerifying(false);
         }
-    }, [value, email, router]);
+    }, [value, email, router, isVerifying, token]);
 
     useEffect(() => {
         if (value.length === 6) {
@@ -67,60 +71,67 @@ export default function Verify() {
         }
     }, [value, verifyEmail]);
 
-    const handleResend = async () => {};
+    const handleResend = async () => {
+        // Implement resend logic here
+    };
 
+    return (
+        <Card className="w-full max-w-md mx-auto border-0 bg-card shadow-none">
+            <CardHeader>
+                <CardTitle className="text-2xl text-center text-primary">
+                    Verify Your Email
+                </CardTitle>
+                <CardDescription className="text-center">
+                    Please enter the 6-digit verification code sent to {email}
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 flex flex-col justify-center items-center">
+                <InputOTP
+                    maxLength={6}
+                    value={value}
+                    onChange={(value) => setValue(value)}
+                    pattern={REGEXP_ONLY_DIGITS}
+                    disabled={isVerifying}
+                >
+                    <InputOTPGroup>
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
+                        <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                </InputOTP>
+                {error && (
+                    <p className="text-sm text-red-500" role="alert">
+                        {error}
+                    </p>
+                )}
+                {isVerifying && (
+                    <p className="text-sm text-blue-500">Verifying...</p>
+                )}
+                <div className="text-sm text-muted-foreground text-center">
+                    {"Didn't"} receive the code?{" "}
+                    <Button
+                        variant="link"
+                        className="p-0 h-auto"
+                        onClick={handleResend}
+                    >
+                        Resend
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+export default function Verify() {
     return (
         <div className="w-full flex h-screen flex-row-reverse">
             <div className="flex-1 flex items-center justify-center">
-                <Card className="w-full max-w-md mx-auto border-0 bg-card shadow-none">
-                    <CardHeader>
-                        <CardTitle className="text-2xl text-center text-primary">
-                            Verify Your Email
-                        </CardTitle>
-                        <CardDescription className="text-center">
-                            Please enter the 6-digit verification code sent to{" "}
-                            {email}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4 flex flex-col justify-center items-center">
-                        <InputOTP
-                            maxLength={6}
-                            value={value}
-                            onChange={(value) => setValue(value)}
-                            pattern={REGEXP_ONLY_DIGITS}
-                            disabled={isVerifying}
-                        >
-                            <InputOTPGroup>
-                                <InputOTPSlot index={0} />
-                                <InputOTPSlot index={1} />
-                                <InputOTPSlot index={2} />
-                                <InputOTPSlot index={3} />
-                                <InputOTPSlot index={4} />
-                                <InputOTPSlot index={5} />
-                            </InputOTPGroup>
-                        </InputOTP>
-                        {error && (
-                            <p className="text-sm text-red-500" role="alert">
-                                {error}
-                            </p>
-                        )}
-                        {isVerifying && (
-                            <p className="text-sm text-blue-500">
-                                Verifying...
-                            </p>
-                        )}
-                        <div className="text-sm text-muted-foreground text-center">
-                            {"Didn't"} receive the code?{" "}
-                            <Button
-                                variant="link"
-                                className="p-0 h-auto"
-                                onClick={handleResend}
-                            >
-                                Resend
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
+                <Suspense fallback={<div>Loading...</div>}>
+                    <VerifyForm />
+                </Suspense>
             </div>
         </div>
     );

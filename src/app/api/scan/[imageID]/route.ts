@@ -3,7 +3,7 @@ import { query } from '@/lib/db/db'
 import { Analysis, Disease, diseaseIdentified, Image, Tree } from '@/type/types';
 
 
-export async function GET(request: Request,{ params }: { params: { imageID: string } }) {
+export async function GET(request: Request,{ params }: { params: Promise<{ imageID: string }> }) {
      const { imageID } = await params;
 
     try {

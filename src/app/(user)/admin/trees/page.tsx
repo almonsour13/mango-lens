@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     Card,
     CardContent,
@@ -51,7 +51,7 @@ export default function Page() {
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
     const [filterUser, setFilterUser] = useState<string | null>(null);
 
-    const fetchTrees = async () => {
+    const fetchTrees = useCallback(async () => {
         setLoading(true);
         console.log(error, loading)
         try {
@@ -68,11 +68,11 @@ export default function Page() {
             setLoading(false);
             setError(error as string);
         }
-    };
+    },[userInfo?.userID, error, loading]);
 
     useEffect(() => {
         fetchTrees();
-    }, [userInfo?.userID]);
+    }, [fetchTrees]);
 
     const uniqueTreeUser = Array.from(
         new Set(trees.map((tree) => tree.fName + " " + tree.lName))
@@ -126,7 +126,7 @@ export default function Page() {
                         A comprehensive list of user trees.
                     </CardDescription>
                 </CardHeader>
-                <TreeAnalytics trees={trees} />
+                {/* <TreeAnalytics trees={trees} /> */}
                 <div className="flex items-center justify-between gap-2">
                     <div className="relative h-10 flex items-center">
                         <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
@@ -319,37 +319,37 @@ const ActionMenu = () => {
     );
 };
 
-interface TreeAnalyticsProps {
-    trees: Trees[];
-}
+// interface TreeAnalyticsProps {
+//     trees: Trees[];
+// }
 
-export function TreeAnalytics({ trees }: TreeAnalyticsProps) {
-    const totalTrees = trees.length;
-    const activeTrees = trees.filter((tree) => tree.status === 1).length;
-    const inactiveTrees = trees.filter((tree) => tree.status === 2).length;
-    
-    const treeMetrics = [
-        { name: "Total Trees", value: totalTrees },
-        { name: "Active Trees", value: activeTrees },
-        { name: "Inactive Trees", value: inactiveTrees },
-        { name: "Average Images", value: inactiveTrees },
-    ];
-    return (
-        <div className="grid gap-2 md:gap-4 grid-cols-2 lg:grid-cols-4">
-            {treeMetrics.map((metrics, index) => (
-                <Card key={index} className="bg-card shadow-none">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            {metrics.name}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">
-                            {metrics.value}
-                        </div>
-                    </CardContent>
-                </Card>
-            ))}
-        </div>
-    );
-}
+// export function TreeAnalytics({ trees }: TreeAnalyticsProps) {
+//     const totalTrees = trees.length;
+//     const activeTrees = trees.filter((tree) => tree.status === 1).length;
+//     const inactiveTrees = trees.filter((tree) => tree.status === 2).length;
+
+//     const treeMetrics = [
+//         { name: "Total Trees", value: totalTrees },
+//         { name: "Active Trees", value: activeTrees },
+//         { name: "Inactive Trees", value: inactiveTrees },
+//         // { name: "Average Images", value: inactiveTrees },
+//     ];
+//     return (
+//         <div className="grid gap-2 md:gap-4 grid-cols-2 lg:grid-cols-4">
+//             {treeMetrics.map((metrics, index) => (
+//                 <Card key={index} className="bg-card shadow-none">
+//                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+//                         <CardTitle className="text-sm font-medium">
+//                             {metrics.name}
+//                         </CardTitle>
+//                     </CardHeader>
+//                     <CardContent>
+//                         <div className="text-2xl font-bold">
+//                             {metrics.value}
+//                         </div>
+//                     </CardContent>
+//                 </Card>
+//             ))}
+//         </div>
+//     );
+// }

@@ -81,7 +81,7 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
             }
         };
         fetchImageDetails();
-    },[imageID, userInfo?.userID]);
+    },[imageID, userInfo?.userID, toast]);
 
     const handleConfirmDelete = async () => {
         try {

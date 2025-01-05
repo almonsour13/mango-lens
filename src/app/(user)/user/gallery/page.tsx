@@ -1,7 +1,7 @@
 "use client";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/auth-context";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Image as img } from "@/type/types";
 import { TreeImageCard } from "@/components/card/tree-image-card";
 import PageWrapper from "@/components/wrapper/page-wrapper";
@@ -32,7 +32,7 @@ export default function Gallery() {
     const [viewMode, setViewMode] = useState<"table" | "grid">("grid");
     const { userInfo } = useAuth();
 
-    const fetchImages = async () => {
+    const fetchImages = useCallback(async () => {
         setLoading(true);
         try {
             const response = await fetch(
@@ -47,11 +47,11 @@ export default function Gallery() {
         } finally {
             setLoading(false);
         }
-    };
+    },[userInfo?.userID]);
 
     useEffect(() => {
         fetchImages();
-    }, [userInfo?.userID]);
+    }, [userInfo?.userID, fetchImages]);
 
     const uniqueTreeCodes = Array.from(new Set(images.map(img => img.treeCode))).sort((a, b) => a - b);
 

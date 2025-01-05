@@ -3,7 +3,7 @@ import { query } from "@/lib/db/db";
 
 export async function GET(
     request: Request,
-    { params }: { params: { userID: number } }
+    { params }: { params: Promise<{ userID: string }> }
 ) {
     const { userID } = await params;
     try {

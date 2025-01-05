@@ -9,6 +9,7 @@ import React, {
     useContext,
     ReactNode,
     useEffect,
+    useCallback,
 } from "react";
 import { useAuth } from "./auth-context";
 import useOnlineStatus from "@/hooks/use-online";
@@ -61,108 +62,109 @@ export const PendingProcessProvider: React.FC<{ children: ReactNode }> = ({
 
     const pathname = usePathname();
 
-    const fetchPendings = async () => {
-        if (userInfo?.userID) {
-            const pendings = await getAllPendingProcessItems(userInfo?.userID);
-            setPendings(pendings);
-        }
-    };
+   
 
     useEffect(() => {
+        const fetchPendings = async () => {
+            if (userInfo?.userID) {
+                const pendings = await getAllPendingProcessItems(userInfo?.userID);
+                setPendings(pendings);
+            }
+        };
         fetchPendings();
     }, [userInfo?.userID]);
 
     const [isProcessing, setIsProcessing] = useState(false);
+    const processPendings = useCallback( async () => {
+        const pendingItems = pendings.filter((item) => item.status === 1);
 
-    useEffect(() => {
-        const processPendings = async () => {
-            const pendingItems = pendings.filter((item) => item.status === 1);
+        if (pendingItems.length === 0) {
+            return;
+        }
 
-            if (pendingItems.length === 0) {
-                return;
-            }
+        setIsProcessing(true);
+        toast({
+            title: "Processing Pending Items",
+            description: `Starting to process ${pendingItems.length} pending item(s).`,
+        });
 
-            setIsProcessing(true);
-            toast({
-                title: "Processing Pending Items",
-                description: `Starting to process ${pendingItems.length} pending item(s).`,
-            });
+        for (let index = 0; index < pendingItems.length; index++) {
+            const pending = pendingItems[index];
 
-            for (let index = 0; index < pendingItems.length; index++) {
-                const pending = pendingItems[index];
+            // if (!isOnline) {
+            //     alert("No internet connection, cannot process.");
+            //     continue; // Skip current iteration, don't break the loop
+            // }
 
-                // if (!isOnline) {
-                //     alert("No internet connection, cannot process.");
-                //     continue; // Skip current iteration, don't break the loop
-                // }
+            if (pending.status === 2) continue;
 
-                if (pending.status === 2) continue;
+            setProcessPendingID(pending.pendingID);
+            console.log(pending);
 
-                setProcessPendingID(pending.pendingID);
-                console.log(pending);
+            try {
+                const response = await fetch("/api/scan/newScan", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        userID: pending.userID,
+                        treeCode: pending.treeCode,
+                        imageUrl: pending.imageUrl,
+                    }),
+                });
 
-                try {
-                    const response = await fetch("/api/scan/newScan", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            userID: pending.userID,
-                            treeCode: pending.treeCode,
-                            imageUrl: pending.imageUrl,
-                        }),
-                    });
+                if (response.ok) {
+                    const { result } = await response.json();
+                    await updatePendingProcessItem(pending.pendingID, 2);
+                    await saveProcessedResult(pending.pendingID, result);
 
-                    if (response.ok) {
-                        const { result } = await response.json();
-                        await updatePendingProcessItem(pending.pendingID, 2);
-                        await saveProcessedResult(pending.pendingID, result);
-
-                        setPendings((prevPending) =>
-                            prevPending.map((item) =>
-                                item.pendingID === pending.pendingID
-                                    ? { ...item, status: 2 }
-                                    : item
-                            )
-                        );
-                    }
-                } catch (error) {
-                    console.error(
-                        `Error during scanning for pendingID: ${pending.pendingID}`,
-                        error
+                    setPendings((prevPending) =>
+                        prevPending.map((item) =>
+                            item.pendingID === pending.pendingID
+                                ? { ...item, status: 2 }
+                                : item
+                        )
                     );
                 }
-
-                await new Promise((resolve) => setTimeout(resolve, 2000)); // Delay between each request
+            } catch (error) {
+                console.error(
+                    `Error during scanning for pendingID: ${pending.pendingID}`,
+                    error
+                );
             }
 
-            setIsProcessing(false);
-            setProcessPendingID(0);
-            if (!pathname.includes('"/user/pending"')) {
-                toast({
-                    description: (
-                        <div className="flex flex-col">
-                            Finished processing {pendingItems.length} pending
-                            item(s).
-                            <Link
-                                href="/user/pending"
-                                className="font-medium text-primary hover:underline"
-                            >
-                                View
-                            </Link>
-                        </div>
-                    ),
-                });
-            } else {
-                toast({
-                    description: `Finished processing ${pendingItems.length} pending item(s).`,
-                });
-            }
-        };
+            await new Promise((resolve) => setTimeout(resolve, 2000)); // Delay between each request
+        }
+
+        setIsProcessing(false);
+        setProcessPendingID(0);
+        if (!pathname.includes('"/user/pending"')) {
+            toast({
+                description: (
+                    <div className="flex flex-col">
+                        Finished processing {pendingItems.length} pending
+                        item(s).
+                        <Link
+                            href="/user/pending"
+                            className="font-medium text-primary hover:underline"
+                        >
+                            View
+                        </Link>
+                    </div>
+                ),
+            });
+        } else {
+            toast({
+                description: `Finished processing ${pendingItems.length} pending item(s).`,
+            });
+        }
+    },[ pathname, pendings, toast]);
+    useEffect(() => {
+        
 
         if (isOnline && !isProcessing) {
             processPendings();
         }
-    }, [isOnline]);
+    }, [isOnline, processPendings, isProcessing]);
 
     useEffect(() => {
         if (selected.length == 0) {

@@ -14,7 +14,6 @@ import React, {
     useState,
     ReactNode,
     useRef,
-    useCallback,
     useEffect,
 } from "react";
 import Image from "next/image";
@@ -82,8 +81,36 @@ const CameraPage = ({
         "environment"
     );
     useEffect(() => {
-        if (!capturedImage) {
+        const startCamera = async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: facingMode },
+                });
+                if (videoRef.current) {
+                    videoRef.current.srcObject = stream;
+                    streamRef.current = stream;
+                    setHasPermission(true);
+                }
+            } catch (err) {
+                console.log(err)
+                setHasPermission(false);
+            }
+        };
+
+        const stopCamera = async () => {
+            const stream = streamRef.current;
+            if (stream) {
+                stream.getTracks().forEach((track) => track.stop());
+                streamRef.current = null;
+            }
+            if (videoRef.current) {
+                videoRef.current.srcObject = null;
+            }
+        };
+        if (!capturedImage && isCameraOpen) {
             startCamera();
+        }else{
+            stopCamera();
         }
         return () => {
             stopCamera();
@@ -121,7 +148,6 @@ const CameraPage = ({
         }
     };
     const handleCheck = () => {
-        stopCamera();
         setIsCameraOpen(false);
     };
     const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,32 +171,6 @@ const CameraPage = ({
         setIsCameraOpen(false);
     };
 
-    const stopCamera = useCallback(async () => {
-        const stream = streamRef.current;
-        if (stream) {
-            stream.getTracks().forEach((track) => track.stop());
-            streamRef.current = null;
-        }
-        if (videoRef.current) {
-            videoRef.current.srcObject = null;
-        }
-    }, []);
-
-    const startCamera = useCallback(async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: facingMode },
-            });
-            if (videoRef.current) {
-                videoRef.current.srcObject = stream;
-                streamRef.current = stream;
-                setHasPermission(true);
-            }
-        } catch (err) {
-            console.log(err)
-            setHasPermission(false);
-        }
-    }, [facingMode]);
 
     return (
         <div className="w-full min-h-screen h-full bg-background absolute z-[100] top-0">

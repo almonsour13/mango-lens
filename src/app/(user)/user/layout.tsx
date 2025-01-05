@@ -14,7 +14,7 @@ import ResultDisplay from "@/components/common/scan/result/result-dislpay";
 import { PendingProcessProvider } from "@/context/pending-process-context";
 import { CameraProvider } from "@/context/camera-context";
 
-export default function userLayout({
+export default function UserLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;

@@ -10,14 +10,16 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from '@/hooks/use-toast'
+import React from 'react'
 
 interface FormData {
   password: string
   confirmPassword: string
 }
 
-export default function UpdatePasswordForm({ params }: { params: { token: number } }) {
-  const { token } = params
+export default function UpdatePasswordForm({ params }: { params: Promise<{ token: number }> }) {
+    const unwrappedParams = React.use(params);
+    const { token } = unwrappedParams;
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)

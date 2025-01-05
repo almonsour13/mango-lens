@@ -1,16 +1,7 @@
 import { NextResponse } from "next/server";
 import { sign } from "jsonwebtoken";
-import { query } from "@/lib/db/db";
 import { sendVerificationEmail } from "@/lib/email-transporter";
-
-export async function emailExists(email: string): Promise<boolean> {
-    const result = (await query(
-        "SELECT COUNT(*) as count FROM user WHERE email = ?",
-        [email]
-    )) as {count:number}[];
-
-    return result[0].count > 0;
-}
+import { emailExists } from "@/lib/auth/auth";
 
 export async function POST(req: Request) {
     try {
@@ -34,7 +25,6 @@ export async function POST(req: Request) {
         const code = Math.floor(
             100000 + Math.random() * 900000
         ).toString();
-
 
         const VerificationToken = sign(
             {

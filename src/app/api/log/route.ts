@@ -67,48 +67,6 @@ export async function DELETE(request: Request) {
         );
     }
 }
-
-export async function insertLog(
-    userID: number,
-    type: number,
-    activity: string
-) {
-    try {
-        if (
-            typeof userID !== "number" ||
-            (typeof type !== "number" && typeof type !== "string")
-        ) {
-            return NextResponse.json(
-                { success: false, error: "Invalid input." },
-                { status: 400 }
-            );
-        }
-
-        if (!activity) {
-            return NextResponse.json(
-                { success: false, error: "Invalid activity type." },
-                { status: 400 }
-            );
-        }
-
-        const result = await query(
-            "INSERT INTO log (userID, type, activity) VALUES (?, ?, ?)",
-            [userID, type, activity]
-        );
-
-        return NextResponse.json({
-            success: true,
-            message: "Log entry added successfully.",
-            result,
-        });
-    } catch (error) {
-        console.error("Error inserting log entry:", error);
-        return NextResponse.json(
-            { success: false, error: "Something went wrong." },
-            { status: 500 }
-        );
-    }
-}
 export async function POST(req: Request) {
     try {
         const body = await req.json();

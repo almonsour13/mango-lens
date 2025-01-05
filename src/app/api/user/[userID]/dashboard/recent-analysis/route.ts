@@ -4,8 +4,8 @@ import { Image } from "@/type/types";
 import { convertBlobToBase64 } from "@/utils/image-utils";
 
 export async function GET(
-    _request: Request,
-    { params }: { params: { userID: number } }
+    req: Request,
+    { params }: { params: Promise<{ userID: string }> }
 ) {
     const { userID } = await params;
 

@@ -8,7 +8,7 @@ import { convertBlobToBase64, convertImageToBlob } from "@/utils/image-utils";
 
 export async function GET(
     request: Request,
-    { params }: { params: { treeID: number; userID: number } }
+    { params }: { params: Promise<{ treeID: string; userID: string }> }
 ) {
     const { userID, treeID } = await params;
     try {
@@ -77,7 +77,7 @@ export async function GET(
 }
 export async function PUT(
     req: Request,
-    { params }: { params: { userID: number } }
+    { params }: { params: Promise<{ userID: string }> }
 ) {
     const { userID } = await params;
     const { treeID, treeCode, description, status, treeImage } = await req.json();

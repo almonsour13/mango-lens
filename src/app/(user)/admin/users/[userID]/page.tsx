@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -57,7 +57,7 @@ export default function UserDetails({
     const [images, setImages] = useState<Image[]>([]);
     const [logs, setLogs] = useState<Log[]>([]);
 
-    const fetchUserData = async () => {
+    const fetchUserData = useCallback( async () => {
         try {
             const response = await fetch(`/api/users/${userID}`);
             if (!response.ok) {
@@ -70,10 +70,10 @@ export default function UserDetails({
         } catch (error) {
             console.log(error)
         }
-    };
+    },[userID]);
     useEffect(() => {
         fetchUserData();
-    }, [userID]);
+    }, [fetchUserData]);
 
     if (!user) {
         return (

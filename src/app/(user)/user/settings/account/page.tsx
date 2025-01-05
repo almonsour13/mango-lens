@@ -94,7 +94,7 @@ export default function AccountSettings() {
         if (userInfo?.userID) {
             fetchUser();
         }
-    }, [userInfo?.userID]);
+    }, [userInfo?.userID, userInfo?.email, form]);
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setLoading(true);

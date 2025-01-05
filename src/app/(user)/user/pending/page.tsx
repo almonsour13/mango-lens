@@ -44,7 +44,7 @@ export default function Pending() {
         if (!isSelected) {
             setSelected([]);
         }
-    }, [isSelected]);
+    }, [isSelected, setSelected]);
     
     useEffect(()=>{
         
@@ -54,7 +54,7 @@ export default function Pending() {
         if(!pendingItems){
             setIsSelected(false);
         }
-    },[pendings])
+    },[pendings, setIsSelected])
 
     const filteredPendings = pendings
         .filter((pending) => filterStatus == 0 || pending.status == filterStatus)

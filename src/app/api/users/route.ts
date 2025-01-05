@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db/db';
-import { emailExists } from '../auth/signup/route';
 import { hash } from 'bcrypt';
+import { emailExists } from '@/lib/auth/auth';
 
 export async function GET(req: Request) {
   try {

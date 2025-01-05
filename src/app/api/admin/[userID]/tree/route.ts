@@ -3,11 +3,11 @@ import { query } from "@/lib/db/db";
 import { Tree, User } from "@/type/types";
 
 export async function GET(
-    req: NextRequest,
-    { params }: { params: { userID: number } }
+    req: Request,
+    { params }: { params: Promise<{ userID: number }> }
 ) {
     const { userID } = await params; // No need to await params here.
-    console.log(userID)
+    console.log(userID);
     try {
         const trees = (await query(
             `SELECT 

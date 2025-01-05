@@ -65,7 +65,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
             }
         };
 
-        if (userInfo) {
+        if (userInfo?.userID) {
             fetchTrees();
         }
     }, [userInfo?.userID]);

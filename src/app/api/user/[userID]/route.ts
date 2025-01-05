@@ -5,8 +5,8 @@ import { compare, hash } from "bcrypt";
 import { convertImageToBlob } from "@/utils/image-utils";
 
 export async function GET(
-    _request: Request,
-    { params }: { params: { userID: number } }
+    req: Request,
+    { params }: { params: Promise<{ userID: string }> }
 ) {
     const { userID } = await params;
 
@@ -33,8 +33,8 @@ export async function GET(
     }
 }
 export async function PUT(
-    request: Request,
-    { params }: { params: { userID: number } }
+    req: Request,
+    { params }: { params: Promise<{ userID: string }> }
 ) {
     const { userID } = await params;
 
@@ -47,7 +47,7 @@ export async function PUT(
             email,
             currentPassword,
             newPassword,
-        } = await request.json();
+        } = await req.json();
         if (type === 1) {
             if (!fName && !lName) {
                 return NextResponse.json(
@@ -76,7 +76,7 @@ export async function PUT(
 
                 const result = await query(
                     `INSERT INTO userprofileimage (userID, imageData) VALUES (?, ?)`,
-                    [userID, blobImageData]
+                    [userID, blobImageData.toString()]
                 );
                 console.log(result)
             }

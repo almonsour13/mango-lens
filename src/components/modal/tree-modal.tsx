@@ -129,7 +129,7 @@ export default function TreeModal({
         if (!openDialog) {
             setEditingTrees && setEditingTrees(null);
         }
-    }, [editingTrees, openDialog, setEditingTrees]);
+    }, [editingTrees, openDialog, setEditingTrees, form]);
 
     const handleConfirmDelete = async () => {
         try {

@@ -25,7 +25,7 @@ interface Log{
     status: number;
     createdAt: Date;
 }
-export async function GET(request: Request, { params }: { params: { userID: number } }) {
+export async function GET(request: Request, { params }: { params:Promise< { userID: string }> }) {
     const { userID } = await params;
     console.log(userID)
     try {

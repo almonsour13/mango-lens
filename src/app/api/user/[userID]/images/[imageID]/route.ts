@@ -11,7 +11,7 @@ import { convertBlobToBase64 } from "@/utils/image-utils";
 
 export async function GET(
     request: Request,
-    { params }: { params: { imageID: string } }
+    { params }: { params: Promise<{ imageID: string }> }
 ) {
     const { imageID } = await params;
 
@@ -82,7 +82,7 @@ export async function GET(
 
 export async function PUT(
     request: Request,
-    { params }: { params: { imageID: string } }
+    { params }: { params: Promise<{ imageID: string }>}
 ) {
     const { imageID } = await params;
 

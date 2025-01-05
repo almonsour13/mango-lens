@@ -16,7 +16,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(
     req: Request,
-    { params }: { params: { userID: number } }
+    { params }: { params: Promise<{ userID: string }> }
 ) {
     const { userID } = await params;
     try {
@@ -65,7 +65,7 @@ export async function GET(
 }
 export async function POST(
     req: Request,
-    { params }: { params: { userID: number } }
+    { params }: { params: Promise<{ userID: string }> }
 ) {
     const { userID } = await params;
     try {
@@ -106,7 +106,7 @@ export async function POST(
 }
 export async function PUT(
     req: Request,
-    { params }: { params: { userID: number } }
+    { params }: { params: Promise<{ userID: string }> }
 ) {
     const { userID } = await params;
     try {

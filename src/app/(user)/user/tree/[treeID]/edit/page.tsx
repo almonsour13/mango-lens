@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -95,7 +95,7 @@ export default function Page({
     const { userInfo } = useAuth();
     const { setIsCameraOpen } = useCameraContext();
 
-    const fetchTree = async () => {
+    const fetchTree = useCallback( async () => {
         setLoading(true);
         try {
             const response = await fetch(
@@ -120,13 +120,13 @@ export default function Page({
         } finally {
             setLoading(false);
         }
-    };
+    },[userInfo?.userID, treeID, form]);
 
     useEffect(() => {
         if (treeID && userInfo?.userID) {
             fetchTree();
         }
-    }, [userInfo, treeID]);
+    }, [userInfo, treeID, fetchTree]);
 
     const handleImageUpload = (file: File) => {
         const reader = new FileReader();
