@@ -8,7 +8,7 @@ import React, {
     useEffect,
 } from "react";
 import { jwtDecode } from "jwt-decode";
-import { deleteUserCredentials, getUserCredentials } from "@/utils/indexedDB/indexedDB";
+import { deleteUserCredentials, getUserCredentials } from "@/utils/indexedDB/store/user-info-store";
 
 interface UserInfo {
     userID: number;

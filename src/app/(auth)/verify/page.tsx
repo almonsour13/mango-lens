@@ -16,11 +16,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-    deleteUserCredentials,
-    getUserCredentials,
-    storeUserCredentials,
-} from "@/utils/indexedDB/indexedDB";
+import { getUserCredentials, deleteUserCredentials, storeUserCredentials } from "@/utils/indexedDB/store/user-info-store";
 
 export default function Verify() {
     const search = useSearchParams();

@@ -70,26 +70,6 @@ export async function dbOperation<T>(
 }
 
 
-export async function saveProcessedResult(pendingID: number, result: ProcessedResult): Promise<void> {
-    await dbOperation<void>(RESULT_STORE, 'readwrite', (store) => 
-        store.add({ pendingID, ...result })
-    );
-}
-
-export async function deleteProcessedResult(pendingIDs: number[]): Promise<void> {
-    const db = await openDB();
-    const transaction = db.transaction(RESULT_STORE, 'readwrite');
-    const store = transaction.objectStore(RESULT_STORE);
-
-    await Promise.all(pendingIDs.map(id => 
-        new Promise<void>((resolve, reject) => {
-            const request = store.delete(id);
-            request.onerror = () => reject(request.error);
-            request.onsuccess = () => resolve();
-        })
-    ));
-}
-
 interface UserDredentials {
     userID: number;
     fName: string;
@@ -98,31 +78,26 @@ interface UserDredentials {
     profileImage: string | null;
 }
 
-export async function getUserCredentials(userID: number): Promise<UserDredentials | null> {
-    const userCredentials = await dbOperation<UserDredentials | null>(USER_CREDENTIALS_STORE, 'readonly', (store) => store.get(userID));
-    if (!userCredentials) return null;
-    return {
-        ...userCredentials,
-        profileImage: convertBlobToBase64(userCredentials.profileImage)
-    }
-}
+// export async function getUserCredentials(userID: number): Promise<UserDredentials | null> {
+//     const userCredentials = await dbOperation<UserDredentials | null>(USER_CREDENTIALS_STORE, 'readonly', (store) => store.get(userID));
+//     if (!userCredentials) return null;
+//     return {
+//         ...userCredentials,
+//         profileImage: convertBlobToBase64(userCredentials.profileImage)
+//     }
+// }
 
-export async function storeUserCredentials(profile: UserDredentials): Promise<void> {
-    const userID = profile.userID;
-    return dbOperation<void>(USER_CREDENTIALS_STORE, 'readwrite', (store) => 
-        store.add({...profile, userID})
-    );
-}
-export async function updateUserCredentials(userID: number, profile: Partial<UserDredentials>): Promise<void> {  
-    return dbOperation<void>(USER_CREDENTIALS_STORE, 'readwrite', (store) => 
-        store.put({...profile, userID})
-    );
-}
-export async function deleteUserCredentials(userID: number): Promise<void> {
-    return dbOperation<void>(USER_CREDENTIALS_STORE, 'readwrite', (store) => 
-        store.delete(userID)
-    );
-}
+// export async function storeUserCredentials(profile: UserDredentials): Promise<void> {
+//     const userID = profile.userID;
+//     return dbOperation<void>(USER_CREDENTIALS_STORE, 'readwrite', (store) => 
+//         store.add({...profile, userID})
+//     );
+// }
+// export async function deleteUserCredentials(userID: number): Promise<void> {
+//     return dbOperation<void>(USER_CREDENTIALS_STORE, 'readwrite', (store) => 
+//         store.delete(userID)
+//     );
+// }
 
 
 

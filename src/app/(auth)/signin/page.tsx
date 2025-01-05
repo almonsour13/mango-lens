@@ -15,7 +15,7 @@ import * as z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { deleteUserCredentials, getUserCredentials, storeUserCredentials } from '@/utils/indexedDB/indexedDB'
+import { deleteUserCredentials, getUserCredentials, storeUserCredentials } from '@/utils/indexedDB/store/user-info-store'
 
 const formSchema = z.object({
     email: z.string().email({ message: "Please enter a valid email address." }),
