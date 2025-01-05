@@ -14,7 +14,7 @@ export async function POST(req: Request) {
                 { status: 400 }
             );
         }
-
+        console.log(1)
         const { tree, originalImage, analyzedImage, boundingBoxes, diseases } =
             scanResult;
 

@@ -28,7 +28,7 @@ export default function BottomNav() {
     );
 
     return (
-        <nav className="fixed border-t bottom-0 left-0 z-40 w-full backdrop-filter backdrop-blur-md supports-[backdrop-filter]:bg-card shadow-sm rounded-t-lg md:hidden">
+        <nav className="fixed border-t bottom-0 left-0 z-30 w-full backdrop-filter backdrop-blur-md supports-[backdrop-filter]:bg-card shadow-sm rounded-t-lg md:hidden">
             <div className="px-4">
                 <div className="flex h-14 items-center justify-between gap-2">
                     {visibleItems.map(

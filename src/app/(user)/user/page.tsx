@@ -45,7 +45,7 @@ import { usePendingProcess } from "@/context/pending-process-context";
 // import { getPendingTotalCount } from "@/utils/indexedDB/store/pending-store";
 
 export default function Dashboard() {
-    const { userInfo,resetToken } = useAuth();
+    const { userInfo, resetToken } = useAuth();
 
     const handleLogout = async () => {
         const response = await fetch("/api/auth/logout", {
@@ -86,12 +86,15 @@ export default function Dashboard() {
                         </button>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Avatar className="cursor-pointer h-8 w-8">
+                                <Avatar className="cursor-pointer h-8 w-8 border">
                                     <AvatarImage
                                         src={userInfo?.profileImage}
-                                        alt="@shadcn"
+                                        alt={`${userInfo?.fName} ${userInfo?.lName}`}
                                     />
-                                    <AvatarFallback className="text-xs">{(userInfo?.fName?.charAt(0) ?? '') + (userInfo?.lName?.charAt(0) ?? '')}</AvatarFallback>
+                                    <AvatarFallback className="text-xs">
+                                        {(userInfo?.fName?.charAt(0) ?? "") +
+                                            (userInfo?.lName?.charAt(0) ?? "")}
+                                    </AvatarFallback>
                                 </Avatar>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
@@ -157,35 +160,40 @@ export default function Dashboard() {
 }
 
 const Welcome = () => {
-    const { userInfo } = useAuth()
-    const [pendingCount, setPendingCount] = useState(0)
-    const [unsavedProcessedCount, setUnsavedProcessedCount] = useState(0)
+    const { userInfo } = useAuth();
+    const [pendingCount, setPendingCount] = useState(0);
+    const [unsavedProcessedCount, setUnsavedProcessedCount] = useState(0);
 
-    const { pendings } = usePendingProcess()
+    const { pendings } = usePendingProcess();
 
     useEffect(() => {
         if (pendings) {
-            const updatedPending = pendings.filter((pending) => pending.status === 1)
-            const updatedUnsaved = pendings.filter((pending) => pending.status === 2)
-            setPendingCount(updatedPending.length)
-            setUnsavedProcessedCount(updatedUnsaved.length)
+            const updatedPending = pendings.filter(
+                (pending) => pending.status === 1
+            );
+            const updatedUnsaved = pendings.filter(
+                (pending) => pending.status === 2
+            );
+            setPendingCount(updatedPending.length);
+            setUnsavedProcessedCount(updatedUnsaved.length);
         }
-    }, [pendings])
+    }, [pendings]);
 
     const getGreeting = () => {
-        const hour = new Date().getHours()
-        if (hour < 12) return "Morning"
-        if (hour < 17) return "Afternoon"
-        return "Evening"
-    }
+        const hour = new Date().getHours();
+        if (hour < 12) return "Morning";
+        if (hour < 17) return "Afternoon";
+        return "Evening";
+    };
 
-    const totalCount = pendingCount + unsavedProcessedCount
+    const totalCount = pendingCount + unsavedProcessedCount;
 
     return (
         <div className="w-full px-4 py-0 flex flex-col items-center justify-center">
             <div className="w-full flex flex-col md:gap-2">
-                <h1 className="text-3xl font-bold tracking-tight">
-                    Good {getGreeting()} {userInfo?.fName}
+                <h1 className="text-3xl font-bold">
+                    <span>Good {getGreeting()}, </span>
+                    <span>{userInfo?.fName}</span>
                 </h1>
                 <p className="text-sm text-muted-foreground">
                     Here is a quick overview of your account and the progress
@@ -195,14 +203,29 @@ const Welcome = () => {
                     <div className="mt-4 bg-destructive/20 border-0 flex items-center p-4 rounded-lg gap-2">
                         <AlertCircle className="h-4 w-4" />
                         <div className="text-current m-0 text-sm">
-                            You have {totalCount} {totalCount === 1 ? 'item' : 'items'} that need attention:{' '}
+                            You have {totalCount}{" "}
+                            {totalCount === 1 ? "item" : "items"} that need
+                            attention:{" "}
                             {pendingCount > 0 && (
-                                <span>{pendingCount} pending {pendingCount === 1 ? 'process' : 'processes'}</span>
+                                <span>
+                                    {pendingCount} pending{" "}
+                                    {pendingCount === 1
+                                        ? "process"
+                                        : "processes"}
+                                </span>
                             )}
-                            {pendingCount > 0 && unsavedProcessedCount > 0 && ' and '}
+                            {pendingCount > 0 &&
+                                unsavedProcessedCount > 0 &&
+                                " and "}
                             {unsavedProcessedCount > 0 && (
-                                <span>{unsavedProcessedCount} unsaved {unsavedProcessedCount === 1 ? 'process' : 'processed'}</span>
-                            )}. View{' '}
+                                <span>
+                                    {unsavedProcessedCount} unsaved{" "}
+                                    {unsavedProcessedCount === 1
+                                        ? "process"
+                                        : "processed"}
+                                </span>
+                            )}
+                            . View{" "}
                             <Link
                                 href="/user/pending"
                                 className="underline underline-offset-4 hover:text-destructive-foreground/90"
@@ -214,8 +237,8 @@ const Welcome = () => {
                 )}
             </div>
         </div>
-    )
-}
+    );
+};
 interface Metric {
     name: string;
     value: number;
@@ -260,8 +283,8 @@ const Metrics = () => {
                 }
             } catch (error) {
                 console.error("Error retrieving metrics:", error);
-            }finally{
-                setLoading(false)
+            } finally {
+                setLoading(false);
             }
         };
         if (userInfo?.userID !== undefined && userInfo?.userID !== null) {
@@ -283,9 +306,11 @@ const Metrics = () => {
                               </Card>
                           )
                       )
-                    : 
-                      metrics.map((metric, index) => (
-                          <Card key={index} className="bg-card border-0 shadow-none">
+                    : metrics.map((metric, index) => (
+                          <Card
+                              key={index}
+                              className="bg-card shadow-none"
+                          >
                               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                   <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
                                       {metric.name}

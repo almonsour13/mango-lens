@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
-import { X, Save, Trash2, RefreshCcw } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { X, Save, Trash2, LoaderCircle } from "lucide-react";
 import {
     Card,
     CardContent,
@@ -15,8 +15,8 @@ import { useScanResult } from "@/context/scan-result-context";
 import { useAuth } from "@/context/auth-context";
 import ResultImage from "../../result-image";
 import ResultDetails from "./result-details";
-import ConfirmDialog from "./confirm-dialogue";
 import ShowImage from "./show-image";
+import ConfirmationModal from "@/components/modal/confirmation-modal";
 
 export default function ResultDisplay() {
     const { scanResult, setScanResult } = useScanResult();
@@ -39,6 +39,8 @@ export default function ResultDisplay() {
 
     const handleSave = async () => {
         try {
+            if (isSaving) return;
+
             setIsSaving(true);
             const saveResponse = await fetch("/api/scan/save", {
                 method: "POST",
@@ -93,7 +95,7 @@ export default function ResultDisplay() {
     return (
         <>
             <div
-                className={`fixed inset-0 top-0 z-40 bg-black transition-opacity duration-300 ease-in-out ${
+                className={`fixed inset-0 top-0 z-30 bg-black transition-opacity duration-300 ease-in-out ${
                     isVisible
                         ? "bg-opacity-60"
                         : "bg-opacity-0 pointer-events-none"
@@ -102,13 +104,13 @@ export default function ResultDisplay() {
                 aria-hidden="true"
             />
             <Card
-                className={`absolute bottom-0 left-0 right-0 z-50 rounded-lg rounded-b-none rounded-t border-0 max-h-[90vh] overflow-y-auto transition-all duration-300 ease-in-out ${
+                className={`absolute bottom-0 left-0 right-0 z-40 rounded-lg rounded-b-none rounded-t border-0 max-h-[90vh] overflow-y-auto transition-all duration-300 ease-in-out ${
                     isVisible
                         ? "translate-y-0 opacity-100"
                         : "translate-y-full opacity-0"
                 }`}
             >
-                <CardHeader className="flex flex-row items-center justify-between top-0 z-10">
+                <CardHeader className="flex flex-row items-center justify-between top-0 ">
                     <CardTitle className="text-xl font-semibold">
                         Scan Result
                     </CardTitle>
@@ -116,7 +118,7 @@ export default function ResultDisplay() {
                         <X className="h-5 w-5" />
                     </Button>
                 </CardHeader>
-                <CardContent className="flex flex-col gap-4">
+                <CardContent className="flex flex-col gap-4 py-0">
                     <ResultImage
                         originalImage={scanResult.originalImage}
                         analyzedImage={scanResult.analyzedImage}
@@ -124,7 +126,7 @@ export default function ResultDisplay() {
                     />
                     <ResultDetails scanResult={scanResult} />
                 </CardContent>
-                <CardFooter className="flex justify-end gap-2">
+                <CardFooter className="flex justify-end gap-2 ">
                     <Button
                         variant="destructive"
                         onClick={handleClose}
@@ -139,7 +141,7 @@ export default function ResultDisplay() {
                         disabled={isSaving}
                     >
                         {isSaving ? (
-                            <RefreshCcw className="h-4 w-4 animate-spin" />
+                            <LoaderCircle className="h-4 w-4 animate-spin" />
                         ) : (
                             <Save className="h-4 w-4" />
                         )}
@@ -147,10 +149,12 @@ export default function ResultDisplay() {
                     </Button>
                 </CardFooter>
             </Card>
-            <ConfirmDialog
-                showConfirmDialog={showConfirmDialog}
-                onCancel={handleCancelClose}
+            <ConfirmationModal
+                open={showConfirmDialog}
+                onClose={() => setShowConfirmDialog(false)}
                 onConfirm={handleConfirmDiscard}
+                title={`Are you sure you want to discard this analysis?`}
+                content={`This action cannot be undone.`}
             />
             <ShowImage
                 imageUrl={scanResult.originalImage || ""}

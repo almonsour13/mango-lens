@@ -65,9 +65,9 @@ const ShowImage: React.FC<ShowImageProps> = ({
                     />
                     <div className="absolute top-2 right-2">
                         <Button
-                            size="icon"
                             variant="secondary"
                             onClick={handleRotate}
+
                         >
                             <RotateCw className="h-4 w-4" />
                         </Button>
@@ -75,7 +75,6 @@ const ShowImage: React.FC<ShowImageProps> = ({
                             <Tooltip>
                                 <TooltipTrigger asChild>
                                     <Button
-                                        size="icon"
                                         variant="secondary"
                                         onClick={handleDownload}
                                     >

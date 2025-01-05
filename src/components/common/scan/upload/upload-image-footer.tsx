@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 
-import {Plus, Camera, Scan} from "lucide-react";
+import { Plus, Camera, Scan, LoaderCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +25,6 @@ import TreeModal from "@/components/modal/tree-modal";
 import { useCameraContext } from "@/context/camera-context";
 import { storePendingProcessItem } from "@/utils/indexedDB/store/pending-store";
 
-
 interface FooterProps {
     isScanning: boolean;
     setIsScanning: (isScanning: boolean) => void;
@@ -37,7 +36,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
     const { capturedImage } = useCameraContext();
     const [treeCode, setTreeCode] = useState("");
     const { setScanResult } = useScanResult();
-    const {setIsCameraOpen} = useCameraContext()
+    const { setIsCameraOpen } = useCameraContext();
 
     const [trees, setTrees] = useState<Tree[]>([]);
     const searchParams = useSearchParams();
@@ -125,7 +124,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
         if (action == 1) {
             setTrees([...trees, value]);
         }
-        console.log(status)
+        console.log(status);
     };
 
     return (
@@ -179,7 +178,12 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
                 onClick={handleScan}
                 disabled={!capturedImage || !treeCode || isScanning}
             >
-                <Scan className="w-4 h-4 mr-2" />
+                {" "}
+                {isScanning ? (
+                    <LoaderCircle className="h-4 w-4 animate-spin" />
+                ) : (
+                    <Scan className="w-4 h-4 mr-2" />
+                )}
                 {isScanning ? "Scanning" : "Scan Image"}
             </Button>
             <TreeModal

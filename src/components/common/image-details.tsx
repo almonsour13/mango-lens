@@ -194,7 +194,7 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
 function ResultDetails({ imageDetails }: { imageDetails: ImageDetailsProps }) {
     return (
         <div className="flex-1 flex flex-col gap-4 border p-4 rounded-lg">
-            <div className="flex items-center justify-between space-x-2">
+            <div className="flex flex-col md:flex-row justify-between gap-2">
                 <div className="flex space-x-2">
                     <Trees className="h-5 w-5 text-muted-foreground" />
                     <span className="text-base font-medium">Tree Code:</span>

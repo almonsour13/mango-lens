@@ -26,7 +26,7 @@ export default function ResultImage({ originalImage, analyzedImage, boundingBoxe
                     boundingBoxes={boundingBoxes}
                 />
                 <div className="flex justify-center absolute left-4 top-4">
-                    <button onClick={toggleImage} className="flex hover items-center gap-1 p-2.5 py-1 bg-black bg-opacity-50 rounded md:text-sm font-medium text-white border-0">
+                    <button onClick={toggleImage} className="flex hover items-center gap-1 p-2.5 py-1 bg-black bg-opacity-50 rounded-md text-sm h-8 font-medium text-white border-0">
                         {currentImage === 'original' ? (
                             <>
                                 View Analyzed 

@@ -10,34 +10,34 @@ import PageWrapper from "@/components/wrapper/page-wrapper";
 import { ImageUploadFooter } from "./upload-image-footer";
 import { useCameraContext } from "@/context/camera-context";
 
-export default function UploadField(){
+export default function UploadField() {
     const [isScanning, setIsScanning] = useState(false);
-    const {capturedImage} = useCameraContext();
+
     return (
         <>
-        <div className="h-14 w-full px-4 flex items-center justify-between border-b">
-            <div className="flex gap-2 h-5 items-center">
-                <h1 className="text-md">Scan</h1>
+            <div className="h-14 w-full px-4 flex items-center justify-between border-b">
+                <div className="flex gap-2 h-5 items-center">
+                    <h1 className="text-md">Scan</h1>
+                </div>
             </div>
-        </div>
-        <PageWrapper>
-            <Card className="p-0 md:p-4 border-0 bg-transparent md:border flex flex-col gap-4 shadow-none">
-                <CardContent
-                    className={`h-80 p-0 flex border-none border-muted-foreground/40 ${capturedImage ? "border-0" : "border-0"} border-dashed border-spacing-10 rounded-lg`}
-                >
-                    <UploadImage
-                        isScanning={isScanning}
-                        setIsScanning={setIsScanning}
-                    />
-                </CardContent>
-                <CardFooter className="flex-1 p-0">
-                    <ImageUploadFooter
-                        isScanning={isScanning}
-                        setIsScanning={setIsScanning}
-                    />
-                </CardFooter>
-            </Card>
-        </PageWrapper>
+            <PageWrapper>
+                <Card className="p-0 md:p-4 border-0 bg-transparent md:border flex flex-col gap-4 shadow-none">
+                    <CardContent
+                        className={`h-80 p-0 flex items-center justify-center overflow-hidden bg-card border rounded-lg`}
+                    >
+                        <UploadImage
+                            isScanning={isScanning}
+                            setIsScanning={setIsScanning}
+                        />
+                    </CardContent>
+                    <CardFooter className="flex-1 p-0">
+                        <ImageUploadFooter
+                            isScanning={isScanning}
+                            setIsScanning={setIsScanning}
+                        />
+                    </CardFooter>
+                </Card>
+            </PageWrapper>
         </>
     );
 }
@@ -50,10 +50,9 @@ const UploadImage: React.FC<UploadImageProps> = ({
     isScanning,
     setIsScanning,
 }) => {
-    const {capturedImage, setCapturedImage} = useCameraContext();
+    const { capturedImage, setCapturedImage } = useCameraContext();
     const [dragActive, setDragActive] = useState(false);
     const [isCropping, setIsCropping] = useState(false);
-
 
     const handleDrag = (e: React.DragEvent) => {
         e.preventDefault();
@@ -94,60 +93,58 @@ const UploadImage: React.FC<UploadImageProps> = ({
             setCapturedImage(croppedImage);
             setIsCropping(false);
         },
-        [setCapturedImage],
+        [setCapturedImage]
     );
     return (
         <>
             {capturedImage ? (
-                <div className="flex-1 bg-card rounded-lg flex justify-center items-center h-full relative">
-                    <div className="h-80 w-auto overflow-hidden rounded-lg flex item-center justify-center relative">
-                        {isCropping ? (
-                            <>
-                                <ImageCropper
-                                    image={capturedImage!}
-                                    onCropComplete={handleCropComplete}
-                                    onCropCancel={() => setIsCropping(false)}
-                                />
-                            </>
-                        ) : (
-                            <>
-                                <Image
-                                    src={capturedImage}
-                                    alt="Uploaded"
-                                    className="h-80 w-auto rounded-md object-cover"
-                                    width={256}
-                                    height={256}
-                                />
-                                {isScanning && (
-                                    <>
-                                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/80 to-transparent animate-scan" />
-                                    </>
-                                )}
-                            </>
-                        )}
-                        <div className="absolute top-2 right-2 flex space-x-2">
-                            {!isScanning && !isCropping && (
-                                <Button
-                                    onClick={() => setIsCropping(true)}
-                                    size="icon"
-                                    variant="secondary"
-                                    className="rounded-full opacity-75 hover:opacity-100 transition-opacity"
-                                >
-                                    <Crop className="h-4 w-4" />
-                                    <span className="sr-only">Crop image</span>
-                                </Button>
+                <div className="h-80 w-auto aspect-square overflow-hidden flex item-center justify-center relative">
+                    {isCropping ? (
+                        <>
+                            <ImageCropper
+                                image={capturedImage!}
+                                onCropComplete={handleCropComplete}
+                                onCropCancel={() => setIsCropping(false)}
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <Image
+                                src={capturedImage}
+                                alt="Uploaded"
+                                className="h-80 w-auto object-cover"
+                                width={256}
+                                height={256}
+                            />
+                            {isScanning && (
+                                <>
+                                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/80 to-transparent animate-scan" />
+                                </>
                             )}
+                        </>
+                    )}
+                    {!isScanning && !isCropping && (
+                        <div className="absolute top-2 right-2 flex space-x-2">
+                            <Button
+                                onClick={() => setIsCropping(true)}
+                                size="icon"
+                                variant="outline"
+                                className="rounded-full bg-background/80 hover:opacity-100 transition-opacity"
+                            >
+                                <Crop className="h-4 w-4" />
+                                <span className="sr-only">Crop image</span>
+                            </Button>
                             <Button
                                 onClick={handleRemoveImage}
                                 size="icon"
-                                variant="secondary"
-                                className="rounded-full opacity-75 hover:opacity-100 transition-opacity"
+                                variant="destructive"
+                                className="rounded-full bg-destructive/80 hover:opacity-100 transition-opacity"
                             >
                                 <X className="h-4 w-4" />
                                 <span className="sr-only">Remove image</span>
                             </Button>
                         </div>
-                    </div>
+                    )}
                 </div>
             ) : (
                 <div
@@ -158,7 +155,9 @@ const UploadImage: React.FC<UploadImageProps> = ({
                     onDragLeave={handleDrag}
                     onDragOver={handleDrag}
                     onDrop={handleDrop}
-                    onClick={() => document.getElementById("input-image")?.click()}
+                    onClick={() =>
+                        document.getElementById("input-image")?.click()
+                    }
                 >
                     {!dragActive && (
                         <div className="flex flex-col gap-2 text-center">

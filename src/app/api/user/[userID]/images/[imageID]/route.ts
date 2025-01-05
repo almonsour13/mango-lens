@@ -33,6 +33,7 @@ export async function GET(
             );
         }
 
+        console.log(imageAnalysis)
         const diseases = (await query(
             `
             SELECT * FROM diseaseidentified di 
@@ -40,7 +41,8 @@ export async function GET(
             WHERE di.analysisID = ?`,
             [imageAnalysis[0].analysisID]
         )) as (diseaseIdentified & Disease)[];
-        
+
+
         const analyzedImage = (await query(
             `SELECT ai.analyzedImageID, ai.imageData FROM image i 
                                             INNER JOIN analysis a ON i.imageID = a.imageID
@@ -48,6 +50,7 @@ export async function GET(
                                             WHERE i.imageID = ?`,
             [imageAnalysis[0].imageID]
         )) as { analyzedImageID: number; imageData: string }[];
+
         const boundingBoxes =
             analyzedImage.length > 0
                 ? ((await query(
@@ -72,7 +75,6 @@ export async function GET(
             diseases,
         };
 
-        console.log(imageDetails);
         return NextResponse.json(imageDetails);
     } catch (error) {
         console.error("Database query error:", error);
