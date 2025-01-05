@@ -28,11 +28,6 @@ interface CameraContextType {
 
 const CameraContext = createContext<CameraContextType | undefined>(undefined);
 
-interface ImageData {
-    page: string;
-    captureImage: string;
-}
-
 export const CameraProvider = ({ children }: { children: ReactNode }) => {
     const [isCameraOpen, setIsCameraOpen] = useState(false);
     const [capturedImage, setCapturedImage] = useState<string>("");
@@ -172,6 +167,7 @@ const CameraPage = ({
                 setHasPermission(true);
             }
         } catch (err) {
+            console.log(err)
             setHasPermission(false);
         }
     }, [facingMode]);
@@ -188,7 +184,7 @@ const CameraPage = ({
                 </div>
                 <div className="w-full px-4">
                     <div className="relative w-full h-full overflow-hidden aspect-square rounded-lg bg-black">
-                        {!capturedImage && (
+                        {!capturedImage && hasPermission && isCameraReady && (
                             <>
                                 <video
                                     ref={videoRef}

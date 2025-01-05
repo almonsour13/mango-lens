@@ -11,7 +11,6 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
@@ -25,8 +24,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/auth-context";
-import { updateUserCredentials } from "@/utils/indexedDB/indexedDB";
 import { Separator } from "@/components/ui/separator";
+import { updateUserCredentials } from "@/utils/indexedDB/store/user-info-store";
 
 const formSchema = z
     .object({
@@ -137,24 +136,24 @@ export default function AccountSettings() {
                 setLoading(false);
             }
         } catch (err) {
-            setError("An error occurred while updating your account.");
+            setError(err as string);
         } finally {
             setLoading(false);
         }
     }
 
-    async function handleDeleteAccount() {
-        setLoading(true);
-        try {
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-            // Handle account deletion here
-        } catch (err) {
-            setError("An error occurred while deleting your account.");
-        } finally {
-            setLoading(false);
-        }
-    }
+    // async function handleDeleteAccount() {
+    //     setLoading(true);
+    //     try {
+    //         // Simulate API call
+    //         await new Promise((resolve) => setTimeout(resolve, 2000));
+    //         // Handle account deletion here
+    //     } catch (err) {
+    //         setError("An error occurred while deleting your account.");
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // }
 
     return (
         <div className="space-y-6">

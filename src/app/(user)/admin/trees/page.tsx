@@ -53,6 +53,7 @@ export default function Page() {
 
     const fetchTrees = async () => {
         setLoading(true);
+        console.log(error, loading)
         try {
             const response = await fetch(`/api/admin/${userInfo?.userID}/tree`);
 
@@ -326,9 +327,7 @@ export function TreeAnalytics({ trees }: TreeAnalyticsProps) {
     const totalTrees = trees.length;
     const activeTrees = trees.filter((tree) => tree.status === 1).length;
     const inactiveTrees = trees.filter((tree) => tree.status === 2).length;
-    const averageImages =
-        trees.reduce((sum, tree) => sum + tree.imagesLength, 0) / totalTrees ||
-        0;
+    
     const treeMetrics = [
         { name: "Total Trees", value: totalTrees },
         { name: "Active Trees", value: activeTrees },

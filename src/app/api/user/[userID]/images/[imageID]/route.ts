@@ -5,7 +5,6 @@ import {
     Disease,
     diseaseIdentified,
     Image,
-    ScanResult,
     Tree,
 } from "@/type/types";
 import { convertBlobToBase64 } from "@/utils/image-utils";
@@ -96,7 +95,7 @@ export async function PUT(
             `UPDATE image set treeID = ? WHERE imageID = ?`,
             [tree[0].treeID, imageID]
         );
-
+        console.log(result)
         return NextResponse.json(
             { message: "Tree code updated successfully" },
             { status: 200 }

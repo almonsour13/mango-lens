@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Sidebar from "@/components/layout/side-bar";
 import BottomNav from "@/components/layout/bottom-nav";
@@ -12,7 +12,7 @@ import { AuthProvider } from "@/context/auth-context";
 import { OnlineStatusToast } from "@/components/common/online-status-toast";
 import ResultDisplay from "@/components/common/scan/result/result-dislpay";
 import { PendingProcessProvider } from "@/context/pending-process-context";
-import { CameraProvider, useCameraContext } from "@/context/camera-context";
+import { CameraProvider } from "@/context/camera-context";
 
 export default function userLayout({
     children,
@@ -45,7 +45,6 @@ export default function userLayout({
 const Main = ({ children }: { children: React.ReactNode }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-    const { isCameraOpen } = useCameraContext();
 
     return (
         <div className="flex h-auto min-h-screen relative bg-background">

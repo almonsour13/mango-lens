@@ -30,9 +30,10 @@ export async function POST(request: Request) {
                 verificationCode: string;
             };
         } catch (error) {
+            console.log(error)
             return NextResponse.json(
                 { success: false, message: "Invalid token." },
-                { status: 400 }
+                { status: 400 },
             );
         }
         console.log(decodedToken);

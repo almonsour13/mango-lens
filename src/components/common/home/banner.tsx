@@ -2,7 +2,6 @@
 import SectionWrapper from "@/components/wrapper/section-wrapper";
 import Image from "next/image";
 import Link from "next/link";
-import UseMouseGradient from "@/hooks/use-mouse-gradient";
 import { Button } from "@/components/ui/button";
 
 export default function Banner(){

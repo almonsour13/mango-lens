@@ -13,11 +13,6 @@ export async function GET(
             currentDate.getMonth(),
             1
         );
-        const lastMonthFirstDay = new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth() - 1,
-            1
-        );
 
         const trees = (await query(
             `SELECT *, addedAt FROM tree WHERE userID = ?`,

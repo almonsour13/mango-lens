@@ -4,7 +4,7 @@ export interface ScanResult {
     analyzedImage: string;
     boundingBoxes: boundingBox[];
     diseases: (diseaseIdentified & Disease)[];
-};
+}
 export interface PendingItem {
     pendingID: number;
     userID?: number;

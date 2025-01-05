@@ -63,7 +63,7 @@ export default function DiseasesPage() {
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
 
-    const fetchDiseases = useCallback(async () => {
+    const fetchDiseases = async () => {
         setIsLoading(true);
         try {
             const response = await fetch(
@@ -86,7 +86,7 @@ export default function DiseasesPage() {
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    };
 
     useEffect(() => {
         fetchDiseases();

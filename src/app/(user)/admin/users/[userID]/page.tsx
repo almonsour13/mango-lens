@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Grid, Clock, ShieldCheck, Calendar, UserCircle } from "lucide-react";
+import { Grid, Clock, Calendar, UserCircle } from "lucide-react";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import Link from "next/link";
 import React from "react";
@@ -67,7 +67,9 @@ export default function UserDetails({
             setUser(data.details);
             setImages(data.images);
             setLogs(data.logs);
-        } catch (error) {}
+        } catch (error) {
+            console.log(error)
+        }
     };
     useEffect(() => {
         fetchUserData();

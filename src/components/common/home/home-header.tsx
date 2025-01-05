@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { useTheme } from "next-themes"
 import Image from "next/image"
 import Link from "next/link"
@@ -8,7 +8,6 @@ import { LayoutDashboard, MenuIcon, Moon, Sun, User } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, } from "@/components/ui/dropdown-menu"
 import { useAuth } from "@/context/auth-context"
-import SectionWrapper from "@/components/wrapper/section-wrapper"
 import { motion, AnimatePresence } from 'framer-motion'
 import React from "react"
 
@@ -25,7 +24,6 @@ export default function HomeHeader({sections, activeLink, setActiveLink, toggleS
   const { theme, setTheme } = useTheme()
   const { userInfo } = useAuth()
 
-  const sectionRefs = useRef<Record<string, HTMLElement | null>>({})
   
   useEffect(() => {
     setMounted(true)

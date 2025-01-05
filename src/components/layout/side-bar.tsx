@@ -1,14 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { LucideIcon, X } from "lucide-react";
+import { X } from "lucide-react";
 import { sidebarItems } from "@/constant/sidebar-item";
 // import { ScrollArea } from '../ui/scroll-area';
 //import { Avatar, AvatarFallback } from '@radix-ui/react-avatar'
 import { Button } from "../ui/button";
-import { Skeleton } from "../ui/skeleton";
 import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
 import { useAuth } from "@/context/auth-context";
 //import { useAuth } from '@/context/auth-context';
@@ -21,7 +20,7 @@ interface Sidebar {
 const Sidebar = ({ isOpen, toggleSidebar }: Sidebar) => {
     const pathname = usePathname();
     const { userInfo } = useAuth();
-    const router = useRouter();
+    // const router = useRouter();
 
     const items = sidebarItems(userInfo?.role);
 

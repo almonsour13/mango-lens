@@ -6,7 +6,6 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
@@ -21,7 +20,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -92,7 +90,7 @@ export default function ProfileSettings() {
         if (userInfo?.userID) {
             fetchUser();
         }
-    }, [userInfo?.userID]);
+    }, [userInfo]);
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setError(null)

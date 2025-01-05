@@ -1,9 +1,6 @@
 "use client";
 
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, ArrowRight, ZoomIn } from "lucide-react";
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
+import React, { useState } from "react";
 import ResultImageCard from "./scan/result-image-card";
 
 type boundingBox = {diseaseName:string, x:number, y:number, w:number, h:number}

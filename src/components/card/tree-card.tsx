@@ -3,7 +3,7 @@ import { Card } from "../ui/card";
 import Image from "next/image";
 import { Leaf, TreeDeciduous } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { Image as img, Tree } from "@/type/types";
+import { Tree } from "@/type/types";
 import { TreeActionMenu } from "../action menu/tree-action-menu";
 
 interface TreeWithImage extends Tree {
@@ -17,7 +17,7 @@ export default function TreeCard({
     handleAction,
 }: {
     tree: TreeWithImage;
-    handleAction: (e: any, action: string, treeID: number) => void;
+    handleAction: (e: React.MouseEvent<HTMLDivElement>, action: string, treeID: number) => void;
 }) {
     const pathname = usePathname();
 

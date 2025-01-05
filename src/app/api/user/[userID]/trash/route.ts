@@ -56,6 +56,7 @@ export async function GET(
             trash: trash.filter((t) => t.item !== null),
         });
     } catch (error) {
+        console.log(error)
         return NextResponse.json(
             { error: "Something went wrong." },
             { status: 500 }
@@ -96,6 +97,7 @@ export async function POST(
 
         return NextResponse.json({ success: true, message: "Move to trash" });
     } catch (error) {
+        console.log(error)
         return NextResponse.json(
             { error: "Something went wrong." },
             { status: 500 }
@@ -150,6 +152,7 @@ export async function PUT(
             message: "Action perform sucessfully",
         });
     } catch (error) {
+        console.log(error)
         return NextResponse.json(
             { error: "Something went wrong." },
             { status: 500 }

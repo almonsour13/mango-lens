@@ -49,6 +49,7 @@ export async function GET(request: Request, { params }: { params: { userID: numb
 
         return NextResponse.json(userData)
     } catch (error) {
+        console.log(error)
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
     }
 }

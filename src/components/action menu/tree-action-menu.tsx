@@ -17,7 +17,7 @@ interface ActionMenuProps {
     treeID: number;
     treeCode: string;
     status: number;
-    handleAction: (e: any, action: string, treeID: number) => void;
+    handleAction: (e: React.MouseEvent<HTMLDivElement>, action: string, treeID: number) => void;
 }
 export function TreeActionMenu({
     treeID,

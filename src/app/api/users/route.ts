@@ -5,6 +5,7 @@ import { hash } from 'bcrypt';
 
 export async function GET(req: Request) {
   try {
+    console.log(req)
     const users = await query('SELECT * FROM user') as any[];
 
     return NextResponse.json({ success: true, users:users });
@@ -31,6 +32,7 @@ export async function POST(req:Request){
       [fName, lName, email, hashedPassword, userRole]
 
     ) as any;
+    console.log(result)
 
     return NextResponse.json({ success: true, message: 'User added successfully.' });
   } catch (error) {
@@ -52,10 +54,10 @@ export async function PUT(req: Request) {
 
     const userStatus = status === "Active" ? 1 : 2;
 
-    const result = await query(
+    await query(
       'UPDATE user SET fName = ?, lName = ?, role = ?, status = ? WHERE userID = ?',
       [fName, lName, userRole, userStatus, userID]
-    ) as any;
+    );
     
     return NextResponse.json({ success: true, message: 'User updated successfully.' });
   } catch (error) {

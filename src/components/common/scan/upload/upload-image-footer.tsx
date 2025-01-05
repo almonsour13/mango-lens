@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 
-import { Image, Plus, Camera, Scan, X } from "lucide-react";
+import {Plus, Camera, Scan} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -87,7 +87,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
             imageUrl: capturedImage,
         };
 
-        if (false) {
+        if (isOnline) {
             setIsScanning(true);
             try {
                 const response = await fetch("/api/scan/newScan", {
@@ -125,6 +125,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
         if (action == 1) {
             setTrees([...trees, value]);
         }
+        console.log(status)
     };
 
     return (

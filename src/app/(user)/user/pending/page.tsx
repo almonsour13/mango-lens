@@ -12,8 +12,6 @@ import {
 import PendingCard from "@/components/card/pending-card";
 import {CardContent } from "@/components/ui/card";
 import PageWrapper from "@/components/wrapper/page-wrapper";
-import { useAuth } from "@/context/auth-context";
-import useOnlineStatus from "@/hooks/use-online";
 import { useEffect, useState } from "react";
 import {
     ArrowDownUp,
@@ -29,25 +27,18 @@ import {
 import { Toggle } from "@/components/ui/toggle";
 import { PendingTable } from "@/components/table/pending-table";
 import { Separator } from "@/components/ui/separator";
-import { useScanResult } from "@/context/scan-result-context";
 import { usePendingProcess } from "@/context/pending-process-context";
 
 export default function Pending() {
     // const [selected, setSelected] = useState<number[]>([]);
     // const [isSelected, setIsSelected] = useState(false);
-    const {pendings, setPendings, processPendingID, setProcessPendingID, selected, setSelected, isSelected, setIsSelected, handleAction, handleSelectedAction} = usePendingProcess();
+    const {pendings, processPendingID, selected, setSelected, isSelected, setIsSelected, handleAction, handleSelectedAction} = usePendingProcess();
     // const [pendings, setPendings] = useState<PendingProcess[]>([]);
 
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Oldest");
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0)
 
     const [viewMode, setViewMode] = useState<"table" | "grid">("grid");
-
-    const { userInfo } = useAuth();
-
-    const isOnline = useOnlineStatus();
-
-    const { setScanResult } = useScanResult();
 
     useEffect(() => {
         if (!isSelected) {
@@ -181,7 +172,7 @@ export default function Pending() {
                                 <DropdownMenuLabel>Sort by: </DropdownMenuLabel>
                                 <DropdownMenuCheckboxItem
                                     checked={sortBy == "Newest"}
-                                    onCheckedChange={(checked) => {
+                                    onCheckedChange={() => {
                                         setSortBy("Newest");
                                     }}
                                 >
@@ -189,7 +180,7 @@ export default function Pending() {
                                 </DropdownMenuCheckboxItem>
                                 <DropdownMenuCheckboxItem
                                     checked={sortBy == "Oldest"}
-                                    onCheckedChange={(checked) => {
+                                    onCheckedChange={() => {
                                         setSortBy("Oldest");
                                     }}
                                 >

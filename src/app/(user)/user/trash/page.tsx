@@ -1,41 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { Image as img, Tree, Trash as TRS } from "@/type/types";
-import Image from "next/image";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
-    DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
     ArrowDownUp,
-    Check,
-    CheckIcon,
     Grid,
-    ImageIcon,
     List,
-    ListFilter,
-    Recycle,
     RefreshCw,
     SlidersHorizontal,
     SquareDashed,
     SquareDashedMousePointer,
     Trash2,
-    TreeDeciduous,
-    TreeDeciduousIcon,
     X,
 } from "lucide-react";
-import { formatDate } from "@/lib/formatter";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/context/auth-context";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Toggle } from "@/components/ui/toggle";
 import { TrashCard } from "@/components/card/trash-card";
 import { toast } from "@/hooks/use-toast";
@@ -109,7 +97,7 @@ export default function Trash() {
                 })
             }
         } catch (error) {
-            
+            console.log(error)
         }
     }
     
@@ -131,7 +119,7 @@ export default function Trash() {
             }
 
         } catch (error) {
-            
+            console.log(error)
         }
     }
     return (
@@ -233,13 +221,13 @@ export default function Trash() {
                             <DropdownMenuLabel>Sort by: </DropdownMenuLabel>
                             <DropdownMenuCheckboxItem 
                                 checked={sortBy == "Newest"}
-                                onCheckedChange={(checked) => {setSortBy("Newest")}}
+                                onCheckedChange={() => {setSortBy("Newest")}}
                             >
                                 Newest to oldest
                             </DropdownMenuCheckboxItem>
                             <DropdownMenuCheckboxItem 
                                 checked={sortBy == "Oldest"}
-                                onCheckedChange={(checked) => {setSortBy("Oldest")}}
+                                onCheckedChange={() => {setSortBy("Oldest")}}
                                 >
                                 Oldest to newest
                             </DropdownMenuCheckboxItem>

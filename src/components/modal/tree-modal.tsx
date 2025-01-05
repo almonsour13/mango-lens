@@ -28,8 +28,6 @@ import {
     SelectItem,
 } from "@/components/ui/select";
 import { Textarea } from "../ui/textarea";
-import { Label } from "../ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ScrollArea } from "../ui/scroll-area";
 
 // Custom Components
@@ -39,12 +37,7 @@ import ConfirmationModal from "./confirmation-modal";
 // Contexts
 import { useAuth } from "@/context/auth-context";
 
-// Types
-import { Image } from "@/type/types";
-
-// Utils
 import { toast } from "@/hooks/use-toast";
-import { useCameraContext } from "@/context/camera-context";
 
 const formSchema = z.object({
     treeCode: z
@@ -136,7 +129,7 @@ export default function TreeModal({
         if (!openDialog) {
             setEditingTrees && setEditingTrees(null);
         }
-    }, [editingTrees, openDialog]);
+    }, [editingTrees, openDialog, setEditingTrees]);
 
     const handleConfirmDelete = async () => {
         try {
@@ -241,22 +234,22 @@ export default function TreeModal({
         }
     };
 
-    const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                form.reset({
-                    treeCode: form.getValues().treeCode,
-                    status: form.getValues().status,
-                    description: form.getValues().description,
-                    treeImage: e.target?.result as string,
-                });
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-    const {setIsCameraOpen} = useCameraContext();
+    // const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     const file = event.target.files?.[0];
+    //     if (file) {
+    //         const reader = new FileReader();
+    //         reader.onload = (e) => {
+    //             form.reset({
+    //                 treeCode: form.getValues().treeCode,
+    //                 status: form.getValues().status,
+    //                 description: form.getValues().description,
+    //                 treeImage: e.target?.result as string,
+    //             });
+    //         };
+    //         reader.readAsDataURL(file);
+    //     }
+    // };
+    // const {setIsCameraOpen} = useCameraContext();
     return (
         <ModalDrawer open={openDialog} onOpenChange={setOpenDialog}>
             <ScrollArea className="max-h-[calc(100vh-56px)]">

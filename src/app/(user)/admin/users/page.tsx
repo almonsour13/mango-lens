@@ -1,6 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import UserModal from "@/components/modal/user-modal";
+import { Button } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -9,6 +17,15 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
     Table,
     TableBody,
@@ -17,45 +34,26 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-    Search,
-    File,
-    PlusCircle,
-    Edit,
-    Eye,
-    SlidersHorizontal,
-    ArrowDownUp,
-    MoreVertical,
-} from "lucide-react";
 import PageWrapper from "@/components/wrapper/page-wrapper";
-import { useRouter } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
-import UserModal from "@/components/modal/user-modal";
-import Link from "next/link";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { useAuth } from "@/context/auth-context";
 import { toast } from "@/hooks/use-toast";
 import { User } from "@/type/types";
-import { useAuth } from "@/context/auth-context";
 import { format } from "date-fns";
+import {
+    ArrowDownUp,
+    Edit,
+    Eye,
+    File,
+    MoreVertical,
+    PlusCircle,
+    Search,
+    SlidersHorizontal,
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Users() {
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(5);
     const [searchTerm, setSearchTerm] = useState("");
     const [users, setUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -119,12 +117,12 @@ export default function Users() {
             }
         });
 
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+    // const indexOfLastItem = currentPage * itemsPerPage;
+    // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    // const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+    // const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
 
-    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+    // const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     const handleChangeStatus = (status: string, userID: number) => {
         setUsers(

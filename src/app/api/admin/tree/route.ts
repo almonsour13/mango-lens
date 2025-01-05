@@ -5,7 +5,7 @@ import { Tree } from '@/type/types';
 
 export async function GET(req:Request) {
     try {
-        
+        console.log(req)
         const trees = await query(`
             SELECT * addedAt FROM tree
         `) as Tree[];

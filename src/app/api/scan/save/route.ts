@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db/db";
-import { Disease } from "@/type/types";
 import { convertImageToBlob } from "@/utils/image-utils";
+import { boundingBox } from "@/type/types";
 
 export async function POST(req: Request) {
     try {
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
 
                 if (diseaseIdentifiedID) {
                     const boundingbox = boundingBoxes.filter(
-                        (box: any) => box.diseaseName === diseaseName
+                        (box: boundingBox) => box.diseaseName === diseaseName
                     )[0];
 
                     if (boundingbox) {
@@ -89,6 +89,7 @@ export async function POST(req: Request) {
                 [analysisID, analyzedImageBlob]
             )) as { insertId: number };
 
+            console.log(insertAnalyzedImageResult)
             return NextResponse.json({
                 message: "Analysis result and image saved successfully.",
             });

@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LucideIcon, MoreHorizontal, Scan } from "lucide-react";
+import { MoreHorizontal, Scan } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
@@ -12,11 +12,6 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { sidebarItems } from "@/constant/sidebar-item";
 import { useAuth } from "@/context/auth-context";
 
-interface SidebarItem {
-    href: string;
-    icon: LucideIcon; // Use LucideIcon directly
-    label: string;
-}
 export default function BottomNav() {
     const pathname = usePathname();
     

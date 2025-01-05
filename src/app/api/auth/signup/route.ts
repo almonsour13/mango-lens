@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import { sign } from "jsonwebtoken";
-import { hash } from "bcrypt";
 import { query } from "@/lib/db/db";
-import { sendVerificationEmail, transporter } from "@/lib/email-transporter";
-
-const verificationCodes = new Map<string, { code: string; expires: number; userData: any }>();
+import { sendVerificationEmail } from "@/lib/email-transporter";
 
 export async function emailExists(email: string): Promise<boolean> {
     const result = (await query(

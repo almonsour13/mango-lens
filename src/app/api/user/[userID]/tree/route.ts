@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { query } from "@/lib/db/db";
-import { Tree, Image } from "@/type/types";
-import { convertBlobToBase64, convertImageToBlob } from "@/utils/image-utils";
+import { Tree } from "@/type/types";
+import { convertBlobToBase64 } from "@/utils/image-utils";
 
 export async function GET(
     req: Request,

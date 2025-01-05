@@ -2,11 +2,8 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { AlertCircle, Eye, EyeOff, RefreshCcw } from 'lucide-react'
-import { DiseaseColor } from "@/constant/color"
-
+import { AlertCircle, RefreshCcw } from 'lucide-react'
 interface BoundingBox {
   x: number
   y: number

@@ -81,10 +81,10 @@ export default function MigrateImageModal({
             }
         };
 
-        if (userInfo) {
+        if (userInfo?.userID) {
             fetchTrees();
         }
-    }, [userInfo?.userID]);
+    }, [userInfo?.userID, initialData.currentTreeCode]);
 
     useEffect(() => {
         if (openDialog) {

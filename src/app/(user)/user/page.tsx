@@ -42,7 +42,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePendingProcess } from "@/context/pending-process-context";
-import { getPendingTotalCount } from "@/utils/indexedDB/store/pending-store";
+// import { getPendingTotalCount } from "@/utils/indexedDB/store/pending-store";
 
 export default function Dashboard() {
     const { userInfo,resetToken } = useAuth();
@@ -58,15 +58,15 @@ export default function Dashboard() {
         }
     };
 
-    const [pendingCount, setPendingCount] = useState<number>(0);
+    // const [pendingCount, setPendingCount] = useState<number>(0);
 
-    useEffect(() => {
-        const fetchPendingCount = async () => {
-            const count = await getPendingTotalCount();
-            setPendingCount(count);
-        };
-        fetchPendingCount();
-    }, []);
+    // useEffect(() => {
+    //     const fetchPendingCount = async () => {
+    //         const count = await getPendingTotalCount();
+    //         setPendingCount(count);
+    //     };
+    //     fetchPendingCount();
+    // }, []);
 
     return (
         <>
@@ -188,8 +188,8 @@ const Welcome = () => {
                     Good {getGreeting()} {userInfo?.fName}
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                    Here's a quick overview of your account and the progress
-                    you've made.
+                    Here is a quick overview of your account and the progress
+                    you have made.
                 </p>
                 {totalCount > 0 && (
                     <div className="mt-4 bg-destructive/20 border-0 flex items-center p-4 rounded-lg gap-2">
@@ -224,7 +224,7 @@ interface Metric {
 }
 const Metrics = () => {
     const { userInfo } = useAuth();
-    const router = useRouter();
+    // const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [metrics, setMetrics] = useState<Metric[]>([]);
 

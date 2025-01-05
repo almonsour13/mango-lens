@@ -1,4 +1,4 @@
-import {  DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import {  DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
@@ -86,13 +86,14 @@ export default function DiseaseModal({ openDialog, setOpenDialog, editingDisease
         } catch (err) {
             toast({
                 title: "Error",
-                description: "An unexpected error occurred. Please try again.",
+                description: err as string,
                 variant: "destructive",
             })
         }
     };
     const handleDelete = async (diseaseID:number) => {
         setConfirmationModalOpen(true)
+        console.log(diseaseID)
     }
     const handleConfirmDelete = async () => {
         try {
@@ -116,7 +117,7 @@ export default function DiseaseModal({ openDialog, setOpenDialog, editingDisease
             }
           } catch (error) {
             console.error('Error deleting disease:', error);
-          };
+          }
         setConfirmationModalOpen(false);
     };
     const handleCancel = () => {

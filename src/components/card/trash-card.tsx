@@ -6,7 +6,6 @@ import { formatDistanceToNow } from "date-fns"
 import { Check, ImageIcon, TreeDeciduous } from 'lucide-react'
 
 import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { TrashActionMenu } from "@/components/action menu/trash-action-menu"
 import { cn } from "@/lib/utils"
 

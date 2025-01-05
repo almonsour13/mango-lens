@@ -136,11 +136,6 @@ export default function Page({
         reader.readAsDataURL(file);
     };
 
-    const handleCameraCapture = (imageData: string) => {
-        form.setValue("treeImage", imageData);
-        setIsCameraOpen(false);
-    };
-
     const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
@@ -175,6 +170,7 @@ export default function Page({
                 });
             }
         } catch (error) {
+            console.log(error)
             setError("Failed to add tree. Please try again.");
         } finally {
             setLoading(false);

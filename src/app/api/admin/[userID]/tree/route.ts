@@ -7,7 +7,7 @@ export async function GET(
     { params }: { params: { userID: number } }
 ) {
     const { userID } = await params; // No need to await params here.
-
+    console.log(userID)
     try {
         const trees = (await query(
             `SELECT 

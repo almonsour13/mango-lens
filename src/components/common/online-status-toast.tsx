@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
-import { Wifi, WifiOff } from 'lucide-react'
+import { WifiOff } from 'lucide-react'
 import useOnlineStatus from '@/hooks/use-online'
 
 export function OnlineStatusToast() {

@@ -1,13 +1,11 @@
 
 import {
     DropdownMenu,
-    DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, MoreVertical, RefreshCw, Trash2 } from "lucide-react";
+import { MoreVertical, RefreshCw, Trash2 } from "lucide-react";
 
 interface ActionMenuProps {
     trashID: number;
@@ -24,13 +22,13 @@ export function TrashActionMenu({ trashID, handleAction }: ActionMenuProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 <DropdownMenuItem
-                    onClick={(e) => handleAction(1, trashID)}
+                    onClick={() => handleAction(1, trashID)}
                 >
                     <RefreshCw className="mr-2 h-4 w-4" />
                     Restore
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                    onClick={(e) => handleAction(2, trashID)}
+                    onClick={() => handleAction(2, trashID)}
                     className="text-destructive"
                 >
                     <Trash2 className="mr-2 h-4 w-4" />

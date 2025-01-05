@@ -8,7 +8,6 @@ import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
-    DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -18,22 +17,15 @@ import { Image as img, Tree } from "@/type/types";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-    AlertCircle,
     ArrowDownUp,
     ArrowLeft,
-    Filter,
     Grid,
-    HeartPulse,
-    Leaf,
     List,
     Plus,
-    ShieldCheck,
     SlidersHorizontal,
     TreeDeciduous,
     Calendar,
     Edit,
-    CheckCircle,
-    XCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -44,7 +36,7 @@ import { TreeImageSkeletonCard } from "@/components/skeleton/skeleton-card";
 import { TreeImageCard } from "@/components/card/tree-image-card";
 import { Badge } from "@/components/ui/badge";
 import TreeModal from "@/components/modal/tree-modal";
-import { formatDate, formatters } from "date-fns";
+import { formatDate } from "date-fns";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -142,6 +134,7 @@ export default function Page({
         } else if (action == 3) {
             router.back();
         }
+        console.log(status)
     };
     const [showMore, setShowMore] = useState(false);
     // if (!tree) return <>loading</>;
@@ -286,7 +279,7 @@ export default function Page({
                                 <DropdownMenuLabel>Sort by: </DropdownMenuLabel>
                                 <DropdownMenuCheckboxItem
                                     checked={sortBy == "Newest"}
-                                    onCheckedChange={(checked) => {
+                                    onCheckedChange={() => {
                                         setSortBy("Newest");
                                     }}
                                 >
@@ -294,7 +287,7 @@ export default function Page({
                                 </DropdownMenuCheckboxItem>
                                 <DropdownMenuCheckboxItem
                                     checked={sortBy == "Oldest"}
-                                    onCheckedChange={(checked) => {
+                                    onCheckedChange={() => {
                                         setSortBy("Oldest");
                                     }}
                                 >

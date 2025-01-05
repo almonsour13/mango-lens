@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db/db"; // Adjust the import based on your db helper
 import {
-    Analysis,
-    Disease,
-    diseaseIdentified,
     Image,
-    ScanResult,
     Tree,
 } from "@/type/types";
 import { convertBlobToBase64, convertImageToBlob } from "@/utils/image-utils";
@@ -118,6 +114,7 @@ export async function PUT(
                 `INSERT INTO treeImage (treeID, imageData) VALUES (?, ?)`,
                 [treeID, blobImageData]
             );
+            console.log(result)
         }
         return NextResponse.json({ message: "Tree updated successfully" });
     } catch (error) {

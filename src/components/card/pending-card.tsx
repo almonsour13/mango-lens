@@ -34,7 +34,7 @@ export default function PendingCard({
 
     useEffect(()=>{
         setIsCheck(selected.includes(pending.pendingID));
-    },[isSelected, selected])
+    },[isSelected, selected, pending.pendingID])
 
     const handleCheck = () => {
         if (isSelected) {

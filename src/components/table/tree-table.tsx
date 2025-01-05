@@ -20,7 +20,7 @@ export const TreeTable = ({
     handleAction,
 }: {
     trees: TreeWithImage[];
-    handleAction: (e: any, action: string, treeID: number) => void;
+    handleAction: (e: React.MouseEvent<HTMLDivElement>, action: string, treeID: number) => void;
 }) => {
     return (
         <Table className="border-0">

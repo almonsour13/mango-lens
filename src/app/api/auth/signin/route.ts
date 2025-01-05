@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { sign } from "jsonwebtoken";
 import { compare } from "bcrypt";
 import { query } from "@/lib/db/db";
-import { insertLog } from "../../log/route";
+import { User } from "@/type/types";
 
 export async function POST(req: Request) {
     try {
@@ -17,9 +17,9 @@ export async function POST(req: Request) {
 
         // Get user from database
         const users = (await query(
-            "SELECT userID, email, password, role, fName, lName FROM user WHERE email = ?",
+            "SELECT * FROM user WHERE email = ?",
             [email]
-        )) as any[];
+        )) as (User & {password:string})[];
 
         const user = users[0];
 
@@ -67,9 +67,9 @@ export async function POST(req: Request) {
 
         });
 
-        const activity: string = `${
-            user.fName + " " + user.lName
-        } just logged in`;
+        // const activity: string = `${
+        //     user.fName + " " + user.lName
+        // } just logged in`;
 
         // await insertLog(user.userID, 1, activity);
 

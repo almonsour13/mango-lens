@@ -95,7 +95,7 @@ export default function AdminActivityLogs() {
             }
           } catch (error) {
             console.error('Error deleting disease:', error);
-          };
+          }
         setSelectedLogID(0)
         setConfirmationModalOpen(false);
     };

@@ -5,9 +5,7 @@ import { usePathname } from "next/navigation";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import {
     Shield,
-    Link as LinkIcon,
     Bell,
-    Zap,
     User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";

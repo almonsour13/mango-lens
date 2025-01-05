@@ -2,14 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { format, formatDate } from "date-fns";
+import { formatDate } from "date-fns";
 import {
     Edit,
     Trash2,
-    ZoomIn,
     Trees,
     Calendar,
-    ArrowRight,
     ArrowLeft,
 } from "lucide-react";
 
@@ -83,7 +81,7 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
             }
         };
         fetchImageDetails();
-    }, [imageID]);
+    },[imageID, userInfo?.userID]);
 
     const handleConfirmDelete = async () => {
         try {
@@ -225,7 +223,7 @@ function ResultDetails({ imageDetails }: { imageDetails: ImageDetailsProps }) {
                     </span>
                 </div>
                 <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
-                    {imageDetails.diseases.map((disease, index) => {
+                    {imageDetails.diseases.map((disease) => {
                         const color: string = DiseaseColor(disease.diseaseName);
                         return (
                             <Card

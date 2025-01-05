@@ -12,7 +12,7 @@ import {
     ImageIcon,
     TreeDeciduous,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { TrashActionMenu } from "../action menu/trash-action-menu";
 import { formatDate } from "date-fns";
 

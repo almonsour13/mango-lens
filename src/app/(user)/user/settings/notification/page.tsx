@@ -13,7 +13,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Label } from "@/components/ui/label";
 import {
     Form,
     FormControl,

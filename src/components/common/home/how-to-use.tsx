@@ -1,6 +1,6 @@
 import SectionWrapper from "@/components/wrapper/section-wrapper"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Camera, Upload, Search, Leaf, Icon, BarChart } from 'lucide-react'
+import { Card, CardContent, } from "@/components/ui/card"
+import { Camera, Upload, Search,BarChart } from 'lucide-react'
 
 export default function HowToUse() {
   const steps = [

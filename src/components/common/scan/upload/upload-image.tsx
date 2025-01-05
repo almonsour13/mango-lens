@@ -1,9 +1,8 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Image as LucideImage, Crop, X, ImagePlus } from "lucide-react";
-import useIsMobile from "@/hooks/use-mobile";
+import { Crop, X, ImagePlus } from "lucide-react";
 import Image from "next/image";
 import ImageCropper from "./crop-image";
 // import { useCaptureImageContext } from "@/context/capture-image-context";
@@ -41,7 +40,7 @@ export default function UploadField(){
         </PageWrapper>
         </>
     );
-};
+}
 
 interface UploadImageProps {
     isScanning: boolean;
@@ -55,7 +54,6 @@ const UploadImage: React.FC<UploadImageProps> = ({
     const [dragActive, setDragActive] = useState(false);
     const [isCropping, setIsCropping] = useState(false);
 
-    const isMobile = useIsMobile();
 
     const handleDrag = (e: React.DragEvent) => {
         e.preventDefault();

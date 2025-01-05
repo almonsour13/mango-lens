@@ -24,7 +24,7 @@ import {
     PlusIcon,
     SlidersHorizontal,
 } from "lucide-react";
-import { Image as img, Tree } from "@/type/types";
+import { Tree } from "@/type/types";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
@@ -239,7 +239,7 @@ export default function TreePage() {
                                     </DropdownMenuLabel>
                                     <DropdownMenuCheckboxItem
                                         checked={sortBy == "Newest"}
-                                        onCheckedChange={(checked) => {
+                                        onCheckedChange={() => {
                                             setSortBy("Newest");
                                         }}
                                     >
@@ -247,7 +247,7 @@ export default function TreePage() {
                                     </DropdownMenuCheckboxItem>
                                     <DropdownMenuCheckboxItem
                                         checked={sortBy == "Oldest"}
-                                        onCheckedChange={(checked) => {
+                                        onCheckedChange={() => {
                                             setSortBy("Oldest");
                                         }}
                                     >

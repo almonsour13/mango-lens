@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import PageWrapper from "@/components/wrapper/page-wrapper"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
@@ -50,13 +50,7 @@ export default function EditUserPage() {
     useEffect(() => {
         // Simulating fetching user data
         const fetchUserData = async () => {
-            // Replace this with actual API call
-            const userData = {
-                fName: "John",
-                lName: "Doe",
-                email: "john.doe@example.com",
-                role: "User"
-            }
+            
             // form.reset(userData)
         }
         fetchUserData()

@@ -1,14 +1,11 @@
 
-import { usePathname } from "next/navigation";
-import { Check, Edit, Eye, MoreHorizontal, MoreVertical, RefreshCcw, Save, Scan, Trash2, TreeDeciduous } from "lucide-react";
 import {
     DropdownMenu,
-    DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Eye, MoreVertical, RefreshCcw, Save, Trash2 } from "lucide-react";
 
 interface ActionMenuProps {
     pendingID: number;
@@ -16,9 +13,7 @@ interface ActionMenuProps {
     handleAction: (action: number, pendingID: number) => void;
 }
 export function PendingActionMenu({ pendingID, status, handleAction }: ActionMenuProps) {
-    const pathname = usePathname();
 
-    const pathSegments = pathname.split("/");
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -37,7 +32,7 @@ export function PendingActionMenu({ pendingID, status, handleAction }: ActionMen
                 </Link> */}
                 {status == 2 && (
                     <DropdownMenuItem
-                        onClick={(e) => handleAction(3, pendingID)}
+                        onClick={() => handleAction(3, pendingID)}
                     >
                         <Eye className="mr-2 h-4 w-4" />
                         View Analysis
@@ -45,7 +40,7 @@ export function PendingActionMenu({ pendingID, status, handleAction }: ActionMen
                 )}
                 {status == 2 && (
                     <DropdownMenuItem
-                        onClick={(e) => handleAction(4, pendingID)}
+                        onClick={() => handleAction(4, pendingID)}
                     >
                         <Save className="mr-2 h-4 w-4" />
                         Save Analysis
@@ -53,14 +48,14 @@ export function PendingActionMenu({ pendingID, status, handleAction }: ActionMen
                 )}
                 {status == 1 && (
                     <DropdownMenuItem
-                        onClick={(e) => handleAction(1, pendingID)}
+                        onClick={() => handleAction(1, pendingID)}
                     >
                         <RefreshCcw className="mr-2 h-4 w-4" />
                         Process
                     </DropdownMenuItem>
                 )}
                 <DropdownMenuItem
-                    onClick={(e) => handleAction(2, pendingID)}
+                    onClick={() => handleAction(2, pendingID)}
                     className="text-destructive"
                 >
                     <Trash2 className="mr-2 h-4 w-4" />

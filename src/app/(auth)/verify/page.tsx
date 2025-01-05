@@ -1,13 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { REGEXP_ONLY_DIGITS } from "input-otp";
-import {
-    InputOTP,
-    InputOTPGroup,
-    InputOTPSlot,
-} from "@/components/ui/input-otp";
+import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
@@ -15,8 +8,15 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { getUserCredentials, deleteUserCredentials, storeUserCredentials } from "@/utils/indexedDB/store/user-info-store";
+import {
+    InputOTP,
+    InputOTPGroup,
+    InputOTPSlot,
+} from "@/components/ui/input-otp";
+import { deleteUserCredentials, getUserCredentials, storeUserCredentials } from "@/utils/indexedDB/store/user-info-store";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Verify() {
     const search = useSearchParams();

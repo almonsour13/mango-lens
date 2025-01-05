@@ -22,11 +22,6 @@ const formSchema = z.object({
     password: z.string().min(8, { message: "Password must be at least 8 characters." })
 });
 
-interface FormData{
-  email: string
-  password: string
-}
-
 export default function LoginForm() {
     const [showPassword, setShowPassword] = useState(false)
     const [error, setError] = useState<string | null>(null)

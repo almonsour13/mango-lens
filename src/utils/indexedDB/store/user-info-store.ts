@@ -1,5 +1,5 @@
 import { User } from "@/type/types";
-import { convertBlobToBase64, convertImageToBlob } from "../../image-utils";
+import { convertBlobToBase64 } from "../../image-utils";
 import { dbOperation } from "../indexedDB";
 import { DB_CONFIG } from "../indexedDBconfig";
 
