@@ -1,10 +1,8 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
     DialogHeader,
     DialogFooter,
     DialogTitle,
@@ -13,38 +11,45 @@ import {
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import Cropper from "react-easy-crop";
 import ModalDrawer from "@/components/modal/modal-drawer-wrapper";
+import { RotateCcw } from "lucide-react";
+
+interface CropArea {
+    width: number;
+    height: number;
+    x: number;
+    y: number;
+}
+
+interface Point {
+    x: number;
+    y: number;
+}
 
 interface ImageCropperProps {
     image: string;
+    crop: Point;
+    setCrop: (crop: Point) => void;
+    zoom: number;
+    setZoom: (value: number) => void;
     onCropComplete: (croppedImage: string) => void;
     onCropCancel: () => void;
 }
 
+const DEFAULT_CROP: Point = { x: 0, y: 0 };
+const DEFAULT_ZOOM = 1;
+
 export default function ImageCropper({
     image,
+    crop,
+    setCrop,
+    zoom,
+    setZoom,
     onCropComplete,
     onCropCancel,
 }: ImageCropperProps) {
-    const [crop, setCrop] = useState({ x: 0, y: 0 });
-    const [zoom, setZoom] = useState(1);
-    const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
-    const imageRef = useRef<HTMLImageElement>(null);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<CropArea | null>(null);
 
-    const onImageLoad = useCallback(
-        (e: React.SyntheticEvent<HTMLImageElement>) => {
-            const { width, height } = e.currentTarget;
-            if (imageRef.current) {
-                const { naturalWidth, naturalHeight } = imageRef.current;
-                const aspect = width / height;
-                setZoom(
-                    aspect > 1 ? naturalWidth / 1024 : naturalHeight / 1024
-                );
-            }
-        },
-        []
-    );
-
-    const onCrop = useCallback((croppedArea: any, croppedAreaPixels: any) => {
+    const onCrop = useCallback((croppedArea: Point, croppedAreaPixels: CropArea) => {
         setCroppedAreaPixels(croppedAreaPixels);
     }, []);
 
@@ -58,7 +63,7 @@ export default function ImageCropper({
 
     const getCroppedImg = async (
         imageSrc: string,
-        pixelCrop: { width: number; height: number; x: number; y: number }
+        pixelCrop: CropArea
     ): Promise<string> => {
         const image = await createImage(imageSrc);
         const canvas = document.createElement("canvas");
@@ -68,11 +73,9 @@ export default function ImageCropper({
             throw new Error("No 2d context");
         }
 
-        // Set canvas size to the cropped size
         canvas.width = pixelCrop.width;
         canvas.height = pixelCrop.height;
 
-        // Draw the cropped image onto the canvas
         ctx.drawImage(
             image,
             pixelCrop.x,
@@ -85,7 +88,6 @@ export default function ImageCropper({
             pixelCrop.height
         );
 
-        // Convert canvas to base64 string
         return canvas.toDataURL("image/jpeg");
     };
 
@@ -101,7 +103,12 @@ export default function ImageCropper({
         } catch (error) {
             console.error("Error cropping image:", error);
         }
-    }, [image, croppedAreaPixels, onCropComplete, getCroppedImg]);
+    }, [image, croppedAreaPixels, onCropComplete]);
+
+    const handleReset = useCallback(() => {
+        setCrop(DEFAULT_CROP);
+        setZoom(DEFAULT_ZOOM);
+    }, [setCrop, setZoom]);
 
     return (
         <ModalDrawer open={true} onOpenChange={onCropCancel}>
@@ -142,6 +149,15 @@ export default function ImageCropper({
                         aria-label="Zoom"
                     />
                 </SliderPrimitive.Root>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleReset}
+                    className="ml-2"
+                    title="Reset crop and zoom"
+                >
+                    <RotateCcw className="h-4 w-4" />
+                </Button>
             </div>
 
             <DialogFooter className="flex-row justify-end space-x-2">

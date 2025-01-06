@@ -26,10 +26,16 @@ import { useCameraContext } from "@/context/camera-context";
 import { storePendingProcessItem } from "@/utils/indexedDB/store/pending-store";
 
 interface FooterProps {
+    isNonSquare:boolean
+    croppedImage: string | null;
+    setCroppedImage: (value: string | null) => void;
     isScanning: boolean;
     setIsScanning: (isScanning: boolean) => void;
 }
 export const ImageUploadFooter: React.FC<FooterProps> = ({
+    isNonSquare,
+    croppedImage,
+    setCroppedImage,
     isScanning,
     setIsScanning,
 }) => {
@@ -83,7 +89,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
         const data = {
             userID: userInfo?.userID,
             treeCode: treeCode,
-            imageUrl: capturedImage,
+            imageUrl: croppedImage || capturedImage,
         };
 
         if (isOnline) {
@@ -171,12 +177,12 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
             </div>
             <Button
                 className={`w-full ${
-                    !capturedImage || !treeCode || isScanning
+                    !capturedImage || !treeCode || isScanning || isNonSquare
                         ? " bg-primary/50"
                         : " bg-primary"
                 }`}
                 onClick={handleScan}
-                disabled={!capturedImage || !treeCode || isScanning}
+                disabled={!capturedImage || !treeCode || isScanning || isNonSquare}
             >
                 {" "}
                 {isScanning ? (

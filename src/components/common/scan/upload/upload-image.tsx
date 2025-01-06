@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Crop, X, ImagePlus } from "lucide-react";
@@ -11,7 +11,34 @@ import { ImageUploadFooter } from "./upload-image-footer";
 import { useCameraContext } from "@/context/camera-context";
 
 export default function UploadField() {
+    const { capturedImage, setCapturedImage } = useCameraContext();
     const [isScanning, setIsScanning] = useState(false);
+    const [croppedImage, setCroppedImage] = useState<string | null>(null);
+    const [isNonSquare, setIsNonSquare] = useState(false);
+
+    useEffect(() => {
+        const checkImageAspectRatio = async () => {
+            try {
+                const img = document.createElement("img");
+                img.src = capturedImage;
+                img.onload = () => {
+                    const isSquare = img.naturalWidth === img.naturalHeight;
+                    setIsNonSquare(!isSquare);
+                };
+
+                img.onerror = (error) => {
+                    console.error("Error loading image:", error);
+                };
+            } catch (error) {
+                console.error("Error checking image aspect ratio:", error);
+            }
+        };
+        if (capturedImage && !croppedImage) {
+            checkImageAspectRatio();
+        } else {
+            setIsNonSquare(false);
+        }
+    }, [capturedImage, croppedImage]);
 
     return (
         <>
@@ -23,15 +50,27 @@ export default function UploadField() {
             <PageWrapper>
                 <Card className="p-0 md:p-4 border-0 bg-transparent md:border flex flex-col gap-4 shadow-none">
                     <CardContent
-                        className={`h-80 p-0 flex items-center justify-center overflow-hidden bg-card border rounded-lg`}
+                        className={`relative h-80 p-0 flex items-center justify-center overflow-hidden bg-card border rounded-lg`}
                     >
+                        {isNonSquare && (
+                            <div className="absolute bottom-0 left-0 right-0 bg-secondary/80 text-white p-1 text-center text-xs z-20">
+                                Warning: Image is not square (1:1 aspect ratio)
+                            </div>
+                        )}
+
                         <UploadImage
+                            isNonSquare={isNonSquare}
+                            croppedImage={croppedImage}
+                            setCroppedImage={setCroppedImage}
                             isScanning={isScanning}
                             setIsScanning={setIsScanning}
                         />
                     </CardContent>
                     <CardFooter className="flex-1 p-0">
                         <ImageUploadFooter
+                            isNonSquare={isNonSquare}
+                            croppedImage={croppedImage}
+                            setCroppedImage={setCroppedImage}
                             isScanning={isScanning}
                             setIsScanning={setIsScanning}
                         />
@@ -43,16 +82,24 @@ export default function UploadField() {
 }
 
 interface UploadImageProps {
+    isNonSquare: boolean;
+    croppedImage: string | null;
+    setCroppedImage: (value: string | null) => void;
     isScanning: boolean;
     setIsScanning: (isScanning: boolean) => void;
 }
 const UploadImage: React.FC<UploadImageProps> = ({
+    isNonSquare,
+    croppedImage,
+    setCroppedImage,
     isScanning,
     setIsScanning,
 }) => {
     const { capturedImage, setCapturedImage } = useCameraContext();
     const [dragActive, setDragActive] = useState(false);
     const [isCropping, setIsCropping] = useState(false);
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
 
     const handleDrag = (e: React.DragEvent) => {
         e.preventDefault();
@@ -86,15 +133,20 @@ const UploadImage: React.FC<UploadImageProps> = ({
     };
     const handleRemoveImage = () => {
         setCapturedImage("");
+        setCroppedImage(null);
         setIsScanning(false);
+        setZoom(1);
+        setCrop({ x: 0, y: 0 });
     };
+
     const handleCropComplete = useCallback(
         (croppedImage: string) => {
-            setCapturedImage(croppedImage);
+            setCroppedImage(croppedImage);
             setIsCropping(false);
         },
-        [setCapturedImage]
+        [setCroppedImage]
     );
+
     return (
         <>
             {capturedImage ? (
@@ -103,14 +155,22 @@ const UploadImage: React.FC<UploadImageProps> = ({
                         <>
                             <ImageCropper
                                 image={capturedImage!}
+                                // croppedImage={croppedImage}
+                                // setCroppedImage={setCroppedImage}
+                                crop={crop}
+                                setCrop={setCrop}
+                                zoom={zoom}
+                                setZoom={setZoom}
                                 onCropComplete={handleCropComplete}
-                                onCropCancel={() => setIsCropping(false)}
+                                onCropCancel={() => {
+                                    setIsCropping(false), setCroppedImage(null);
+                                }}
                             />
                         </>
                     ) : (
                         <>
                             <Image
-                                src={capturedImage}
+                                src={croppedImage || capturedImage}
                                 alt="Uploaded"
                                 className="h-80 w-auto object-cover"
                                 width={256}
