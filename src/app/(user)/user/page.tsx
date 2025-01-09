@@ -152,7 +152,7 @@ export default function Dashboard() {
                 <Metrics />
                 <div className="flex flex-col md:flex-row gap-4">
                     <RecentAnalysis />
-                    <RecentActivities />
+                    {/* <RecentActivities /> */}
                 </div>
             </PageWrapper>
         </>

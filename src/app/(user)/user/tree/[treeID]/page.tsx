@@ -165,6 +165,9 @@ export default function Page({
                     </Button>
                 </Link>
             </div>
+            {loading ? (
+                <div className="min-h-screen w-full flex items-center justify-center">loading</div>
+            ):(
             <PageWrapper className="gap-4">
                 <div className="flex justify-between flex-col items-start gap-4">
                     <div className="flex w-full flex-row items-start justify-start gap-4">
@@ -387,7 +390,7 @@ export default function Page({
                         </div>
                     )}
                 </CardContent>
-            </PageWrapper>
+            </PageWrapper>)}
             <TreeModal
                 openDialog={openDialog}
                 setOpenDialog={setOpenDialog}

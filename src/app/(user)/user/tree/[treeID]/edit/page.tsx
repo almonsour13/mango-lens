@@ -104,6 +104,7 @@ export default function Page({
             const data = await response.json();
             const tree = data.tree;
 
+            if(response.ok){
             form.reset({
                 treeCode: tree.treeCode,
                 description: tree.description || "",
@@ -111,10 +112,8 @@ export default function Page({
                 treeImage: data.tree.treeImage,
             });
             setEditTree(tree);
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch image details");
-            }
+            setLoading(false)
+        }
         } catch (error) {
             console.error("Error fetching trees:", error);
         } finally {
@@ -220,6 +219,9 @@ export default function Page({
                     <h1 className="text-md">Edit Tree: {editTree?.treeCode}</h1>
                 </div>
             </div>
+            {loading ? (
+                <div className="min-h-screen w-full flex items-center justify-center">loading</div>
+            ):(
             <PageWrapper>
                 <CardHeader className="px-0">
                     <CardTitle>Edit Tree Details</CardTitle>
@@ -434,6 +436,7 @@ export default function Page({
                     </Form>
                 </CardContent>
             </PageWrapper>
+            )}
             <ConfirmationModal
                 open={confirmationModalOpen}
                 onClose={() => setConfirmationModalOpen(false)}

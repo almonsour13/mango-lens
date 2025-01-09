@@ -71,7 +71,10 @@ export default function TreePage() {
                 throw new Error("Failed to fetch image details");
             }
             const data = await response.json();
-            setTrees(data.treeWidthImage);
+            if(response.ok){
+                setTrees(data.treeWidthImage);
+                setLoading(false);
+            }
         } catch (error) {
             console.error("Error fetching trees:", error);
         } finally {
@@ -323,7 +326,7 @@ export default function TreePage() {
                     </div>
                 </div>
                 <CardContent className="p-0">
-                    {loading ? (
+                    {loading && trees.length === 0 ? (
                         <TreeSkeletonCard />
                     ) : trees && trees.length > 0 ? (
                         viewMode === "grid" ? (

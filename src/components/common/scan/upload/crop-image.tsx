@@ -61,7 +61,7 @@ export default function ImageCropper({
             image.src = url;
         });
 
-    const getCroppedImg = async (
+    const getCroppedImg = useCallback(async (
         imageSrc: string,
         pixelCrop: CropArea
     ): Promise<string> => {
@@ -89,7 +89,7 @@ export default function ImageCropper({
         );
 
         return canvas.toDataURL("image/jpeg");
-    };
+    },[]);
 
     const handleCrop = useCallback(async () => {
         try {
@@ -103,7 +103,7 @@ export default function ImageCropper({
         } catch (error) {
             console.error("Error cropping image:", error);
         }
-    }, [image, croppedAreaPixels, onCropComplete]);
+    }, [image, croppedAreaPixels, onCropComplete, getCroppedImg]);
 
     const handleReset = useCallback(() => {
         setCrop(DEFAULT_CROP);

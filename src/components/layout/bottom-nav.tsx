@@ -16,7 +16,7 @@ export default function BottomNav() {
     const pathname = usePathname();
     
     const { userInfo } = useAuth();
-    const items = sidebarItems(userInfo?.role);
+    const items = sidebarItems(userInfo?.role || 1);
 
     const visibleItems = [items[0], items[2], items[1], items[3]];
     const moreItems = items.slice(4);

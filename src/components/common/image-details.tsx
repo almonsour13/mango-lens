@@ -119,7 +119,6 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
             prevDetails ? { ...prevDetails, treeCode: newTreeCode } : null
         );
     };
-    if (!imageDetails) return <div>Loading...</div>;
 
     return (
         <>
@@ -130,7 +129,7 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
                     </button>
                     <Separator orientation="vertical" />
                     <h1 className="text-md">
-                        {formatDate(imageDetails.analyzedAt, "MMM dd, yyyy")}
+                        {imageDetails && formatDate(imageDetails?.analyzedAt, "MMM dd, yyyy")}
                     </h1>
                 </div>
                 <div className="flex gap-2 ">
@@ -154,6 +153,9 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
                     </Button>
                 </div>
             </div>
+            {!imageDetails ? (
+                <div className="flex-1 h-full w-full flex items-center justify-center">loading</div>
+            ):(<>
             <PageWrapper>
                 <CardHeader className="p-0">
                     <CardTitle>Image Details</CardTitle>
@@ -183,10 +185,10 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
                 setOpenDialog={setIsMigrateModalOpen}
                 onMigrate={handleMigrateImage}
                 initialData={{
-                    imageID: imageDetails?.imageID,
-                    currentTreeCode: imageDetails?.treeCode,
+                    imageID: imageDetails?.imageID || 0,
+                    currentTreeCode: imageDetails?.treeCode || '',
                 }}
-            />
+            /></>)}
         </>
     );
 }
