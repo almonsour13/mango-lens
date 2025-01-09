@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Crop, X, ImagePlus } from "lucide-react";
@@ -67,6 +67,7 @@ export default function UploadField() {
                         />
                     </CardContent>
                     <CardFooter className="flex-1 p-0">
+        <Suspense fallback={<div>sad</div>}>
                         <ImageUploadFooter
                             isNonSquare={isNonSquare}
                             croppedImage={croppedImage}
@@ -74,6 +75,7 @@ export default function UploadField() {
                             isScanning={isScanning}
                             setIsScanning={setIsScanning}
                         />
+        </Suspense>
                     </CardFooter>
                 </Card>
             </PageWrapper>
