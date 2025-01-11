@@ -29,6 +29,7 @@ export async function middleware(request: NextRequest) {
         request.nextUrl.pathname.startsWith('/api/auth/:path*') ||
         request.nextUrl.pathname === '/manifest.json' || 
         request.nextUrl.pathname === '/sw.js' || 
+        request.nextUrl.pathname.startsWith('/images/') ||
         request.nextUrl.pathname.startsWith('/sw/') ||
         request.nextUrl.pathname.startsWith('/workbox-') ||
         (!token && request.nextUrl.pathname === '/signin') ||
@@ -81,6 +82,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
     matcher: [
         '/',
-        '/((?!api|_next/static|_next/image|favicon.ico).*)'
+        // '/((?!api|_next/static|_next/image|favicon.ico).*)'
     ],
 };
