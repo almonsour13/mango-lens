@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db/db";
-import { Tree } from "@/type/types";
+import { Tree } from "@/types/types";
 import { convertBlobToBase64 } from "@/utils/image-utils";
 
 export async function GET(

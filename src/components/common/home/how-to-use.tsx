@@ -1,6 +1,7 @@
 import SectionWrapper from "@/components/wrapper/section-wrapper"
 import { Card, CardContent, } from "@/components/ui/card"
 import { Camera, Upload, Search,BarChart } from 'lucide-react'
+import { MetaData } from "@/constant/metaData";
 
 export default function HowToUse() {
   const steps = [
@@ -31,7 +32,7 @@ export default function HowToUse() {
     <SectionWrapper id="How-to-use" className="py-16">
       <div className="w-full flex flex-col justify-center">
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold h-full mb-8 text-left">
-            <span className="bg-gradient-to-r from-green-900 via-green-500 to-yellow-400 text-transparent bg-clip-text">How to Use MangoPro</span>
+            <span className="bg-gradient-to-r from-green-900 via-green-500 to-yellow-400 text-transparent bg-clip-text">How to Use {MetaData.title}</span>
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
           {steps.map((step, index) => (

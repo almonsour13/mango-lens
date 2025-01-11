@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db/db';
-import { Tree, Disease } from '@/type/types';
+import { Tree, Disease } from '@/types/types';
 
 export async function POST(req: Request) {
     try {

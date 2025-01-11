@@ -54,7 +54,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
-import { Tree } from "@/type/types";
+import { Tree } from "@/types/types";
 import React from "react";
 
 const formSchema = z.object({

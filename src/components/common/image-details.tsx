@@ -9,14 +9,16 @@ import {
     Trees,
     Calendar,
     ArrowLeft,
+    ArrowDownToLine,
+    MessageCircle,
+    MoreVertical,
+    RefreshCcw,
 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
@@ -28,7 +30,10 @@ import {
     Analysis,
     diseaseIdentified,
     Disease,
-} from "@/type/types";
+    ImageAnalysisDetails,
+    boundingBox,
+} from "@/types/types";
+
 import ResultImage from "./result-image";
 import { Separator } from "../ui/separator";
 import { useAuth } from "@/context/auth-context";
@@ -36,26 +41,19 @@ import ConfirmationModal from "../modal/confirmation-modal";
 import { DiseaseColor } from "@/constant/color";
 import MigrateImageModal from "../modal/migrate-image-modal";
 import Link from "next/link";
-
-type boundingBox = {
-    diseaseName: string;
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-};
-
-type ImageDetailsProps = Tree &
-    Img & { analyzedImage: string | null } & {
-        boundingBoxes: boundingBox[];
-    } & Analysis & { diseases: (diseaseIdentified & Disease)[] };
+import { generateImage } from "@/actions/generate-image-analysis-report";
+import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
+import {
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 export default function ImageDetails({ imageID }: { imageID: number }) {
     const { toast } = useToast();
     const router = useRouter();
-    const [imageDetails, setImageDetails] = useState<ImageDetailsProps | null>(
-        null
-    );
+    const [imageDetails, setImageDetails] =
+        useState<ImageAnalysisDetails | null>(null);
     const { userInfo } = useAuth();
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [isMigrateModalOpen, setIsMigrateModalOpen] = useState(false);
@@ -81,7 +79,7 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
             }
         };
         fetchImageDetails();
-    },[imageID, userInfo?.userID, toast]);
+    }, [imageID, userInfo?.userID, toast]);
 
     const handleConfirmDelete = async () => {
         try {
@@ -107,13 +105,20 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
         }
         setConfirmationModalOpen(false);
     };
-    const handleDelete = () => {
+
+    const handleDownload = async () => {
+        if (!imageDetails) return;
+        await generateImage(imageDetails);
+    };
+
+    const handleMoveToTrash = () => {
         setConfirmationModalOpen(true);
     };
 
     const handleBack = () => {
         router.back();
     };
+
     const handleMigrateImage = async (newTreeCode: string) => {
         setImageDetails((prevDetails) =>
             prevDetails ? { ...prevDetails, treeCode: newTreeCode } : null
@@ -129,19 +134,61 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
                     </button>
                     <Separator orientation="vertical" />
                     <h1 className="text-md">
-                        {imageDetails && formatDate(imageDetails?.analyzedAt, "MMM dd, yyyy")}
+                        {imageDetails &&
+                            formatDate(
+                                imageDetails?.analyzedAt,
+                                "MMM dd, yyyy"
+                            )}
                     </h1>
                 </div>
-                <div className="flex gap-2 ">
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="w-10 md:hidden">
+                            <MoreVertical size={16} />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem>
+                            <MessageCircle className="mr-2 h-4 w-4" />
+                            Feedback
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDownload()}>
+                            <ArrowDownToLine className="mr-2 h-4 w-4" />
+                            Export
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => setIsMigrateModalOpen(true)}
+                        >
+                            <Edit className="mr-2 h-4 w-4" />
+                            Migrate
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => handleMoveToTrash()}
+                        >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Move to trash
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                <div className="hidden md:flex gap-2">
                     <Button
                         variant="outline"
-                        onClick={() => handleDelete()}
-                        className="w-10 md:w-auto text-destructive"
+                        onClick={() => handleDownload()}
+                        className="w-10 md:w-auto"
                     >
-                        <Trash2 className="h-5 w-5" />
+                        <MessageCircle className="h-5 w-5" />
                         <span className="hidden md:block text-sm">
-                            Move to Trash
+                            Feedback
                         </span>
+                    </Button>
+                    <Button
+                        variant="outline"
+                        onClick={() => handleDownload()}
+                        className="w-10 md:w-auto"
+                    >
+                        <ArrowDownToLine className="h-5 w-5" />
+                        <span className="hidden md:block text-sm">Export</span>
                     </Button>
                     <Button
                         variant="outline"
@@ -151,52 +198,203 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
                         <Edit className=" h-5 w-5" />
                         <span className="hidden md:block text-sm">Migrate</span>
                     </Button>
+                    <Button
+                        variant="outline"
+                        onClick={() => handleMoveToTrash()}
+                        className="w-10 md:w-auto text-destructive"
+                    >
+                        <Trash2 className="h-5 w-5" />
+                        <span className="hidden md:block text-sm">
+                            Move to Trash
+                        </span>
+                    </Button>
                 </div>
             </div>
             {!imageDetails ? (
-                <div className="flex-1 h-full w-full flex items-center justify-center">loading</div>
-            ):(<>
-            <PageWrapper>
-                <CardHeader className="p-0">
-                    <CardTitle>Image Details</CardTitle>
-                    <CardDescription>
-                        View and manage your tree collection
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-col  gap-4 px-0 mt-4">
-                    <ResultImage
-                        originalImage={imageDetails.imageData}
-                        analyzedImage={imageDetails.analyzedImage || ""}
-                        boundingBoxes={imageDetails.boundingBoxes}
+                <div className="flex-1 h-full w-full flex items-center justify-center">
+                    loading
+                </div>
+            ) : (
+                <>
+                    <PageWrapper>
+                        <CardHeader className="p-0">
+                            <CardTitle>Image Details</CardTitle>
+                            {/* <CardDescription>
+                                View and manage your tree collection
+                            </CardDescription> */}
+                        </CardHeader>
+                        <CardContent className="flex flex-col  gap-4 px-0 mt-2">
+                            <ResultImage
+                                originalImage={imageDetails.imageData}
+                                analyzedImage={imageDetails.analyzedImage || ""}
+                                boundingBoxes={imageDetails.boundingBoxes}
+                            />
+                            <AnalysisCarousel
+                                originalImage={imageDetails.imageData}
+                                analyzedImage={imageDetails.analyzedImage || ""}
+                                boundingBoxes={imageDetails.boundingBoxes}
+                            />
+
+                            <ResultDetails imageDetails={imageDetails} />
+                        </CardContent>
+                    </PageWrapper>
+                    <ConfirmationModal
+                        open={confirmationModalOpen}
+                        onClose={() => setConfirmationModalOpen(false)}
+                        onConfirm={handleConfirmDelete}
+                        title={`Are you sure you want to delete this image? `}
+                        content={`This action cannot be undone.`}
                     />
-                    <ResultDetails imageDetails={imageDetails} />
-                </CardContent>
-                <CardFooter className="flex justify-end gap-2 px-0"></CardFooter>
-            </PageWrapper>
-            <ConfirmationModal
-                open={confirmationModalOpen}
-                onClose={() => setConfirmationModalOpen(false)}
-                onConfirm={handleConfirmDelete}
-                title={`Are you sure you want to delete this image? `}
-                content={`This action cannot be undone.`}
-            />
-            <MigrateImageModal
-                openDialog={isMigrateModalOpen}
-                setOpenDialog={setIsMigrateModalOpen}
-                onMigrate={handleMigrateImage}
-                initialData={{
-                    imageID: imageDetails?.imageID || 0,
-                    currentTreeCode: imageDetails?.treeCode || '',
-                }}
-            /></>)}
+                    <MigrateImageModal
+                        openDialog={isMigrateModalOpen}
+                        setOpenDialog={setIsMigrateModalOpen}
+                        onMigrate={handleMigrateImage}
+                        initialData={{
+                            imageID: imageDetails?.imageID || 0,
+                            currentTreeCode: imageDetails?.treeCode || "",
+                        }}
+                    />
+                </>
+            )}
         </>
     );
 }
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+    type CarouselApi,
+} from "@/components/ui/carousel";
+import Image from "next/image";
+interface AnalysisCarouselProps {
+    originalImage: string;
+    analyzedImage: string;
+    boundingBoxes?: boundingBox[];
+}
 
-function ResultDetails({ imageDetails }: { imageDetails: ImageDetailsProps }) {
+export function AnalysisCarousel({
+    originalImage,
+    analyzedImage,
+    boundingBoxes = [],
+}: AnalysisCarouselProps) {
+    const [api, setApi] = React.useState<CarouselApi>();
+    const [current, setCurrent] = React.useState(0);
+    const [showBoundingBoxes, setShowBoundingBoxes] = useState(false);
+
+    React.useEffect(() => {
+        if (!api) {
+            return;
+        }
+
+        api.on("select", () => {
+            setCurrent(api.selectedScrollSnap());
+        });
+    }, [api]);
+
+    const images = [
+        { src: originalImage, alt: "Original Image", label: "Original Image" },
+        { src: analyzedImage, alt: "Analyzed Image", label: "Analyzed Image" },
+    ];
+
+    const renderBoundingBoxes = () => (
+        <svg
+            className="absolute top-0 left-0 w-full h-full"
+            viewBox="0 0 244 244"
+            style={{ pointerEvents: "none" }}
+        >
+            {boundingBoxes?.map((box, index) => {
+                const color = "stroke-red-500";
+                return (
+                    <g key={index}>
+                        <rect
+                            x={box.x}
+                            y={box.y}
+                            width={box.w}
+                            height={box.h}
+                            fill="none"
+                            className={`${color}`}
+                            strokeWidth="2"
+                            style={{ pointerEvents: "all", cursor: "pointer" }}
+                        />
+                    </g>
+                );
+            })}
+        </svg>
+    );
+    return (
+        <Carousel setApi={setApi} className="w-full md:w-80 mx-auto md:hidden">
+            <CarouselContent>
+                {images.map((image, index) => (
+                    <CarouselItem key={index}>
+                        <Card className="border-none">
+                            <CardContent className="p-0">
+                                <div className="relative aspect-square rounded-lg overflow-hidden">
+                                    <Image
+                                        src={
+                                            index == 0?image.src:
+                                            index == 1 && !showBoundingBoxes?
+                                                image.src:images[0].src
+                                        }
+                                        alt={image.alt}
+                                        fill
+                                        className="object-cover"
+                                    />
+                                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-black bg-opacity-50 text-white text-center">
+                                        <p className="text-sm font-semibold">
+                                            {image.label}
+                                        </p>
+                                    </div>
+                                    {showBoundingBoxes && index == 1 && renderBoundingBoxes()}
+                                    {image.label === "Analyzed Image" &&
+                                        analyzedImage &&
+                                        boundingBoxes?.length && (
+                                            <div className="absolute top-4 right-4">
+                                                <Button
+                                                    variant="default"
+                                                    onClick={() =>
+                                                        setShowBoundingBoxes(
+                                                            !showBoundingBoxes
+                                                        )
+                                                    }
+                                                    className=" bg-black bg-opacity-50 w-8 h-8"
+                                                >
+                                                    <RefreshCcw className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </CarouselItem>
+                ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+            <div className="py-2 text-center space-x-1">
+                {images.map((_, index) => (
+                    <Button
+                        key={index}
+                        variant={current === index ? "default" : "outline"}
+                        size="sm"
+                        className="w-2 h-2 rounded-full p-0 m-0"
+                        onClick={() => api?.scrollTo(index)}
+                    />
+                ))}
+            </div>
+        </Carousel>
+    );
+}
+
+function ResultDetails({
+    imageDetails,
+}: {
+    imageDetails: ImageAnalysisDetails;
+}) {
     return (
         <div className="flex-1 flex flex-col gap-4 border p-4 rounded-lg">
-            <div className="flex flex-col md:flex-row justify-between gap-2">
+            <div className="flex flex-col md:flex-row gap-2">
                 <div className="flex space-x-2">
                     <Trees className="h-5 w-5 text-muted-foreground" />
                     <span className="text-base font-medium">Tree Code:</span>
@@ -217,11 +415,11 @@ function ResultDetails({ imageDetails }: { imageDetails: ImageDetailsProps }) {
                     </span>
                 </div>
             </div>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
                 <div className="flex items-center space-x-2">
                     {/* <CircleAlert className="h-5 w-5 text-muted-foreground" /> */}
                     <span className="text-base font-medium">
-                        Disease Detected
+                        Assign Classification:
                     </span>
                 </div>
                 <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">

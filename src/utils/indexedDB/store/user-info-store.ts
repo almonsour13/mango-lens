@@ -1,4 +1,4 @@
-import { User } from "@/type/types";
+import { User } from "@/types/types";
 import { convertBlobToBase64 } from "../../image-utils";
 import { dbOperation } from "../indexedDB";
 import { DB_CONFIG } from "../indexedDBconfig";

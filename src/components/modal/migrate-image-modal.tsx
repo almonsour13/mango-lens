@@ -23,7 +23,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import ModalDrawer from "./modal-drawer-wrapper";
 import { useAuth } from "@/context/auth-context";
-import { Tree } from "@/type/types";
+import { Tree } from "@/types/types";
 import { toast } from "@/hooks/use-toast";
 import { DialogDescription } from "@radix-ui/react-dialog";
 

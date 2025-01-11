@@ -37,7 +37,7 @@ import {
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useAuth } from "@/context/auth-context";
 import { toast } from "@/hooks/use-toast";
-import { User } from "@/type/types";
+import { User } from "@/types/types";
 import { format } from "date-fns";
 import {
     ArrowDownUp,

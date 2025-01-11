@@ -1,4 +1,4 @@
-import { ScanResult } from "@/type/types";
+import { ScanResult } from "@/types/types";
 import { dbOperation, openDB } from "../indexedDB";
 import { DB_CONFIG } from "../indexedDBconfig";
 

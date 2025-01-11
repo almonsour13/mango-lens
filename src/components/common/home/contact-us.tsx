@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from '@/hooks/use-toast'
 import SectionWrapper from '@/components/wrapper/section-wrapper'
+import { MetaData } from '@/constant/metaData'
 
 const contactFormSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -65,7 +66,7 @@ export default function ContactSection() {
           <div>
             <h3 className="text-xl font-semibold mb-4">Get in Touch</h3>
             <p className="text-muted-foreground mb-6">
-              Have questions about MangoCare? {"We're"} here to help! Fill out the form, and {"we'll"} get back to you as soon as possible.
+              Have questions about {MetaData.title}? {"We're"} here to help! Fill out the form, and {"we'll"} get back to you as soon as possible.
             </p>
             <div className="space-y-4">
               <div className="flex items-center">

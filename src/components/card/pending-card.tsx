@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Check } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { PendingActionMenu } from "../action menu/pending-action-menu";
-import { PendingItem } from "@/type/types";
+import { PendingItem } from "@/types/types";
 
 
 export default function PendingCard({

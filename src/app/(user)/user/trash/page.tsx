@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import PageWrapper from "@/components/wrapper/page-wrapper";
-import { Image as img, Tree, Trash as TRS } from "@/type/types";
+import { Image as img, Tree, Trash as TRS } from "@/types/types";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,

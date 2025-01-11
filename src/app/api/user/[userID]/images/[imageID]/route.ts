@@ -6,7 +6,7 @@ import {
     diseaseIdentified,
     Image,
     Tree,
-} from "@/type/types";
+} from "@/types/types";
 import { convertBlobToBase64 } from "@/utils/image-utils";
 
 export async function GET(

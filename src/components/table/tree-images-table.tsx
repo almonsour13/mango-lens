@@ -10,7 +10,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import type { Image as ImageType } from "@/type/types";
+import type { Image as ImageType } from "@/types/types";
 import { formatDate } from "date-fns";
 
 type TreeImage = ImageType & {

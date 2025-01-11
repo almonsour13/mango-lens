@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { TrashActionMenu } from "@/components/action menu/trash-action-menu"
 import { cn } from "@/lib/utils"
 
-import { Image as ImageType, Tree, Trash as TRS } from "@/type/types"
+import { Image as ImageType, Tree, Trash as TRS } from "@/types/types"
 
 type TrashItem = TRS & { item: Tree | ImageType }
 

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db/db";
 import { convertImageToBlob } from "@/utils/image-utils";
-import { boundingBox } from "@/type/types";
+import { boundingBox } from "@/types/types";
 
 export async function POST(req: Request) {
     try {

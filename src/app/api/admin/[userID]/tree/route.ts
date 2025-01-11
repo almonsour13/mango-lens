@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db/db";
-import { Tree, User } from "@/type/types";
+import { Tree, User } from "@/types/types";
 
 export async function GET(
     req: Request,

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db/db'; // Adjust the import based on your db helper
-import { Analysis, Image, Tree } from '@/type/types';
+import { Analysis, Image, Tree } from '@/types/types';
 
 export async function GET() {
     try {

@@ -10,6 +10,7 @@ import { sidebarItems } from "@/constant/sidebar-item";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
 import { useAuth } from "@/context/auth-context";
+import { MetaData } from "@/constant/metaData";
 //import { useAuth } from '@/context/auth-context';
 //import { Skeleton } from '../ui/skeleton';
 
@@ -55,14 +56,14 @@ const Sidebar = ({ isOpen, toggleSidebar }: Sidebar) => {
                 <div className="h-14 flex items-center justify-between px-4 border-b">
                     <div className="flex gap-1 items-center justify-center px-3">
                         <Image
-                            src="/assets/icon/icon.png"
+                            src={MetaData.icons.icon}
                             alt="icon"
                             width={48}
                             height={48}
                             className="w-6 h-6"
                         />
                         <h2 className="text-2xl font-bold text-foreground">
-                            Mango<span className="text-yellow-600">Care</span>
+                            {MetaData.title}
                         </h2>
                     </div>
                     <button

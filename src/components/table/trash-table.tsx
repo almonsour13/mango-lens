@@ -1,4 +1,4 @@
-import { Image as img, Tree, Trash as TRS } from "@/type/types";
+import { Image as img, Tree, Trash as TRS } from "@/types/types";
 import {
     Table,
     TableBody,

@@ -1,4 +1,4 @@
-import { PendingItem } from "@/type/types";
+import { PendingItem } from "@/types/types";
 import { convertBlobToBase64, convertImageToBlob } from "../../image-utils";
 import { dbOperation, openDB } from "../indexedDB";
 import { DB_CONFIG } from "../indexedDBconfig";

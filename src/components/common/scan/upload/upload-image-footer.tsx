@@ -17,7 +17,7 @@ import { useAuth } from "@/context/auth-context";
 
 import { useSearchParams } from "next/navigation";
 
-import { Tree } from "@/type/types";
+import { Tree } from "@/types/types";
 import AddPendingModal from "@/components/modal/add-pending-modal";
 import useOnlineStatus from "@/hooks/use-online";
 import { toast } from "@/hooks/use-toast";

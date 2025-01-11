@@ -1,5 +1,5 @@
 'use client';
-import { ScanResult} from '@/type/types';
+import { ScanResult} from '@/types/types';
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 interface ScanResultContextType {

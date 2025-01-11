@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { toast } from "@/hooks/use-toast"
 import ModalDrawer from "./modal-drawer-wrapper"
 import ConfirmationModal from "./confirmation-modal"
-import { Disease } from "@/type/types"
+import { Disease } from "@/types/types"
 
 const formSchema = z.object({
     diseaseName: z.string().min(2, { message: "Disease name must be at least 2 characters." }),

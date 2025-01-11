@@ -3,7 +3,7 @@ import { Card } from "../ui/card";
 import Image from "next/image";
 import { Leaf, TreeDeciduous } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { Tree } from "@/type/types";
+import { Tree } from "@/types/types";
 import { TreeActionMenu } from "../action menu/tree-action-menu";
 
 interface TreeWithImage extends Tree {

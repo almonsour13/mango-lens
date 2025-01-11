@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { MetaData } from "@/constant/metaData";
 
 interface SidebarProps {
     sections: string[];
@@ -39,7 +40,7 @@ const HomeSidebar: React.FC<SidebarProps> = ({
                     <div className="flex items-center justify-start gap-1">
                         <Link href="/" aria-label="Home">
                             <Image
-                                src="/assets/icon/icon.png"
+                                src={MetaData.icons.icon}
                                 alt=""
                                 width={48}
                                 height={48}
@@ -48,7 +49,7 @@ const HomeSidebar: React.FC<SidebarProps> = ({
                         </Link>
                         <div className="h-full flex items-end">
                             <h2 className="text-xl line-clamp-2 font-bold bg-gradient-to-r from-green-900 via-green-500 to-yellow-400 text-transparent bg-clip-text">
-                                MangoCare
+                                {MetaData.title}
                             </h2>
                         </div>
                     </div>

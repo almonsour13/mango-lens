@@ -45,7 +45,7 @@ import { usePathname } from "next/navigation";
 import DiseaseModal from "@/components/modal/disease-modal";
 import ConfirmationModal from "@/components/modal/confirmation-modal";
 import Link from "next/link";
-import { Disease } from "@/type/types";
+import { Disease } from "@/types/types";
 import { useAuth } from "@/context/auth-context";
 import { format } from "date-fns";
 

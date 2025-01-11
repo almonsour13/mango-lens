@@ -5,6 +5,7 @@ import "./globals.css";
 import { AuthProvider } from "@/context/auth-context";
 // import { CameraProvider } from "@/context/user-camera-context";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { MetaData } from "@/constant/metaData";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -20,12 +21,12 @@ const geistMono = localFont({
 
 
 export const metadata: Metadata = {
-  title: "Mango Lens",
+  title: MetaData.title,
   description: "A web-based application for managing mango tree health and diagnosing diseases using leaf image analysis.",
   category: "website",
   generator: "Next.js", // framework used
   icons: {
-    icon: "/assets/icon/icon.png",
+    icon: MetaData.icons.icon,
   },
   manifest:'/manifest.json'
 };

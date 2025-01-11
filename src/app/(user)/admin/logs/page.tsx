@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/hooks/use-toast";
 import ConfirmationModal from "@/components/modal/confirmation-modal";
-import { Log } from "@/type/types";
+import { Log } from "@/types/types";
 
 
 export default function AdminActivityLogs() {

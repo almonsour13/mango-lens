@@ -12,7 +12,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import PageWrapper from "@/components/wrapper/page-wrapper";
-import { Image as img, Tree } from "@/type/types";
+import { Image as img, Tree } from "@/types/types";
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";

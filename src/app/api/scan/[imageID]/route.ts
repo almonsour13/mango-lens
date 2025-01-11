@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { query } from '@/lib/db/db'
-import { Analysis, Disease, diseaseIdentified, Image, Tree } from '@/type/types';
+import { Analysis, Disease, diseaseIdentified, Image, Tree } from '@/types/types';
 
 
 export async function GET(request: Request,{ params }: { params: Promise<{ imageID: string }> }) {

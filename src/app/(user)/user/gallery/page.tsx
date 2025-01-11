@@ -2,7 +2,7 @@
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/auth-context";
 import { useCallback, useEffect, useState } from "react";
-import { Image as img } from "@/type/types";
+import { Image as img } from "@/types/types";
 import { TreeImageCard } from "@/components/card/tree-image-card";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { ArrowDownUp, Grid, List, Plus, SlidersHorizontal } from 'lucide-react';

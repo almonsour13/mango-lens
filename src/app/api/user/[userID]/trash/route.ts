@@ -1,5 +1,5 @@
 import { query } from "@/lib/db/db";
-import { Tree, Image, Trash } from "@/type/types";
+import { Tree, Image, Trash } from "@/types/types";
 import { convertBlobToBase64 } from "@/utils/image-utils";
 import { NextResponse } from "next/server";
 

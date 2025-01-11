@@ -1,3 +1,8 @@
+export type ImageAnalysisDetails = Tree &
+    Image & { analyzedImage: string } & {
+        boundingBoxes: boundingBox[];
+    } & Analysis & { diseases: (diseaseIdentified & Disease)[] };
+
 export interface ScanResult {
     tree: Tree;
     originalImage: string;
@@ -98,5 +103,5 @@ export interface User {
     role: number;
     status: number;
     createdAt: Date;
-    profileImage:string | null;
+    profileImage: string | null;
 }

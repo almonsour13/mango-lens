@@ -24,7 +24,7 @@ import {
     PlusIcon,
     SlidersHorizontal,
 } from "lucide-react";
-import { Tree } from "@/type/types";
+import { Tree } from "@/types/types";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth-context";

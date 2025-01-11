@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db/db";
-import { User } from "@/type/types";
+import { User } from "@/types/types";
 import { compare, hash } from "bcrypt";
 import { convertImageToBlob } from "@/utils/image-utils";
 

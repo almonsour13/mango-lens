@@ -37,7 +37,7 @@ import {
     FileText,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Image as Img } from "@/type/types";
+import { Image as Img } from "@/types/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { sign } from "jsonwebtoken";
 import { compare } from "bcrypt";
 import { query } from "@/lib/db/db";
-import { User } from "@/type/types";
+import { User } from "@/types/types";
 
 export async function POST(req: Request) {
     try {

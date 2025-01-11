@@ -1,4 +1,4 @@
-import { Tree } from "@/type/types";
+import { Tree } from "@/types/types";
 import {
     Table,
     TableBody,

@@ -10,6 +10,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { useAuth } from "@/context/auth-context"
 import { motion, AnimatePresence } from 'framer-motion'
 import React from "react"
+import { MetaData } from "@/constant/metaData"
 
 interface HomeHeaderProps {
   sections: string[]
@@ -67,7 +68,7 @@ export default function HomeHeader({sections, activeLink, setActiveLink, toggleS
               className="w-6 h-6 mr-1"
             />
             <h2 className="text-xl line-clamp-2 hidden md:block font-bold bg-gradient-to-r from-green-900 via-green-500 to-yellow-400 text-transparent bg-clip-text">
-              MangoCare
+              {MetaData.title}
             </h2>
           </Link>
         </div>

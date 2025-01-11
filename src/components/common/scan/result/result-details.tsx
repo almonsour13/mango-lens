@@ -2,7 +2,7 @@ import React from "react";
 import { Trees } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { DiseaseColor } from "@/constant/color";
-import { Tree, diseaseIdentified, Disease } from "@/type/types";
+import { Tree, diseaseIdentified, Disease } from "@/types/types";
 
 
 type boundingBox = {diseaseName:string, x:number, y:number, w:number, h:number}

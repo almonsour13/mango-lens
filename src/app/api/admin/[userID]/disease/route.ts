@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db/db";
-import { Disease } from "@/type/types";
+import { Disease } from "@/types/types";
 
 export async function GET(
     req: Request,

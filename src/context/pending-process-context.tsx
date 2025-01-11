@@ -2,7 +2,7 @@
 
 import {
     PendingItem
-} from "@/type/types";
+} from "@/types/types";
 import React, {
     createContext,
     useState,
