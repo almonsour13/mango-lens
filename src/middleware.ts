@@ -27,67 +27,67 @@ const clearAuthCookies = (response: NextResponse) => {
 // };
 
 export async function middleware(request: NextRequest) {
-    if (!process.env.JWT_SECRET_KEY) {
-        return NextResponse.json({ error: 'JWT secret key is not set.' }, { status: 500 });
-    }
+    // if (!process.env.JWT_SECRET_KEY) {
+    //     return NextResponse.json({ error: 'JWT secret key is not set.' }, { status: 500 });
+    // }
 
-    const token = request.cookies.get('token')?.value;
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
+    // const token = request.cookies.get('token')?.value;
+    // const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
 
-    // Allow unauthenticated access to signup and signin pages
-    if (request.nextUrl.pathname === '/' ||
-        request.nextUrl.pathname.startsWith('/api/auth/:path*') ||
-        (!token && request.nextUrl.pathname === '/signin') ||
-        (!token && request.nextUrl.pathname === '/signup') ||
-        (!token && request.nextUrl.pathname === '/verify') ||
-        (!token && request.nextUrl.pathname === '/forgot-password') ||
-        (!token && request.nextUrl.pathname === '/update-password')){
-        return NextResponse.next();
-    }
+    // // Allow unauthenticated access to signup and signin pages
+    // if (request.nextUrl.pathname === '/' ||
+    //     request.nextUrl.pathname.startsWith('/api/auth/:path*') ||
+    //     (!token && request.nextUrl.pathname === '/signin') ||
+    //     (!token && request.nextUrl.pathname === '/signup') ||
+    //     (!token && request.nextUrl.pathname === '/verify') ||
+    //     (!token && request.nextUrl.pathname === '/forgot-password') ||
+    //     (!token && request.nextUrl.pathname === '/update-password')){
+    //     return NextResponse.next();
+    // }
 
-    try {
-        if (token) {
-            const { payload } = await jwtVerify(token, secret);
+    // try {
+    //     if (token) {
+    //         const { payload } = await jwtVerify(token, secret);
             
-            // Check if token is expired
-            // if (isTokenExpired(payload)) {
-            //     const response = NextResponse.redirect(new URL('/signin?error=token_expired', request.url));
-            //     return clearAuthCookies(response);
-            // }
+    //         // Check if token is expired
+    //         // if (isTokenExpired(payload)) {
+    //         //     const response = NextResponse.redirect(new URL('/signin?error=token_expired', request.url));
+    //         //     return clearAuthCookies(response);
+    //         // }
 
-            const { role } = payload;
+    //         const { role } = payload;
 
-            if (request.nextUrl.pathname === '/signin' || request.nextUrl.pathname === '/signup') {
-                return role === ADMIN_ROLE
-                    ? NextResponse.redirect(new URL('/admin', request.url))
-                    : NextResponse.redirect(new URL('/user', request.url));
-            }
+    //         if (request.nextUrl.pathname === '/signin' || request.nextUrl.pathname === '/signup') {
+    //             return role === ADMIN_ROLE
+    //                 ? NextResponse.redirect(new URL('/admin', request.url))
+    //                 : NextResponse.redirect(new URL('/user', request.url));
+    //         }
 
-            if (request.nextUrl.pathname.startsWith('/admin') && role !== ADMIN_ROLE) {
-                return NextResponse.redirect(new URL('/unauthorized', request.url));
-            }
-            if (request.nextUrl.pathname.startsWith('/user') && (role !== USER_ROLE && role !== ADMIN_ROLE)) {
-                return NextResponse.redirect(new URL('/unauthorized', request.url));
-            }
+    //         if (request.nextUrl.pathname.startsWith('/admin') && role !== ADMIN_ROLE) {
+    //             return NextResponse.redirect(new URL('/unauthorized', request.url));
+    //         }
+    //         if (request.nextUrl.pathname.startsWith('/user') && (role !== USER_ROLE && role !== ADMIN_ROLE)) {
+    //             return NextResponse.redirect(new URL('/unauthorized', request.url));
+    //         }
 
-            if (request.nextUrl.pathname.startsWith('/api/admin') && role !== ADMIN_ROLE) {
-                return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
-            }
-            if (request.nextUrl.pathname.startsWith('/api/user') && (role !== USER_ROLE && role !== ADMIN_ROLE)) {
-                return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
-            }
-        } else {
-            if (request.nextUrl.pathname.startsWith('/api/')) {
-                return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-            }
-            return NextResponse.redirect(new URL('/signin', request.url));
-        }
-    } catch (error) {
-        console.error('Token verification failed:', error);
-        // Clear cookies on verification failure and redirect to signin
-        const response = NextResponse.redirect(new URL('/signin?error='+error, request.url));
-        return clearAuthCookies(response);
-    }
+    //         if (request.nextUrl.pathname.startsWith('/api/admin') && role !== ADMIN_ROLE) {
+    //             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    //         }
+    //         if (request.nextUrl.pathname.startsWith('/api/user') && (role !== USER_ROLE && role !== ADMIN_ROLE)) {
+    //             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    //         }
+    //     } else {
+    //         if (request.nextUrl.pathname.startsWith('/api/')) {
+    //             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    //         }
+    //         return NextResponse.redirect(new URL('/signin', request.url));
+    //     }
+    // } catch (error) {
+    //     console.error('Token verification failed:', error);
+    //     // Clear cookies on verification failure and redirect to signin
+    //     const response = NextResponse.redirect(new URL('/signin?error='+error, request.url));
+    //     return clearAuthCookies(response);
+    // }
 
     return NextResponse.next();
 }
