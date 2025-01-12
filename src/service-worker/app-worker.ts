@@ -19,7 +19,10 @@ const serwist = new Serwist({
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,
-  runtimeCaching: defaultCache,
+  disableDevLogs:true,
+  runtimeCaching:[
+    
+  ],
   fallbacks: {
     entries: [
       {
