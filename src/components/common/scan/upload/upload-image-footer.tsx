@@ -26,7 +26,7 @@ import { useCameraContext } from "@/context/camera-context";
 import { storePendingProcessItem } from "@/utils/indexedDB/store/pending-store";
 
 interface FooterProps {
-    isNonSquare:boolean
+    isNonSquare: boolean;
     croppedImage: string | null;
     setCroppedImage: (value: string | null) => void;
     isScanning: boolean;
@@ -40,6 +40,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
     setIsScanning,
 }) => {
     const { capturedImage } = useCameraContext();
+    const [loading, setLoading] = useState(true);
     const [treeCode, setTreeCode] = useState("");
     const { setScanResult } = useScanResult();
     const { setIsCameraOpen } = useCameraContext();
@@ -56,6 +57,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
 
     useEffect(() => {
         const fetchTrees = async () => {
+            setLoading(true);
             try {
                 const response = await fetch(
                     `/api/user/${userInfo?.userID}/tree?type=2`
@@ -65,8 +67,10 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
                 }
                 const data = await response.json();
                 setTrees(data.treeWidthImage);
+                setLoading(false);
             } catch (error) {
                 console.error("Error fetching trees:", error);
+                setLoading(false);
             }
         };
 
@@ -148,10 +152,18 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
             <div className="flex-1 flex items-center w-full gap-2">
                 <Select value={treeCode} onValueChange={setTreeCode}>
                     <SelectTrigger>
-                        <SelectValue placeholder="Select tree code" />
+                        {loading ? (
+                            <p className="p-1 px-2">Loading...</p>
+                        ) : trees.length? (
+                            <SelectValue placeholder="Select tree code" />
+                        ) : (
+                            <p className="p-1 px-2">No trees available</p>
+                        )}
                     </SelectTrigger>
                     <SelectContent>
-                        {trees.length ? (
+                        {loading ? (
+                            <p className="p-1 px-2">loading</p>
+                        ) : trees.length ? (
                             <>
                                 {trees.map((tree) => (
                                     <SelectItem
@@ -182,7 +194,9 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
                         : " bg-primary"
                 }`}
                 onClick={handleScan}
-                disabled={!capturedImage || !treeCode || isScanning || isNonSquare}
+                disabled={
+                    !capturedImage || !treeCode || isScanning || isNonSquare
+                }
             >
                 {" "}
                 {isScanning ? (

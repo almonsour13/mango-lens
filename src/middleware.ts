@@ -34,12 +34,18 @@ export async function middleware(request: NextRequest) {
     if (
         pathname === "/" ||
         pathname.startsWith("/api/auth/:path*") ||
+        // Serwist and PWA related paths
         pathname.startsWith("/sw.js") ||
+        pathname.startsWith("/serwist-sw.js") ||
+        pathname.startsWith("/workbox-") ||
+        pathname.startsWith("/serwist-") ||
         pathname.startsWith("/manifest.json") ||
         pathname.startsWith("/icon-") ||
         pathname.startsWith("/_next") ||
         pathname.startsWith("/images/") ||
-        pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|webp|mp4|webm|wav|mp3|pdf|doc|docx|txt)$/) ||
+        // Static file extensions
+        pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|webp|mp4|webm|wav|mp3|pdf|doc|docx|txt|js|json)$/) ||
+        // Auth-related paths for non-authenticated users
         (!token && pathname === "/signin") ||
         (!token && pathname === "/signup") ||
         (!token && pathname === "/verify") ||
