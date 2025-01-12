@@ -8,7 +8,11 @@ import React, {
     useEffect,
 } from "react";
 import { jwtDecode } from "jwt-decode";
-import { deleteUserCredentials, getUserCredentials } from "@/utils/indexedDB/store/user-info-store";
+import {
+    deleteUserCredentials,
+    getUserCredentials,
+} from "@/utils/indexedDB/store/user-info-store";
+import { usePathname, useRouter } from "next/navigation";
 
 interface UserInfo {
     userID: number;
@@ -20,7 +24,7 @@ interface UserDredentials {
     fName: string;
     lName: string;
     email: string;
-    role:number;
+    role: number;
     profileImage?: string;
 }
 
@@ -48,6 +52,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [isLoaded, setIsLoaded] = useState(false);
     const [userInfo, setUserInfo] = useState<UserDredentials | null>(null);
     const [decodedToken, setDecodedToken] = useState<UserInfo | null>(null);
+    const pathname = usePathname();
+    const router = useRouter();
+    
+    // useEffect(() => {
+    //     const role = userInfo?.role
+    //     if(pathname === "/"){
+    //         return
+    //     }
+    //     if(isLoaded){
+    //     if (!token) {
+    //         router.push("/signin");
+    //       } else if (userInfo) {
+    //         const { role } = userInfo;
+    //         if (role === 1 && !pathname.startsWith("/admin")) {
+    //           router.push("/admin");
+    //         } else if (role === 2 && !pathname.startsWith("/user")) {
+    //           router.push("/user");
+    //         } else if ((role !== 1 && pathname.startsWith("/admin")) || (role !== 2 && pathname.startsWith("/user"))) {
+    //           router.push("/unauthorized");
+    //         }
+    //       }
+    //     }
+    // }, [pathname, userInfo, token, isLoaded]);
 
     useEffect(() => {
         const cookieToken = getTokenFromCookie();
@@ -60,20 +87,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (token) {
                 try {
                     const decoded = jwtDecode<UserInfo>(token);
-                    setDecodedToken(decoded)
-                    const userCredentials = await getUserCredentials(decoded.userID);
-                    
-                    if (userCredentials?.userID && userCredentials.fName && userCredentials.lName && userCredentials.email) {
+                    setDecodedToken(decoded);
+                    const userCredentials = await getUserCredentials(
+                        decoded.userID
+                    );
+
+                    if (
+                        userCredentials?.userID &&
+                        userCredentials.fName &&
+                        userCredentials.lName &&
+                        userCredentials.email
+                    ) {
                         setUserInfo({
                             userID: userCredentials.userID,
                             fName: userCredentials.fName,
                             lName: userCredentials.lName,
                             email: userCredentials.email,
                             role: decoded.role,
-                            profileImage: userCredentials.profileImage || ''
+                            profileImage: userCredentials.profileImage || "",
                         });
                     }
-                    
                 } catch (error) {
                     console.error("Error decoding token:", error);
                 }
@@ -84,9 +117,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const resetToken = async () => {
         if (token && decodedToken?.userID) {
-            await deleteUserCredentials(decodedToken.userID)
+            await deleteUserCredentials(decodedToken.userID);
             setToken(null);
-            setDecodedToken(null)
+            setDecodedToken(null);
         }
     };
 
