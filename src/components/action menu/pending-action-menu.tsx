@@ -46,12 +46,12 @@ export function PendingActionMenu({ pendingID, status, handleAction }: ActionMen
                         Save Analysis
                     </DropdownMenuItem>
                 )}
-                {status == 1 && (
+                {(status == 1 || status == 3) && (
                     <DropdownMenuItem
                         onClick={() => handleAction(1, pendingID)}
                     >
                         <RefreshCcw className="mr-2 h-4 w-4" />
-                        Process
+                        {status == 1?"Process":"Reprocess"}
                     </DropdownMenuItem>
                 )}
                 <DropdownMenuItem

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import PendingCard from "@/components/card/pending-card";
-import {CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useEffect, useState } from "react";
 import {
@@ -32,11 +32,20 @@ import { usePendingProcess } from "@/context/pending-process-context";
 export default function Pending() {
     // const [selected, setSelected] = useState<number[]>([]);
     // const [isSelected, setIsSelected] = useState(false);
-    const {pendings, processPendingID, selected, setSelected, isSelected, setIsSelected, handleAction, handleSelectedAction} = usePendingProcess();
+    const {
+        pendings,
+        processPendingID,
+        selected,
+        setSelected,
+        isSelected,
+        setIsSelected,
+        handleAction,
+        handleSelectedAction,
+    } = usePendingProcess();
     // const [pendings, setPendings] = useState<PendingProcess[]>([]);
 
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Oldest");
-    const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0)
+    const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
 
     const [viewMode, setViewMode] = useState<"table" | "grid">("grid");
 
@@ -45,24 +54,31 @@ export default function Pending() {
             setSelected([]);
         }
     }, [isSelected, setSelected]);
-    
-    useEffect(()=>{
-        
+
+    useEffect(() => {
         const pendingItems = pendings.filter(
             (item) => item.status == 1 || item.status !== 2
         );
-        if(!pendingItems){
+        if (!pendingItems) {
             setIsSelected(false);
         }
-    },[pendings, setIsSelected])
+    }, [pendings, setIsSelected]);
 
     const filteredPendings = pendings
-        .filter((pending) => filterStatus == 0 || pending.status == filterStatus)
+        .filter(
+            (pending) => filterStatus == 0 || pending.status == filterStatus
+        )
         .sort((a, b) => {
             if (sortBy === "Newest") {
-                return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
+                return (
+                    new Date(b.addedAt).getTime() -
+                    new Date(a.addedAt).getTime()
+                );
             } else {
-                return new Date(a.addedAt).getTime() - new Date(b.addedAt).getTime();
+                return (
+                    new Date(a.addedAt).getTime() -
+                    new Date(b.addedAt).getTime()
+                );
             }
         });
 
@@ -82,8 +98,8 @@ export default function Pending() {
                         {!isSelected
                             ? "Pending"
                             : selected.length === 0
-                              ? "Select"
-                              : `${selected.length} selected`}
+                            ? "Select"
+                            : `${selected.length} selected`}
                     </h1>
                 </div>
                 <div className="flex items-center gap-2">
@@ -95,7 +111,13 @@ export default function Pending() {
                                 onClick={() => handleSelectedAction(1)}
                             >
                                 <RefreshCw className="h-5 w-5" />
-                                <span className="hidden md:block">Process</span>
+                                <span className="hidden md:block">
+                                    {pendings.filter(
+                                        (pending) => pending.status === 3
+                                    ).length > 0
+                                        ? "Reprocess"
+                                        : "Process"}
+                                </span>
                             </Button>
                             <Button
                                 variant="outline"
@@ -120,15 +142,18 @@ export default function Pending() {
                         <>
                             <Button
                                 variant="outline"
-                                className={`w-10 md:w-auto border ${selected.length === pendings.length ? "bg-opacity-100" : "bg-opacity-50"}`}
+                                className={`w-10 md:w-auto border ${
+                                    selected.length === pendings.length
+                                        ? "bg-opacity-100"
+                                        : "bg-opacity-50"
+                                }`}
                                 onClick={() =>
                                     setSelected(
                                         selected.length === pendings.length
                                             ? []
                                             : pendings.map(
-                                                  (pending) =>
-                                                      pending.pendingID,
-                                              ),
+                                                  (pending) => pending.pendingID
+                                              )
                                     )
                                 }
                             >
@@ -188,37 +213,48 @@ export default function Pending() {
                                 </DropdownMenuCheckboxItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className={`w-10 md:w-auto gap-1 ${filterStatus != 0 && "border-primary"}`}>
-                                        <SlidersHorizontal className="h-3.5 w-3.5" />
-                                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                            {filterStatus == 1? "Pending":filterStatus == 2?"Processed":"Filter"}
-                                        </span>
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="start">
-                                    <DropdownMenuLabel>Filter by: </DropdownMenuLabel>
-                                    <DropdownMenuCheckboxItem 
-                                        checked={filterStatus == 0}
-                                        onCheckedChange={() => setFilterStatus(0)}
-                                    >
-                                        All
-                                    </DropdownMenuCheckboxItem>
-                                    <DropdownMenuCheckboxItem 
-                                        checked={filterStatus == 1}
-                                        onCheckedChange={() => setFilterStatus(1)}
-                                    >
-                                        Pending
-                                    </DropdownMenuCheckboxItem>
-                                    <DropdownMenuCheckboxItem 
-                                        checked={filterStatus == 2}
-                                        onCheckedChange={() => setFilterStatus(2)}
-                                    >
-                                        Processed
-                                    </DropdownMenuCheckboxItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    className={`w-10 md:w-auto gap-1 ${
+                                        filterStatus != 0 && "border-primary"
+                                    }`}
+                                >
+                                    <SlidersHorizontal className="h-3.5 w-3.5" />
+                                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                                        {filterStatus == 1
+                                            ? "Pending"
+                                            : filterStatus == 2
+                                            ? "Processed"
+                                            : "Filter"}
+                                    </span>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start">
+                                <DropdownMenuLabel>
+                                    Filter by:{" "}
+                                </DropdownMenuLabel>
+                                <DropdownMenuCheckboxItem
+                                    checked={filterStatus == 0}
+                                    onCheckedChange={() => setFilterStatus(0)}
+                                >
+                                    All
+                                </DropdownMenuCheckboxItem>
+                                <DropdownMenuCheckboxItem
+                                    checked={filterStatus == 1}
+                                    onCheckedChange={() => setFilterStatus(1)}
+                                >
+                                    Pending
+                                </DropdownMenuCheckboxItem>
+                                <DropdownMenuCheckboxItem
+                                    checked={filterStatus == 2}
+                                    onCheckedChange={() => setFilterStatus(2)}
+                                >
+                                    Processed
+                                </DropdownMenuCheckboxItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                     <div className="">
                         <Toggle
