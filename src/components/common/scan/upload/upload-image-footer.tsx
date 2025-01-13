@@ -88,118 +88,193 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
     const handleSetNewTreeCode = async (treeCode: string) => {
         setTreeCode(treeCode);
     };
+    
+    // const handleScan = async () => {
+    //     const data = {
+    //         userID: userInfo?.userID,
+    //         treeCode: treeCode,
+    //         imageUrl: croppedImage || capturedImage,
+    //     };
 
+    //     if (!isOnline) {
+    //         setOpenPendingModal(true);
+    //         await storePendingProcessItem(data);
+    //         return;
+    //     }
+
+    //     setIsScanning(true);
+
+    //     // Configure timeout and retry settings
+    //     const TIMEOUT_DURATION = 30000; // 30 seconds
+    //     const MAX_RETRIES = 3;
+    //     let currentTry = 0;
+
+    //     const attemptScan = async () => {
+    //         const controller = new AbortController();
+    //         const timeoutId = setTimeout(
+    //             () => controller.abort(),
+    //             TIMEOUT_DURATION
+    //         );
+
+    //         try {
+    //             const response = await fetch("/api/scan/newScan", {
+    //                 method: "POST",
+    //                 headers: { "Content-Type": "application/json" },
+    //                 body: JSON.stringify(data),
+    //                 signal: controller.signal,
+    //             });
+
+    //             clearTimeout(timeoutId);
+
+    //             if (!response.ok) {
+    //                 const { error } = await response.json();
+    //                 throw new Error(error || "Something went wrong.");
+    //             }
+
+    //             const { result } = await response.json();
+    //             if (result) {
+    //                 setScanResult(result);
+    //             }
+    //             return true; // Successful scan
+    //         } catch (error) {
+    //             clearTimeout(timeoutId);
+
+    //             if (error instanceof Error) {
+    //                 if (error.name === "AbortError") {
+    //                     throw new Error("Request timed out");
+    //                 }
+    //                 throw error;
+    //             }
+    //             throw new Error(
+    //                 error instanceof Object
+    //                     ? JSON.stringify(error)
+    //                     : "An unknown error occurred"
+    //             );
+    //         }
+    //     };
+
+    //     while (currentTry < MAX_RETRIES) {
+    //         try {
+    //             await attemptScan();
+    //             setIsScanning(false);
+    //             return;
+    //         } catch (error) {
+    //             currentTry++;
+    //             const errorMessage =
+    //                 error instanceof Error
+    //                     ? error.message
+    //                     : "An unknown error occurred";
+    //             console.error(
+    //                 `Scan attempt ${currentTry} failed:`,
+    //                 errorMessage
+    //             );
+
+    //             if (currentTry === MAX_RETRIES) {
+    //                 toast({
+    //                     title: "Scanning Failed",
+    //                     description:
+    //                         errorMessage === "Request timed out"
+    //                             ? "The scan is taking longer than expected. Please try again."
+    //                             : "Error during scanning. Please try again later.",
+    //                     variant: "destructive",
+    //                 });
+
+    //                 // If all retries failed, store it as pending
+    //                 if (errorMessage === "Request timed out") {
+    //                     setOpenPendingModal(true);
+    //                     await storePendingProcessItem(data);
+    //                 }
+    //             } else {
+    //                 // Show retry toast
+    //                 toast({
+    //                     description: `Retrying scan attempt ${
+    //                         currentTry + 1
+    //                     }/${MAX_RETRIES}...`,
+    //                 });
+    //                 // Wait briefly before retrying
+    //                 await new Promise((resolve) => setTimeout(resolve, 2000));
+    //             }
+    //         }
+    //     }
+
+    //     setIsScanning(false);
+    // };
+
+    interface ScanData {
+        userID: string | undefined;
+        treeCode: string;
+        imageUrl: string;
+    }
+    
+    interface ScanResult {
+        result: any; // Replace 'any' with your actual result type
+    }
+    
+    interface APIError {
+        error: string;
+    }
+    
     const handleScan = async () => {
         const data = {
             userID: userInfo?.userID,
             treeCode: treeCode,
             imageUrl: croppedImage || capturedImage,
         };
-
+    
         if (!isOnline) {
             setOpenPendingModal(true);
             await storePendingProcessItem(data);
             return;
         }
-
+    
         setIsScanning(true);
-
-        // Configure timeout and retry settings
-        const TIMEOUT_DURATION = 30000; // 30 seconds
-        const MAX_RETRIES = 3;
-        let currentTry = 0;
-
-        const attemptScan = async () => {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(
-                () => controller.abort(),
-                TIMEOUT_DURATION
-            );
-
-            try {
-                const response = await fetch("/api/scan/newScan", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(data),
-                    signal: controller.signal,
-                });
-
-                clearTimeout(timeoutId);
-
-                if (!response.ok) {
-                    const { error } = await response.json();
-                    throw new Error(error || "Something went wrong.");
-                }
-
-                const { result } = await response.json();
-                if (result) {
-                    setScanResult(result);
-                }
-                return true; // Successful scan
-            } catch (error) {
-                clearTimeout(timeoutId);
-
-                if (error instanceof Error) {
-                    if (error.name === "AbortError") {
-                        throw new Error("Request timed out");
-                    }
-                    throw error;
-                }
-                throw new Error(
-                    error instanceof Object
-                        ? JSON.stringify(error)
-                        : "An unknown error occurred"
-                );
+        
+        const TIMEOUT_DURATION = 60000; // 60 seconds
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_DURATION);
+    
+        try {
+            const response = await fetch("/api/scan/newScan", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                signal: controller.signal
+            });
+    
+            clearTimeout(timeoutId);
+    
+            if (!response.ok) {
+                const errorData = await response.json() as APIError;
+                throw new Error(errorData.error || "Something went wrong.");
             }
-        };
-
-        while (currentTry < MAX_RETRIES) {
-            try {
-                await attemptScan();
-                setIsScanning(false);
-                return;
-            } catch (error) {
-                currentTry++;
-                const errorMessage =
-                    error instanceof Error
-                        ? error.message
-                        : "An unknown error occurred";
-                console.error(
-                    `Scan attempt ${currentTry} failed:`,
-                    errorMessage
-                );
-
-                if (currentTry === MAX_RETRIES) {
-                    toast({
-                        title: "Scanning Failed",
-                        description:
-                            errorMessage === "Request timed out"
-                                ? "The scan is taking longer than expected. Please try again."
-                                : "Error during scanning. Please try again later.",
-                        variant: "destructive",
-                    });
-
-                    // If all retries failed, store it as pending
-                    if (errorMessage === "Request timed out") {
-                        setOpenPendingModal(true);
-                        await storePendingProcessItem(data);
-                    }
-                } else {
-                    // Show retry toast
-                    toast({
-                        description: `Retrying scan attempt ${
-                            currentTry + 1
-                        }/${MAX_RETRIES}...`,
-                    });
-                    // Wait briefly before retrying
-                    await new Promise((resolve) => setTimeout(resolve, 2000));
-                }
+    
+            const { result } = await response.json() as ScanResult;
+            if (result) {
+                setScanResult(result);
             }
+        } catch (error) {
+            clearTimeout(timeoutId);
+            
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+            console.error("Scan failed:", errorMessage);
+    
+            toast({
+                title: "Scanning Failed",
+                description: error instanceof Error && error.name === 'AbortError'
+                    ? "The scan timed out after 60 seconds. Please try again."
+                    : "Error during scanning. Please try again later.",
+                variant: "destructive"
+            });
+    
+            // If it's a timeout, store as pending
+            if (error instanceof Error && error.name === 'AbortError') {
+                setOpenPendingModal(true);
+                await storePendingProcessItem(data);
+            }
+        } finally {
+            setIsScanning(false);
         }
-
-        setIsScanning(false);
     };
-
     const confirmPending = async () => {
         setOpenPendingModal(false);
         toast({
