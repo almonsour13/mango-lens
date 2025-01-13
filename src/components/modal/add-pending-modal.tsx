@@ -33,7 +33,7 @@ export default function AddPendingModal({
             Would you like to add this process to the pending queue? It will be completed automatically when the connection is restored.
           </p>
         </div>
-        <DialogFooter className="">
+        <DialogFooter className="gap-2">
             <Button
                 type="button"
                 variant="outline"

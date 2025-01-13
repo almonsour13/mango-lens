@@ -23,7 +23,7 @@ export default function ConfirmationModal({
                     <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>
                 <div className="text-sm text-center">{content}</div>
-                <DialogFooter className="gap-2 md:gap-4 flex-row justify-end">
+                <DialogFooter className="gap-2 flex-row justify-end">
                     <Button
                         type="button"
                         variant="outline"
