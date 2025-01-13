@@ -123,7 +123,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
     //     }
     // };
 
-    const TIMEOUT_MS = 30000; // 30 seconds
+    const TIMEOUT_MS = 60000; // 30 seconds
 
     const handleScan = async () => {
         const data = {
@@ -183,7 +183,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
                 variant: "destructive",
             });
 
-            setOpenPendingModal(true);
+            // setOpenPendingModal(true);
         } finally {
             setIsScanning(false);
         }
