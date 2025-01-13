@@ -96,6 +96,9 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
             imageUrl: croppedImage || capturedImage,
         };
 
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+
         if (isOnline) {
             setIsScanning(true);
             try {
@@ -103,7 +106,9 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data),
+                    signal: controller.signal,
                 });
+                clearTimeout(timeout);
 
                 if (!response.ok) {
                     const { error } = await response.json();
@@ -112,7 +117,9 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
 
                 const { result } = await response.json();
 
-                setScanResult(result);
+                if (result) {
+                    setScanResult(result);
+                }
                 setIsScanning(false);
             } catch (error) {
                 console.error("Error during scanning:", error);
@@ -154,7 +161,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
                     <SelectTrigger>
                         {loading ? (
                             <p className="p-1 px-2">Loading...</p>
-                        ) : trees.length? (
+                        ) : trees.length ? (
                             <SelectValue placeholder="Select tree code" />
                         ) : (
                             <p className="p-1 px-2">No trees available</p>

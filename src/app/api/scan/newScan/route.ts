@@ -76,7 +76,7 @@ export async function POST(req: Request) {
 async function analyzeImage(imageUrl: string) {
     try {
         //ML backend end point
-        const response = await fetch('https://pcjkn8p3-5000.asse.devtunnels.ms/predict', {
+        const response = await fetch('http://0.0.0.0:5000/predict', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
