@@ -96,7 +96,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
             imageUrl: croppedImage || capturedImage,
         };
 
-        if (false) {
+        if (isOnline) {
             setIsScanning(true);
             try {
                 const response = await fetch("/api/scan/newScan", {

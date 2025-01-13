@@ -341,7 +341,7 @@ export function AnalysisCarousel({
                                         fill
                                         className="object-cover"
                                     />
-                                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-black bg-opacity-50 text-white text-center">
+                                    <div className="absolute z-10 bottom-0 left-0 right-0 p-4 bg-black bg-opacity-50 text-white text-center">
                                         <p className="text-sm font-semibold">
                                             {image.label}
                                         </p>
