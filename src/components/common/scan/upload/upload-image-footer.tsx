@@ -97,7 +97,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
         };
 
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 15000);
+        const timeout = setTimeout(() => controller.abort(), 60000);
 
         if (isOnline) {
             setIsScanning(true);
