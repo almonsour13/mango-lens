@@ -32,7 +32,7 @@ export default function ResultDetails({
                 </div>
                 {!scanResult.predictions ? (
                     <div className="w-full flex items-center justify-center py-2">
-                        <LoaderCircle className="h-4 w-4 animate-spin" />
+                        <LoaderCircle className="h-6 w-6 animate-spin" />
                     </div>
                 ) : (
                     <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">

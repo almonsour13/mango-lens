@@ -141,14 +141,8 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
         
         try {
 
-            // const response = await fetch("/api/scan/newScan", {
-            //     method: "POST",
-            //     headers: { "Content-Type": "application/json" },
-            //     body: JSON.stringify(data),
-            //     signal: controller.signal,
-            // });
             const response = await fetch(
-                "http://localhost:5000/predict", 
+                "https://pcjkn8p3-5000.asse.devtunnels.ms/predict", 
                 {
                     method: "POST",
                     headers: {
