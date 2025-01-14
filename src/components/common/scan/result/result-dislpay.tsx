@@ -17,6 +17,8 @@ import ResultImage from "../../result-image";
 import ResultDetails from "./result-details";
 import ShowImage from "./show-image";
 import ConfirmationModal from "@/components/modal/confirmation-modal";
+import { Disease, DiseaseIdentified } from "@/types/types";
+import AnalysisCarousel from "../../result-image-carousel";
 
 export default function ResultDisplay() {
     const { scanResult, setScanResult } = useScanResult();
@@ -26,6 +28,37 @@ export default function ResultDisplay() {
     const [isSaving, setIsSaving] = useState(false);
 
     const { userInfo } = useAuth();
+
+    useEffect(() => {
+        const fetchDiseaseDetails = async () => {
+            if (!scanResult?.predictions) {
+                console.log("no predictions");
+                return;
+            }
+            const response = await fetch(`/api/scan/disease`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ predictions: scanResult?.predictions }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                const { diseases } = data;
+                if (scanResult) {
+                    const res = {
+                        ...scanResult,
+                        diseases: diseases as (DiseaseIdentified & Disease)[],
+                    };
+                    setScanResult(res);
+                }
+            }
+        };
+        if (scanResult?.predictions) {
+            fetchDiseaseDetails();
+        }
+    }, [scanResult?.predictions, setScanResult, scanResult]);
 
     useEffect(() => {
         if (scanResult) {
@@ -104,7 +137,7 @@ export default function ResultDisplay() {
                 aria-hidden="true"
             />
             <Card
-                className={`absolute bottom-0 left-0 right-0 z-40 rounded-lg rounded-b-none rounded-t border-0 max-h-[90vh] overflow-y-auto transition-all duration-300 ease-in-out ${
+                className={`absolute bottom-0 left-0 right-0 z-40 rounded-xl rounded-b-none rounded-t border-0 max-h-[90vh] overflow-y-auto transition-all duration-300 ease-in-out ${
                     isVisible
                         ? "translate-y-0 opacity-100"
                         : "translate-y-full opacity-0"
@@ -124,7 +157,12 @@ export default function ResultDisplay() {
                         analyzedImage={scanResult.analyzedImage}
                         boundingBoxes={scanResult.boundingBoxes}
                     />
-                    {/* <ResultDetails scanResult={scanResult} /> */}
+                    <AnalysisCarousel
+                        originalImage={scanResult.originalImage }
+                        analyzedImage={scanResult.analyzedImage || ""}
+                        boundingBoxes={scanResult.boundingBoxes}
+                    />
+                    <ResultDetails scanResult={scanResult} />
                 </CardContent>
                 <CardFooter className="flex justify-end gap-2 ">
                     <Button

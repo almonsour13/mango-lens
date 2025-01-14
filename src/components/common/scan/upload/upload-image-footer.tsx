@@ -17,7 +17,7 @@ import { useAuth } from "@/context/auth-context";
 
 import { useSearchParams } from "next/navigation";
 
-import { boundingBox, Tree } from "@/types/types";
+import { BoundingBox, Tree } from "@/types/types";
 import AddPendingModal from "@/components/modal/add-pending-modal";
 import useOnlineStatus from "@/hooks/use-online";
 import { toast } from "@/hooks/use-toast";
@@ -148,7 +148,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
             //     signal: controller.signal,
             // });
             const response = await fetch(
-                "https://pcjkn8p3-5000.asse.devtunnels.ms/predict", 
+                "http://localhost:5000/predict", 
                 {
                     method: "POST",
                     headers: {
@@ -165,14 +165,17 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
 
             const data = await response.json();
             if (data) {
-                console.log(data)
-                const {analyzedImage, originalImage, boundingBoxes} = data;
+                // console.log(data)
+                const {analyzedImage, originalImage, boundingBoxes, predictions} = data;
+                const tree = trees.filter(tree => tree.treeCode === treeCode)[0]
+                console.log(tree)
                 const res = {
-                    tree:null,
+                    tree:tree,
                     analyzedImage:analyzedImage as string,
                     originalImage:originalImage as string,
-                    boundingBoxes:boundingBoxes as boundingBox[],
-                    diseases: null
+                    boundingBoxes:boundingBoxes as BoundingBox[],
+                    diseases: null,
+                    predictions:predictions
                 }
                 setScanResult(res);   
             }

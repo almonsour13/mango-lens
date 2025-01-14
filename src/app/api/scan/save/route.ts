@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db/db";
 import { convertImageToBlob } from "@/utils/image-utils";
-import { boundingBox } from "@/types/types";
+import { BoundingBox } from "@/types/types";
 
 export async function POST(req: Request) {
     try {
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
 
                 if (diseaseIdentifiedID) {
                     const boundingbox = boundingBoxes.filter(
-                        (box: boundingBox) => box.diseaseName === diseaseName
+                        (box: BoundingBox) => box.diseaseName === diseaseName
                     )[0];
 
                     if (boundingbox) {

@@ -3,7 +3,7 @@ import { query } from "@/lib/db/db";
 import {
     Analysis,
     Disease,
-    diseaseIdentified,
+    DiseaseIdentified,
     Image,
     Tree,
 } from "@/types/types";
@@ -40,7 +40,7 @@ export async function GET(
             INNER JOIN disease d ON di.diseaseID = d.diseaseID
             WHERE di.analysisID = ?`,
             [imageAnalysis[0].analysisID]
-        )) as (diseaseIdentified & Disease)[];
+        )) as (DiseaseIdentified & Disease)[];
 
 
         const analyzedImage = (await query(

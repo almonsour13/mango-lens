@@ -1,14 +1,15 @@
 export type ImageAnalysisDetails = Tree &
     Image & { analyzedImage: string } & {
-        boundingBoxes: boundingBox[];
-    } & Analysis & { diseases: (diseaseIdentified & Disease)[] };
+        boundingBoxes: BoundingBox[];
+    } & Analysis & { diseases: (DiseaseIdentified & Disease)[] };
 
 export interface ScanResult {
     tree: Tree | null;
     originalImage: string;
     analyzedImage: string;
-    boundingBoxes: boundingBox[];
-    diseases: (diseaseIdentified & Disease)[] | null
+    boundingBoxes: BoundingBox[];
+    diseases: (DiseaseIdentified & Disease)[] | null
+    predictions?: {diseaseName:string; likelihood:number}[]
 }
 export interface PendingItem {
     pendingID: number;
@@ -23,12 +24,12 @@ export interface Trash {
     trashID: number;
     userID: number;
     itemID: number;
-    type: number; // 1 for Tree, 2 for Image
-    status: number; // 0 for deleted, 1 for active
+    type: number;
+    status: number;
     deletedAt: Date;
 }
 
-export interface boundingBox {
+export interface BoundingBox {
     diseaseName: string;
     x: number;
     y: number;
@@ -67,7 +68,7 @@ export interface Disease {
     status: number;
     addedAt: Date;
 }
-export interface diseaseIdentified {
+export interface DiseaseIdentified {
     diseaseIdentifiedID: number;
     analysisID: number;
     diseaseID: number;

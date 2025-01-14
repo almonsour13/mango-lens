@@ -1,19 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ResultImageCard from "./scan/result-image-card";
+import { BoundingBox } from "@/types/types";
 
-type boundingBox = {
-    diseaseName: string;
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-};
 interface ResultImageProps {
     originalImage: string;
     analyzedImage: string;
-    boundingBoxes?: boundingBox[];
+    boundingBoxes?: BoundingBox[];
 }
 export default function ResultImage({
     originalImage,
