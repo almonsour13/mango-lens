@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { X, Save, Trash2, LoaderCircle } from "lucide-react";
 import {
     Card,
@@ -29,36 +29,37 @@ export default function ResultDisplay() {
 
     const { userInfo } = useAuth();
 
-    useEffect(() => {
-        const fetchDiseaseDetails = async () => {
-            if (!scanResult?.predictions) {
-                console.log("no predictions");
-                return;
-            }
-            const response = await fetch(`/api/scan/disease`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ predictions: scanResult?.predictions }),
-            });
+    const fetchDiseaseDetails = useCallback(async () => {
+        if (!scanResult?.predictions) {
+            console.log("no predictions");
+            return;
+        }
+        const response = await fetch(`/api/scan/disease`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ predictions: scanResult?.predictions }),
+        });
 
-            const data = await response.json();
-            if (response.ok) {
-                const { diseases } = data;
-                if (scanResult) {
-                    const res = {
-                        ...scanResult,
-                        diseases: diseases as (DiseaseIdentified & Disease)[],
-                    };
-                    setScanResult(res);
-                }
+        const data = await response.json();
+        if (response.ok) {
+            const { diseases } = data;
+            if (scanResult) {
+                const res = {
+                    ...scanResult,
+                    diseases: diseases as (DiseaseIdentified & Disease)[],
+                };
+                setScanResult(res);
             }
-        };
+        }
+    }, [scanResult?.predictions, scanResult, setScanResult]);
+
+    useEffect(() => {
         if (scanResult?.predictions) {
             fetchDiseaseDetails();
         }
-    }, [scanResult?.predictions, setScanResult, scanResult]);
+    }, [scanResult?.predictions]);
 
     useEffect(() => {
         if (scanResult) {
@@ -123,7 +124,6 @@ export default function ResultDisplay() {
         setShowConfirmDialog(false);
         handleDiscard();
     };
-    const handleCancelClose = () => setShowConfirmDialog(false);
 
     return (
         <>
@@ -158,7 +158,7 @@ export default function ResultDisplay() {
                         boundingBoxes={scanResult.boundingBoxes}
                     />
                     <AnalysisCarousel
-                        originalImage={scanResult.originalImage }
+                        originalImage={scanResult.originalImage}
                         analyzedImage={scanResult.analyzedImage || ""}
                         boundingBoxes={scanResult.boundingBoxes}
                     />

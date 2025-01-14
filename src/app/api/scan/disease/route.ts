@@ -7,7 +7,6 @@ export async function POST(req: Request) {
     try {
         const body = await req.json();
         const { predictions } = body;
-        console.log(predictions);
 
         try {
             const diseases = await Promise.all(

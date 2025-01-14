@@ -168,7 +168,6 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
                 // console.log(data)
                 const {analyzedImage, originalImage, boundingBoxes, predictions} = data;
                 const tree = trees.filter(tree => tree.treeCode === treeCode)[0]
-                console.log(tree)
                 const res = {
                     tree:tree,
                     analyzedImage:analyzedImage as string,
