@@ -124,7 +124,7 @@ export default function ResultDisplay() {
                         analyzedImage={scanResult.analyzedImage}
                         boundingBoxes={scanResult.boundingBoxes}
                     />
-                    <ResultDetails scanResult={scanResult} />
+                    {/* <ResultDetails scanResult={scanResult} /> */}
                 </CardContent>
                 <CardFooter className="flex justify-end gap-2 ">
                     <Button

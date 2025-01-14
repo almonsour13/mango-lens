@@ -17,7 +17,7 @@ import { useAuth } from "@/context/auth-context";
 
 import { useSearchParams } from "next/navigation";
 
-import { Tree } from "@/types/types";
+import { boundingBox, Tree } from "@/types/types";
 import AddPendingModal from "@/components/modal/add-pending-modal";
 import useOnlineStatus from "@/hooks/use-online";
 import { toast } from "@/hooks/use-toast";
@@ -123,7 +123,6 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
     //     }
     // };
 
-    const TIMEOUT_MS = 60000; // 30 seconds
 
     const handleScan = async () => {
         const data = {
@@ -139,47 +138,49 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
         }
 
         setIsScanning(true);
-
+        
         try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-            const response = await fetch("/api/scan/newScan", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-                signal: controller.signal,
-            });
-
-            clearTimeout(timeoutId);
+            // const response = await fetch("/api/scan/newScan", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(data),
+            //     signal: controller.signal,
+            // });
+            const response = await fetch(
+                "https://pcjkn8p3-5000.asse.devtunnels.ms/predict", 
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json", // Specify content type
+                    },
+                    body: JSON.stringify({ image:croppedImage || capturedImage}) // Send the image as JSON
+                }
+            );
 
             if (!response.ok) {
                 const errorData = (await response.json()) as { error: string };
                 throw new Error(errorData.error || "Something went wrong.");
             }
 
-            const { result } = await response.json();
-            if (result) {
-                setScanResult(result);
+            const data = await response.json();
+            if (data) {
+                console.log(data)
+                const {analyzedImage, originalImage, boundingBoxes} = data;
+                const res = {
+                    tree:null,
+                    analyzedImage:analyzedImage as string,
+                    originalImage:originalImage as string,
+                    boundingBoxes:boundingBoxes as boundingBox[],
+                    diseases: null
+                }
+                setScanResult(res);   
             }
         } catch (error) {
-            const isTimeout =
-                error instanceof Error &&
-                (error.name === "AbortError" ||
-                    error.message.includes("timeout") ||
-                    error.message.includes("504"));
-
-            const errorMessage =
-                error instanceof Error
-                    ? error.message
-                    : "An unknown error occurred";
-            console.error("Scan failed:", errorMessage);
 
             toast({
                 title: "Scanning Failed",
-                description: isTimeout
-                    ? "Request timed out. Saving to pending items."
-                    : "Error during scanning. Saving to pending items.",
+                description: "Error during scanning.",
                 variant: "destructive",
             });
 

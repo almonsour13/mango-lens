@@ -4,11 +4,11 @@ export type ImageAnalysisDetails = Tree &
     } & Analysis & { diseases: (diseaseIdentified & Disease)[] };
 
 export interface ScanResult {
-    tree: Tree;
+    tree: Tree | null;
     originalImage: string;
     analyzedImage: string;
     boundingBoxes: boundingBox[];
-    diseases: (diseaseIdentified & Disease)[];
+    diseases: (diseaseIdentified & Disease)[] | null
 }
 export interface PendingItem {
     pendingID: number;
