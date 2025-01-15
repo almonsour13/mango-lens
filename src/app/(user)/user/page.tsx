@@ -1,8 +1,7 @@
 "use client";
-import PageWrapper from "@/components/wrapper/page-wrapper";
-import { useAuth } from "@/context/auth-context";
-import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -13,6 +12,8 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
     Table,
     TableBody,
@@ -21,27 +22,26 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import Image from "next/image";
-import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import PageWrapper from "@/components/wrapper/page-wrapper";
+import { useAuth } from "@/context/auth-context";
+import { usePendingProcess } from "@/context/pending-process-context";
+import { Image as Img } from "@/types/types";
 import {
     Activity,
-    Eye,
-    Bell,
     AlertCircle,
-    TreeDeciduous,
-    ImageIcon,
-    Radar,
-    Percent,
-    LucideIcon,
+    Bell,
+    Eye,
     FileText,
+    ImageIcon,
+    LucideIcon,
+    Percent,
+    Radar,
+    TreeDeciduous,
 } from "lucide-react";
-import { useState, useEffect } from "react";
-import { Image as Img } from "@/types/types";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { usePendingProcess } from "@/context/pending-process-context";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 // import { getPendingTotalCount } from "@/utils/indexedDB/store/pending-store";
 
 export default function Dashboard() {
