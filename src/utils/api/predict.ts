@@ -1,9 +1,6 @@
 import { BoundingBox, Disease, DiseaseIdentified, ScanResult } from "@/types/types";
 
-const API_BASE_URL =
-    process.env.NODE_ENV === "production"
-        ? process.env.ML_SERVICE_API
-        : "http://localhost:5000";
+const API_BASE_URL = "https://pcjkn8p3-5000.asse.devtunnels.ms"
 
 type PredictionResponse = ScanResult;
 
