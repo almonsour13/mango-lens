@@ -3,7 +3,7 @@ import mysql from "mysql2/promise";
 export async function createDBConnection() {
     let connection;
     
-    if (process.env.NODE_ENV !== "development") {
+    if (process.env.NODE_ENV === "development") {
         connection = await mysql.createConnection({
             host: process.env.MYSQL_HOST,
             user: process.env.MYSQL_USER,
