@@ -1,32 +1,21 @@
-"use client"
+"use client";
 
-import React, { useEffect, useState } from "react";
-import { LoaderCircle, Trees } from "lucide-react";
 import {
     Card,
     CardContent,
+    CardDescription,
     CardHeader,
     CardTitle,
-    CardDescription,
 } from "@/components/ui/card";
 import { DiseaseColor } from "@/constant/color";
-import { Tree, DiseaseIdentified, Disease, ScanResult } from "@/types/types";
+import { ScanResult } from "@/types/types";
+import { Trees } from "lucide-react";
 
 export default function ResultDetails({
     scanResult,
 }: {
     scanResult: ScanResult;
 }) {
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        if(scanResult.predictions === null){
-            setLoading(true)
-        }else{
-            setLoading(false)
-        }
-    },[scanResult.predictions])
-
     return (
         <div className="flex-1 flex flex-col gap-4 border p-4 rounded-lg bg-card">
             <div className="flex items-center space-x-2">
@@ -42,45 +31,35 @@ export default function ResultDetails({
                         Disease Detected:
                     </span>
                 </div>
-                {loading && scanResult.predictions == null ? (
-                    <div className="w-full flex items-center justify-center py-2">
-                        <LoaderCircle className="h-6 w-6 animate-spin" />
-                    </div>
-                ) : (
-                    <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
-                        {scanResult.diseases &&
-                            scanResult.diseases.length > 0 &&
-                            scanResult.diseases.map((disease) => {
-                                const color = DiseaseColor(disease.diseaseName);
-                                return (
-                                    <Card
-                                        key={disease.diseaseID}
-                                        className={`border ${
-                                            "border-" + color
-                                        }`}
-                                    >
-                                        <CardHeader className="pb-2">
-                                            <CardTitle className="text-lg font-semibold">
-                                                {disease.diseaseName}
-                                            </CardTitle>
-                                            <CardDescription>
-                                                Likelihood:{" "}
-                                                {disease.likelihoodScore.toFixed(
-                                                    2
-                                                )}
-                                                %
-                                            </CardDescription>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <p className="text-sm">
-                                                {disease.description}
-                                            </p>
-                                        </CardContent>
-                                    </Card>
-                                );
-                            })}
-                    </div>
-                )}
+                <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
+                    {scanResult.diseases &&
+                        scanResult.diseases.length > 0 &&
+                        scanResult.diseases.map((disease) => {
+                            const color = DiseaseColor(disease.diseaseName);
+                            return (
+                                <Card
+                                    key={disease.diseaseID}
+                                    className={`border ${"border-" + color}`}
+                                >
+                                    <CardHeader className="pb-2">
+                                        <CardTitle className="text-lg font-semibold">
+                                            {disease.diseaseName}
+                                        </CardTitle>
+                                        <CardDescription>
+                                            Likelihood:{" "}
+                                            {disease.likelihoodScore.toFixed(2)}
+                                            %
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p className="text-sm">
+                                            {disease.description}
+                                        </p>
+                                    </CardContent>
+                                </Card>
+                            );
+                        })}
+                </div>
             </div>
         </div>
     );
