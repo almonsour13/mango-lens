@@ -3,11 +3,10 @@
 import * as React from "react";
 import { format, isAfter } from "date-fns";
 import { CalendarIcon, ArrowRightIcon } from "lucide-react";
-import { DateRange } from "react-day-picker";
+import { DateRange, DayPicker } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
     Popover,
     PopoverContent,
@@ -50,7 +49,7 @@ export function CustomDateRange({
                 to: formattedToDate,
             });
             setOpen(false);
-            setTempDate(undefined)
+            setTempDate(undefined);
         }
     };
 
@@ -102,7 +101,7 @@ export function CustomDateRange({
                                             className="w-auto p-0"
                                             align="start"
                                         >
-                                            <Calendar
+                                            <DayPicker
                                                 initialFocus
                                                 mode="range"
                                                 defaultMonth={tempDate?.from}
@@ -143,7 +142,7 @@ export function CustomDateRange({
                                             className="w-auto p-0"
                                             align="start"
                                         >
-                                            <Calendar
+                                            <DayPicker
                                                 initialFocus
                                                 mode="range"
                                                 defaultMonth={tempDate?.to}
@@ -163,10 +162,7 @@ export function CustomDateRange({
                     </Card>
                 </div>
                 <div className="flex justify-end gap-4">
-                    <Button
-                        variant="outline"
-                        onClick={handleCancel}
-                    >
+                    <Button variant="outline" onClick={handleCancel}>
                         Cancel
                     </Button>
                     <Button

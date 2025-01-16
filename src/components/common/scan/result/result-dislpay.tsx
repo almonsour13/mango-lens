@@ -53,7 +53,7 @@ export default function ResultDisplay() {
                 setScanResult(res);
             }
         }
-    }, [scanResult?.predictions, scanResult, setScanResult]);
+    }, [ scanResult, setScanResult]);
 
     useEffect(() => {
         if (scanResult?.predictions) {

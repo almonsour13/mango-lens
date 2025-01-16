@@ -91,7 +91,7 @@ export const PendingProcessProvider: React.FC<{ children: ReactNode }> = ({
             const pendings = await getAllPendingProcessItems(userInfo?.userID);
             setPendings(pendings);
         }
-    },[pendings, userInfo?.userID]);
+    },[userInfo?.userID]);
     useEffect(() => {
         fetchPendings();
     }, [userInfo?.userID, fetchPendings]);
@@ -103,7 +103,7 @@ export const PendingProcessProvider: React.FC<{ children: ReactNode }> = ({
                 handleBulkProcess(pendingItems.map(item => item.pendingID));
             }
         }
-    }, [isOnline, isProcessing, handleBulkProcess]);
+    }, [pendings,isOnline, isProcessing, handleBulkProcess]);
 
     useEffect(() => {
         if (selected.length == 0) {
