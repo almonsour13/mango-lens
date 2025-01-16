@@ -1,6 +1,6 @@
 "use client";
 
-import { PendingItem } from "@/types/types";
+import { BoundingBox, PendingItem } from "@/types/types";
 import React, {
     createContext,
     useState,
@@ -25,8 +25,11 @@ import {
     getProcessedResultItem,
     saveProcessedResult,
 } from "@/utils/indexedDB/store/result-store";
+import { predict } from "@/utils/api/predict";
+import { usePendingActions } from "@/hooks/use-pending";
 
 interface PendingProcessContextType {
+    fetchPendings: () => void;
     processPendingID: number;
     setProcessPendingID: React.Dispatch<React.SetStateAction<number>>;
     pendings: PendingItem[];
@@ -64,147 +67,43 @@ export const PendingProcessProvider: React.FC<{ children: ReactNode }> = ({
     const { setScanResult } = useScanResult();
     const [isProcessing, setIsProcessing] = useState(false);
 
-    const isOnline = useOnlineStatus();
+    const isOnline = true
     const { toast } = useToast();
 
     const pathname = usePathname();
 
+    const {
+        handleSingleProcess,
+        handleBulkProcess,
+        handleBulkDelete,
+        handleDelete,
+        handleView,
+        handleSave,
+    } = usePendingActions(
+        pendings,
+        setPendings,
+        setProcessPendingID,
+        setIsProcessing
+    );
+
+    const fetchPendings = useCallback(async () => {
+        if (userInfo?.userID) {
+            const pendings = await getAllPendingProcessItems(userInfo?.userID);
+            setPendings(pendings);
+        }
+    },[pendings, userInfo?.userID]);
     useEffect(() => {
-        const fetchPendings = async () => {
-            if (userInfo?.userID) {
-                const pendings = await getAllPendingProcessItems(
-                    userInfo?.userID
-                );
-                setPendings(pendings);
-            }
-        };
         fetchPendings();
-    }, [userInfo?.userID]);
-
-    const processPendings = useCallback(async () => {
-        const pendingItems = pendings.filter((item) => item.status === 1);
-
-        if (pendingItems.length === 0) {
-            return;
-        }
-        setIsProcessing(true);
-        toast({
-            title: "Processing Pending Items",
-            description: `Starting to process ${pendingItems.length} pending item(s).`,
-        });
-
-        for (let index = 0; index < pendingItems.length; index++) {
-            const pending = pendingItems[index];
-
-            // if (!isOnline) {
-            //     alert("No internet connection, cannot process.");
-            //     continue; // Skip current iteration, don't break the loop
-            // }
-
-            if (pending.status === 2) continue;
-
-            setProcessPendingID(pending.pendingID);
-            console.log(pending);
-
-            try {
-                const response = await fetch("/api/scan/newScan", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        userID: pending.userID,
-                        treeCode: pending.treeCode,
-                        imageUrl: pending.imageUrl,
-                    }),
-                });
-
-                if (response.ok) {
-                    const { result } = await response.json();
-
-                    setPendings((prevPending) =>
-                        prevPending.map((item) =>
-                            item.pendingID === pending.pendingID
-                                ? { ...item, status: 2 }
-                                : item
-                        )
-                    );
-
-                    await saveProcessedResult(pending.pendingID, result);
-                    await updatePendingProcessItem(pending.pendingID, 2);
-                } else {
-                    setPendings((prevPending) =>
-                        prevPending.map((item) =>
-                            item.pendingID === pending.pendingID
-                                ? { ...item, status: 3 }
-                                : item
-                        )
-                    );
-                    await updatePendingProcessItem(pending.pendingID, 3);
-                }
-            } catch (error) {
-                console.error(
-                    `Error during scanning for pendingID: ${pending.pendingID}`,
-                    error
-                );
-            }
-
-            await new Promise((resolve) => setTimeout(resolve, 2000)); // Delay between each request
-        }
-
-        setIsProcessing(false);
-        setProcessPendingID(0);
-        const pendingStatus = pendingItems.filter(
-            (pending) => (pending.status == 1 || pending.status == 3) 
-        );
-        if (!pathname.includes('"/user/pending"')) {
-            if (pendingStatus.length > 0) {
-                toast({
-                    description: (
-                        <div className="flex flex-col">
-                            Failed to process {pendingStatus.length} pending
-                            item(s).
-                            <Link
-                                href="/user/pending"
-                                className="font-medium text-primary hover:underline"
-                            >
-                                View
-                            </Link>
-                        </div>
-                    ),
-                });
-            } else {
-                toast({
-                    description: (
-                        <div className="flex flex-col">
-                            Finished processing {pendingStatus.length} pending
-                            item(s).
-                            <Link
-                                href="/user/pending"
-                                className="font-medium text-primary hover:underline"
-                            >
-                                View
-                            </Link>
-                        </div>
-                    ),
-                });
-            }
-        } else {
-            if (pendingStatus.length > 0) {
-                toast({
-                    description: `Failed to process ${pendingItems.length} pending item(s).`,
-                });
-            } else {
-                toast({
-                    description: `Finished processing ${pendingItems.length} pending item(s).`,
-                });
-            }
-        }
-    }, [pathname, pendings, toast]);
+    }, [userInfo?.userID, fetchPendings]);
 
     useEffect(() => {
         if (isOnline && !isProcessing) {
-            processPendings();
+            const pendingItems = pendings.filter(item => item.status === 1);
+            if (pendingItems.length > 0) {
+                handleBulkProcess(pendingItems.map(item => item.pendingID));
+            }
         }
-    }, [isOnline, processPendings, isProcessing]);
+    }, [isOnline, isProcessing, handleBulkProcess]);
 
     useEffect(() => {
         if (selected.length == 0) {
@@ -218,250 +117,45 @@ export const PendingProcessProvider: React.FC<{ children: ReactNode }> = ({
     }, [pathname]);
 
     const handleAction = async (action: number, pendingId: number) => {
-        if (action == 1) {
-            if (!isOnline) {
-                alert("no internet connection cannot be process");
-                return;
-            }
-            setProcessPendingID(pendingId);
-            const pending = pendings.filter(
-                (pending) => pending.pendingID == pendingId
-            );
-            try {
-                const response = await fetch("/api/scan/newScan", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        userID: pending[0].userID,
-                        treeCode: pending[0].treeCode,
-                        imageUrl: pending[0].imageUrl,
-                    }),
-                });
-
-                if (response.ok) {
-                    const { result } = await response.json();
-                    setPendings((prevPending) =>
-                        prevPending.map((item) =>
-                            item.pendingID === pendingId
-                                ? { ...item, status: 2 }
-                                : item
-                        )
-                    );
-                    console.log(result);
-                    await saveProcessedResult(pendingId, result);
-
-                    setProcessPendingID(0);
-                    toast({
-                        description: "Pending Processed Sucessfully",
-                    });
-                } else {
-                    setPendings((prevPending) =>
-                        prevPending.map((item) =>
-                            item.pendingID === pendingId
-                                ? { ...item, status: 3 }
-                                : item
-                        )
-                    );
-                    await updatePendingProcessItem(pendingId, 3);
-                    toast({
-                        description: "Failed to process pending",
-                    });
-                    setProcessPendingID(0);
-                }
-            } catch (error) {
-                console.error(
-                    `Error during scanning for pendingID: ${pendingId}`,
-                    error
-                );
-            } finally {
-                setProcessPendingID(0);
-            }
-        } else if (action == 2) {
-            await deleteSelectedPendingProcessItems([pendingId]);
-            await deleteProcessedResult([pendingId]);
-            setPendings((prevPending) =>
-                prevPending.filter((pending) => pending.pendingID !== pendingId)
-            );
-            toast({
-                title: "Pending deleted Sucessfully",
-            });
-        } else if (action == 3) {
-            const result = await getProcessedResultItem(pendingId);
-            setScanResult(result);
-        } else if (action == 4) {
-            const result = await getProcessedResultItem(pendingId);
-            try {
-                const response = await fetch("/api/scan/save", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        userID: userInfo?.userID,
-                        scanResult: result,
-                    }),
-                });
-                if (response.ok) {
-                    setPendings((prevPending) =>
-                        prevPending.filter(
-                            (pending) => pending.pendingID !== pendingId
-                        )
-                    );
-                    await deleteSelectedPendingProcessItems([pendingId]);
-                    await deleteProcessedResult([pendingId]);
-
-                    toast({
-                        title: "Pending saved sucessfully",
-                    });
-                }
-            } catch (error) {
-                console.error("Error while saving scan result:", error);
-                toast({
-                    title: "Error",
-                    description:
-                        "Failed to save the scan result. Please try again.",
-                });
-            }
+        if (!isOnline && action === 1) {
+            alert("No internet connection, cannot process");
+            return;
+        }
+        switch (action) {
+            case 1:
+                await handleSingleProcess(pendingId);
+                break;
+            case 2:
+                await handleDelete(pendingId);
+                break;
+            case 3:
+                await handleView(pendingId);
+                break;
+            case 4:
+                await handleSave(pendingId);
+                break;
         }
     };
-
     const handleSelectedAction = async (action: number) => {
-        if (selected && action == 2) {
-            await deleteSelectedPendingProcessItems(selected);
-            await deleteProcessedResult(selected);
+        if (!selected.length) return;
 
-            for (let index = 0; index < selected.length; index++) {
-                const pendingID = selected[index];
-
-                setPendings((prevPending) =>
-                    prevPending.filter(
-                        (pending) => pending.pendingID !== pendingID
-                    )
-                );
-            }
+        if (action === 2) {
+            await handleBulkDelete(selected);
             setSelected([]);
             setIsSelected(false);
-            toast({
-                title: "Selected pending items deleted successfully",
-            });
-        } else if (selected && action == 1) {
-            if (!isOnline) {
-                alert("no internet connection cannot be process");
-                return;
-            }
-            (async () => {
-                toast({
-                    title: "Processing selected pending items",
-                    description: `Starting to process ${selected.length} selected pending item(s).`,
-                });
-                for (let index = 0; index < selected.length; index++) {
-                    const pendingID = selected[index];
-
-                    const pending = pendings.find(
-                        (pending) => pending.pendingID === pendingID
-                    );
-
-                    if (!pending || pending.status == 2) continue;
-                    setProcessPendingID(pendingID);
-                    console.log(pending);
-
-                    try {
-                        const response = await fetch("/api/scan/newScan", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                userID: pending.userID,
-                                treeCode: pending.treeCode,
-                                imageUrl: pending.imageUrl,
-                            }),
-                        });
-
-                        if (response.ok) {
-                            const { result } = await response.json();
-
-                            setPendings((prevPending) =>
-                                prevPending.map((pending) =>
-                                    pending.pendingID === pendingID
-                                        ? { ...pending, status: 2 }
-                                        : pending
-                                )
-                            );
-                            await saveProcessedResult(pendingID, result);
-                            await updatePendingProcessItem(pendingID, 2);
-                        } else {
-                            setPendings((prevPending) =>
-                                prevPending.map((pending) =>
-                                    pending.pendingID === pendingID
-                                        ? { ...pending, status: 3 }
-                                        : pending
-                                )
-                            );
-                            await updatePendingProcessItem(pendingID, 3);
-                        }
-                    } catch (error) {
-                        console.error(
-                            `Error during scanning for pendingID: ${pendingID}`,
-                            error
-                        );
-                    }
-
-                    await new Promise((resolve) => setTimeout(resolve, 2000));
-                }
-
-                const pendingStatus = pendings.filter(
-                    (pending) => (pending.status == 1 || pending.status == 3) 
-                );
-                if (!pathname.includes('"/user/pending"')) {
-                    if (pendingStatus.length > 0) {
-                        toast({
-                            description: (
-                                <div className="flex flex-col">
-                                    Failed to process {pendingStatus.length}{" "}
-                                    pending item(s).
-                                    <Link
-                                        href="/user/pending"
-                                        className="font-medium text-secondary hover:underline"
-                                    >
-                                        View
-                                    </Link>
-                                </div>
-                            ),
-                        });
-                    } else {
-                        toast({
-                            description: (
-                                <div className="flex flex-col">
-                                    Finished processing {pendingStatus.length}{" "}
-                                    pending item(s).
-                                    <Link
-                                        href="/user/pending"
-                                        className="font-medium text-primary hover:underline"
-                                    >
-                                        View
-                                    </Link>
-                                </div>
-                            ),
-                        });
-                    }
-                } else {
-                    if (pendingStatus.length > 0) {
-                        toast({
-                            description: `Failed to process ${pendingStatus.length} pending item(s).`,
-                        });
-                    } else {
-                        toast({
-                            description: `Finished processing ${pendingStatus.length} pending item(s).`,
-                        });
-                    }
-                }
-                setSelected([]);
-                setProcessPendingID(0);
-                setIsSelected(false);
-            })();
+        } else if (action === 1 && isOnline) {
+            await handleBulkProcess(selected);
+            setSelected([]);
+            setIsSelected(false);
+        } else if (!isOnline) {
+            alert("No internet connection, cannot process");
         }
     };
 
     return (
         <PendingProcessContext.Provider
             value={{
+                fetchPendings,
                 processPendingID,
                 setProcessPendingID,
                 pendings,

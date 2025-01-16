@@ -107,7 +107,7 @@ export default function ImageStatistic({
         if (userInfo?.userID) {
             fetchImages();
         }
-    }, [userInfo?.userID, DateRange]);
+    }, [userInfo?.userID, DateRange, fetchImages]);
     return (
         <div className="w-full flex flex-col gap-2 flex-1">
             <div className="w-full flex items-center justify-between">
@@ -124,11 +124,11 @@ export default function ImageStatistic({
                     {/* <CardTitle className="text-lg">Images Added</CardTitle> */}
                     <CardDescription>
                         {DateRange?.from
-                            ? format(new Date(DateRange.from), "MMMM dd, yyyy")
+                            ? format(new Date(DateRange.from), 'MMM, dd yyyy')
                             : ""}
                         {" - "}
                         {DateRange?.to
-                            ? format(new Date(DateRange.to), "MMMM dd, yyyy")
+                            ? format(new Date(DateRange.to),'MMM, dd yyyy')
                             : ""}
                     </CardDescription>
                 </CardHeader>

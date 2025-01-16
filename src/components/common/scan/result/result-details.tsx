@@ -1,4 +1,6 @@
-import React from "react";
+"use client"
+
+import React, { useEffect, useState } from "react";
 import { LoaderCircle, Trees } from "lucide-react";
 import {
     Card,
@@ -15,13 +17,23 @@ export default function ResultDetails({
 }: {
     scanResult: ScanResult;
 }) {
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if(scanResult.predictions === null){
+            setLoading(true)
+        }else{
+            setLoading(false)
+        }
+    },[scanResult.predictions])
+
     return (
         <div className="flex-1 flex flex-col gap-4 border p-4 rounded-lg bg-card">
             <div className="flex items-center space-x-2">
                 <Trees className="h-5 w-5 text-muted-foreground" />
                 <span className="text-base font-medium">Tree Code:</span>
                 <span className="text-base font-semibold">
-                    {scanResult.tree?.treeCode || "N/A"}
+                    {scanResult.treeCode || "N/A"}
                 </span>
             </div>
             <div className="flex flex-col gap-4">
@@ -30,7 +42,7 @@ export default function ResultDetails({
                         Disease Detected:
                     </span>
                 </div>
-                {!scanResult.predictions ? (
+                {loading && scanResult.predictions == null ? (
                     <div className="w-full flex items-center justify-center py-2">
                         <LoaderCircle className="h-6 w-6 animate-spin" />
                     </div>

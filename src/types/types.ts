@@ -4,7 +4,7 @@ export type ImageAnalysisDetails = Tree &
     } & Analysis & { diseases: (DiseaseIdentified & Disease)[] };
 
 export interface ScanResult {
-    tree: Tree | null;
+    treeCode: string;
     originalImage: string;
     analyzedImage: string;
     boundingBoxes: BoundingBox[];

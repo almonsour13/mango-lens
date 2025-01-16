@@ -24,6 +24,8 @@ import { toast } from "@/hooks/use-toast";
 import TreeModal from "@/components/modal/tree-modal";
 import { useCameraContext } from "@/context/camera-context";
 import { storePendingProcessItem } from "@/utils/indexedDB/store/pending-store";
+import { predict } from "@/utils/api/predict";
+import { usePendingProcess } from "@/context/pending-process-context";
 
 interface FooterProps {
     isNonSquare: boolean;
@@ -55,6 +57,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
 
     const [openTreeModal, setOpenTreeModal] = useState(false);
 
+    const {fetchPendings} = usePendingProcess();
     useEffect(() => {
         const fetchTrees = async () => {
             setLoading(true);
@@ -89,41 +92,6 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
         setTreeCode(treeCode);
     };
 
-    // const handleScan = async () => {
-    //     const data = {
-    //         userID: userInfo?.userID,
-    //         treeCode: treeCode,
-    //         imageUrl: croppedImage || capturedImage,
-    //     };
-
-    //     if (isOnline) {
-    //         setIsScanning(true);
-    //         try {
-    //             const response = await fetch("/api/scan/newScan", {
-    //                 method: "POST",
-    //                 headers: { "Content-Type": "application/json" },
-    //                 body: JSON.stringify(data),
-    //             });
-
-    //             if (!response.ok) {
-    //                 const { error } = await response.json();
-    //                 throw new Error(error || "Something went wrong.");
-    //             }
-
-    //             const { result } = await response.json();
-
-    //             setScanResult(result);
-    //             setIsScanning(false);
-    //         } catch (error) {
-    //             console.error("Error during scanning:", error);
-    //             setIsScanning(false);
-    //         }
-    //     } else {
-    //         setOpenPendingModal(true);
-    //     }
-    // };
-
-
     const handleScan = async () => {
         const data = {
             userID: userInfo?.userID,
@@ -133,47 +101,20 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
 
         if (!isOnline) {
             setOpenPendingModal(true);
-            await storePendingProcessItem(data);
             return;
         }
 
         setIsScanning(true);
-        
+
         try {
-
-            const response = await fetch(
-                "https://pcjkn8p3-5000.asse.devtunnels.ms/predict", 
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json", // Specify content type
-                    },
-                    body: JSON.stringify({ image:croppedImage || capturedImage}) // Send the image as JSON
-                }
-            );
-
-            if (!response.ok) {
-                const errorData = (await response.json()) as { error: string };
-                throw new Error(errorData.error || "Something went wrong.");
-            }
-
-            const data = await response.json();
-            if (data) {
-                // console.log(data)
-                const {analyzedImage, originalImage, boundingBoxes, predictions} = data;
-                const tree = trees.filter(tree => tree.treeCode === treeCode)[0]
-                const res = {
-                    tree:tree,
-                    analyzedImage:analyzedImage as string,
-                    originalImage:originalImage as string,
-                    boundingBoxes:boundingBoxes as BoundingBox[],
-                    diseases: null,
-                    predictions:predictions
-                }
-                setScanResult(res);   
+            const result = await predict(croppedImage || capturedImage);
+            if (result) {
+                setScanResult({
+                    ...result,
+                    treeCode: treeCode,
+                });
             }
         } catch (error) {
-
             toast({
                 title: "Scanning Failed",
                 description: "Error during scanning.",
@@ -193,6 +134,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
         };
         setOpenPendingModal(false);
         await storePendingProcessItem(data);
+        fetchPendings();
         toast({
             description: "Successfully added to the pending",
         });

@@ -59,7 +59,7 @@ export default function ResultDisplay() {
         if (scanResult?.predictions) {
             fetchDiseaseDetails();
         }
-    }, [scanResult?.predictions]);
+    }, [scanResult?.predictions, fetchDiseaseDetails]);
 
     useEffect(() => {
         if (scanResult) {

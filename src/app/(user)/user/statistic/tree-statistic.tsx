@@ -89,7 +89,7 @@ export default function TreeStatistic({
         if (userInfo?.userID) {
             fetchTree();
         }
-    }, [userInfo?.userID, DateRange]);
+    }, [userInfo?.userID, DateRange, fetchTree]);
     return (
         <div className="w-full flex flex-col gap-2 flex-1">
             <div className="w-full flex items-center justify-between">
@@ -106,11 +106,11 @@ export default function TreeStatistic({
                     {/* <CardTitle className="text-lg">Tree Added</CardTitle> */}
                     <CardDescription>
                         {DateRange?.from
-                            ? format(new Date(DateRange.from), "MMMM dd, yyyy")
+                            ? format(new Date(DateRange.from), 'MMM, dd yyyy')
                             : ""}
                         {" - "}
                         {DateRange?.to
-                            ? format(new Date(DateRange.to), "MMMM dd, yyyy")
+                            ? format(new Date(DateRange.to), 'MMM, dd yyyy')
                             : ""}
                     </CardDescription>
                 </CardHeader>

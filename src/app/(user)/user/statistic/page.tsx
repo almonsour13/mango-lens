@@ -22,7 +22,8 @@ import { useCallback, useEffect, useState } from "react";
 import ImageStatistic from "./image-statistic";
 import TreeStatistic from "./tree-statistic";
 import { useAuth } from "@/context/auth-context";
-import { DateRangePicker } from "./date-range-picker";
+import { CustomDateRange } from "./date-range-picker";
+import { format } from "date-fns";
 
 export default function Statistic() {
     const [openDownloadModal, setOpenDownloadModal] = useState(false);
@@ -31,8 +32,15 @@ export default function Statistic() {
         from: string;
         to: string;
     } | null>(null);
+    const [isCustomDate, setIsCustomDate] = useState(false);
+    const [customDate, setCustomDate] = useState<{
+        from: string;
+        to: string;
+    } | null>(null);
+
     useEffect(() => {
-        if (dateRange) {
+        if (dateRange !== "custom") {
+            setCustomDate(null);
             // Calculate the date 3 months ago
             const today = new Date();
             const monthsAgo = parseInt(dateRange, 10); // Get the date range value (e.g., "3")
@@ -46,7 +54,6 @@ export default function Statistic() {
             const formattedFromDate = pastDate.toISOString().split("T")[0]; // YYYY-MM-DD
             const formattedToDate = new Date().toISOString().split("T")[0]; // Current date in YYYY-MM-DD
 
-            console.log(`From: ${formattedFromDate}, To: ${formattedToDate}`);
             setFormattedDateRange({
                 from: formattedFromDate,
                 to: formattedToDate,
@@ -54,6 +61,13 @@ export default function Statistic() {
             // You can now use formattedFromDate and formattedToDate to filter or display data
         }
     }, [dateRange]);
+
+    useEffect(() => {
+        if (customDate) {
+            setDateRange("custom");
+            setFormattedDateRange(customDate);
+        }
+    }, [customDate]);
 
     return (
         <>
@@ -68,7 +82,28 @@ export default function Statistic() {
                                 variant="outline"
                                 className="flex items-center justify-center"
                             >
-                                Last {dateRange} months <Calendar1 />
+                                {customDate ? (
+                                    <div className="flex gap-2">
+                                        <span className="hidden md:block">
+                                            {format(
+                                                new Date(customDate.from),
+                                                "MMM, dd yyyy"
+                                            )}{" "}
+                                            -{" "}
+                                            {format(
+                                                new Date(customDate.to),
+                                                "MMM, dd yyyy"
+                                            )}
+                                        </span>{" "}
+                                        <span className="font-semibold">
+                                            Custom
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <span>{`Last ${dateRange} months`}</span>
+                                )}
+
+                                <Calendar1 />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56">
@@ -98,6 +133,15 @@ export default function Statistic() {
                             >
                                 Last 12 months
                             </DropdownMenuCheckboxItem>
+
+                            <DropdownMenuCheckboxItem
+                                checked={
+                                    dateRange == "custom" && customDate !== null
+                                }
+                                onClick={() => setIsCustomDate(true)}
+                            >
+                                custom
+                            </DropdownMenuCheckboxItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                     <Button className="w-10 md:w-auto">
@@ -109,10 +153,15 @@ export default function Statistic() {
             <PageWrapper>
                 <Overview />
                 <div className="flex flex-col md:flex-row gap-4">
-                    <TreeStatistic DateRange={formattedDateRange}/>
-                    <ImageStatistic  DateRange={formattedDateRange}/>
+                    <TreeStatistic DateRange={formattedDateRange} />
+                    <ImageStatistic DateRange={formattedDateRange} />
                 </div>
             </PageWrapper>
+            <CustomDateRange
+                open={isCustomDate}
+                setOpen={setIsCustomDate}
+                setCustomDate={setCustomDate}
+            />
         </>
     );
 }
@@ -184,11 +233,10 @@ const Overview = () => {
         if (userInfo?.userID) {
             fetchOverview();
         }
-    }, [userInfo?.userID]);
+    }, [userInfo?.userID, fetchOverview]);
     return (
         <div className="w-full flex flex-col gap-2">
             <h2 className="text-lg font-semibold">Overview</h2>
-            <DateRangePicker/>
             <div className="flex flex-col md:flex-row gap-2 rounded-lg">
                 {overviewData && (
                     <>
