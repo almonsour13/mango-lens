@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db/db";
 import { convertImageToBlob } from "@/utils/image-utils";
-import { BoundingBox } from "@/types/types";
+import { BoundingBox, Tree } from "@/types/types";
 
 export async function POST(req: Request) {
     try {
@@ -14,13 +14,13 @@ export async function POST(req: Request) {
                 { status: 400 }
             );
         }
-        console.log(1)
-        const { tree, originalImage, analyzedImage, boundingBoxes, diseases } =
+        const { treeCode, originalImage, analyzedImage, boundingBoxes, diseases } =
             scanResult;
-
+        
+            console.log(treeCode)
         if (
             !userID ||
-            !tree ||
+            !treeCode ||
             !originalImage ||
             !analyzedImage ||
             !diseases ||
@@ -32,14 +32,13 @@ export async function POST(req: Request) {
             );
         }
         
-
+        const tree = await query(`SELECT * FROM tree WHERE treeCode = ?`,[treeCode]) as Tree[]
         try {
             const originalImageBlob = convertImageToBlob(originalImage);
-            
             const insertImageResult = (await query(
                 `INSERT INTO image (userID, treeID, imageData) 
                  VALUES (?, ?, ?)`,
-                [userID, tree.treeID, originalImageBlob]
+                [userID, tree[0].treeID, originalImageBlob]
             )) as { insertId: number };
 
             const imageID = insertImageResult.insertId;

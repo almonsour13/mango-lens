@@ -28,39 +28,6 @@ export default function ResultDisplay() {
     const [isSaving, setIsSaving] = useState(false);
 
     const { userInfo } = useAuth();
-
-    const fetchDiseaseDetails = useCallback(async () => {
-        if (!scanResult?.predictions) {
-            console.log("no predictions");
-            return;
-        }
-        const response = await fetch(`/api/scan/disease`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ predictions: scanResult?.predictions }),
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-            const { diseases } = data;
-            if (scanResult) {
-                const res = {
-                    ...scanResult,
-                    diseases: diseases as (DiseaseIdentified & Disease)[],
-                };
-                setScanResult(res);
-            }
-        }
-    }, [ scanResult, setScanResult]);
-
-    useEffect(() => {
-        if (scanResult?.predictions) {
-            fetchDiseaseDetails();
-        }
-    }, [scanResult?.predictions, fetchDiseaseDetails]);
-
     useEffect(() => {
         if (scanResult) {
             setTimeout(() => setIsVisible(true), 50);
@@ -81,7 +48,7 @@ export default function ResultDisplay() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ userID: userInfo?.userID, scanResult }),
             });
-
+            console.log(scanResult)
             if (!saveResponse.ok) {
                 const { error } = await saveResponse.json();
                 throw new Error(error || "Failed to save analysis result.");

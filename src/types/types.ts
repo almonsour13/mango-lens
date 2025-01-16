@@ -8,8 +8,7 @@ export interface ScanResult {
     originalImage: string;
     analyzedImage: string;
     boundingBoxes: BoundingBox[];
-    diseases: (DiseaseIdentified & Disease)[] | null
-    predictions?: {diseaseName:string; likelihood:number}[]
+    diseases: (DiseaseIdentified & Disease)[]
 }
 export interface PendingItem {
     pendingID: number;
