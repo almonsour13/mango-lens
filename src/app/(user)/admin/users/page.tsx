@@ -84,7 +84,7 @@ export default function Users() {
         fetchUsers();
     }, [userInfo?.userID]);
 
-    const handleAction = async (action: string, userID: number) => {
+    const handleAction = async (action: string, userID: string) => {
         if (action === "Edit") {
             const user = users.filter((user) => user.userID == userID);
             setEditingUser(user[0]);
@@ -124,7 +124,7 @@ export default function Users() {
 
     // const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
-    const handleChangeStatus = (status: string, userID: number) => {
+    const handleChangeStatus = (status: string, userID: string) => {
         setUsers(
             users.map((user) =>
                 user.userID === userID
@@ -375,8 +375,8 @@ export default function Users() {
     );
 }
 interface ActionMenuProps {
-    userID: number;
-    handleAction: (action: string, userID: number) => void;
+    userID: string;
+    handleAction: (action: string, userID: string) => void;
 }
 function ActionMenu({ userID, handleAction }: ActionMenuProps) {
     const router = useRouter();

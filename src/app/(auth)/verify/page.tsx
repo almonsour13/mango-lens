@@ -13,6 +13,7 @@ import {
     InputOTPGroup,
     InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { getUser, removeUser, setUser } from "@/stores/user-store";
 import {
     deleteUserCredentials,
     getUserCredentials,
@@ -47,10 +48,10 @@ function VerifyForm() {
 
             if (res.ok) {
                 const { user, redirect } = data;
-                if (await getUserCredentials(user.userID)) {
-                    await deleteUserCredentials(user.userID);
+                if (getUser()) {
+                    removeUser();
                 }
-                await storeUserCredentials(user);
+                setUser(user);
 
                 router.push(redirect);
             } else {
@@ -66,10 +67,10 @@ function VerifyForm() {
     }, [value, email, router, isVerifying, token]);
 
     useEffect(() => {
-        if (value.length === 6) {
+        if (value.length === 6 && !isVerifying) {
             verifyEmail();
         }
-    }, [value, verifyEmail]);
+    }, [value, verifyEmail, isVerifying]);
 
     const handleResend = async () => {
         // Implement resend logic here

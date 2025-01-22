@@ -37,7 +37,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getImageByTreeID, getTreeByID } from "@/stores/store";
+import { getTreeByID } from "@/stores/tree";
+import { getImageByTreeID } from "@/stores/image";
 
 type images = img & { analyzedImage: string } & {
     diseases: { likelihoodScore: number; diseaseName: string }[];
@@ -75,19 +76,6 @@ export default function Page({
                     setTree(er);
                     setImages(i as images[]);
                 }
-                // const response = await fetch(
-                //     `/api/user/${userInfo?.userID}/tree/${treeID}`
-                // );
-                // if (!response.ok) {
-                //     throw new Error("Failed to fetch image details");
-                // }
-                // const data = await response.json();
-                // if(response.ok){
-                //     // setTree(data.tree);]
-                //     setImages(data.images);
-                // }else{
-                //     alert(data.error)
-                // }
             } catch (error) {
                 console.error("Error fetching trees:", error);
             } finally {

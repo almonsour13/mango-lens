@@ -25,6 +25,7 @@ import {
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useAuth } from "@/context/auth-context";
 import { usePendingProcess } from "@/context/pending-process-context";
+import { dashboardMetrics, recentAnalysis } from "@/stores/dashboard";
 import { Image as Img } from "@/types/types";
 import {
     Activity,
@@ -58,6 +59,10 @@ export default function Dashboard() {
         }
     };
 
+    useEffect(() => {
+        if (userInfo) {
+        }
+    }, [userInfo]);
     // const [pendingCount, setPendingCount] = useState<number>(0);
 
     // useEffect(() => {
@@ -254,33 +259,32 @@ const Metrics = () => {
     useEffect(() => {
         const fetchMetrics = async () => {
             setLoading(true);
+            if (!userInfo?.userID) return;
             try {
-                const response = await fetch(
-                    `/api/user/${userInfo?.userID}/dashboard/metrics`
-                );
-                if (response.ok) {
-                    const data = await response.json();
-                    const metricsData = data.metrics as Metric[];
-                    const icons = [
-                        { name: "Total Trees", icon: TreeDeciduous },
-                        { name: "Total Images", icon: ImageIcon },
-                        { name: "Disease Detected", icon: Radar },
-                        { name: "Detection Rate", icon: Percent },
-                    ];
-                    const updatedMetrics = metricsData.map((metric) => {
-                        const iconConfig = icons.find(
-                            (icon) => icon.name === metric.name
-                        );
-                        return {
-                            name: metric.name,
-                            value: metric.value,
-                            detail: metric.detail,
-                            icon: iconConfig?.icon || TreeDeciduous,
-                        };
-                    });
-                    setMetrics(updatedMetrics);
-                    setLoading(false);
-                }
+                const res = await dashboardMetrics(userInfo?.userID);
+                // const response = await fetch(
+                //     `/api/user/${userInfo?.userID}/dashboard/metrics`
+                // );
+                const metricsData = res as Metric[];
+                const icons = [
+                    { name: "Total Trees", icon: TreeDeciduous },
+                    { name: "Total Images", icon: ImageIcon },
+                    { name: "Disease Detected", icon: Radar },
+                    { name: "Detection Rate", icon: Percent },
+                ];
+                const updatedMetrics = metricsData.map((metric) => {
+                    const iconConfig = icons.find(
+                        (icon) => icon.name === metric.name
+                    );
+                    return {
+                        name: metric.name,
+                        value: metric.value,
+                        detail: metric.detail,
+                        icon: iconConfig?.icon || TreeDeciduous,
+                    };
+                });
+                setMetrics(updatedMetrics);
+                setLoading(false);
             } catch (error) {
                 console.error("Error retrieving metrics:", error);
             } finally {
@@ -307,10 +311,7 @@ const Metrics = () => {
                           )
                       )
                     : metrics.map((metric, index) => (
-                          <Card
-                              key={index}
-                              className="bg-card shadow-none"
-                          >
+                          <Card key={index} className="bg-card shadow-none">
                               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                   <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
                                       {metric.name}
@@ -334,7 +335,7 @@ const Metrics = () => {
 
 type Images = Img & {
     analyzedImage: string | null;
-    treeCode?: number;
+    treeCode?: string;
     diseases: { likelihoodScore: number; diseaseName: string }[];
 };
 const RecentAnalysis = () => {
@@ -346,16 +347,18 @@ const RecentAnalysis = () => {
     useEffect(() => {
         const fetchImages = async () => {
             setLoading(true);
+            if (!userInfo?.userID) return;
             try {
-                const response = await fetch(
-                    `/api/user/${userInfo?.userID}/dashboard/recent-analysis`
-                );
+                // const response = await fetch(
+                //     `/api/user/${userInfo?.userID}/dashboard/recent-analysis`
+                // );
 
-                if (response.ok) {
-                    const data = await response.json();
-                    setAnalysis(data.recentAnalysis);
-                    setLoading(false);
-                }
+                const res = recentAnalysis(userInfo?.userID);
+                // if (response.ok) {
+                //     const data = await response.json();
+                setAnalysis(res );
+                setLoading(false);
+                // }
             } catch (error) {
                 console.error("Error retrieving images:", error);
             }

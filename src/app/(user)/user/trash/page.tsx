@@ -50,13 +50,13 @@ export default function Trash() {
         setLoading(true);
         try {
             if(!userInfo?.userID) return
-            const t = getTrashByUserID(userInfo.userID)
-            const response = await fetch(`/api/user/${userInfo?.userID}/trash`);
-            const data = await response.json();
+            // const t = getTrashByUserID(userInfo.userID)
+            // const response = await fetch(`/api/user/${userInfo?.userID}/trash`);
+            // const data = await response.json();
 
-            if(response.ok){
-                setTrashes(data.trash);
-            }
+            // if(response.ok){
+            //     setTrashes(data.trash);
+            // }
         } catch (error) {
             console.error("Error fetching trees:", error);
         } finally {

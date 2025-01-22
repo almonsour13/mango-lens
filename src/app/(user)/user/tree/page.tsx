@@ -34,7 +34,7 @@ import { Toggle } from "@/components/ui/toggle";
 import TreeCard from "@/components/card/tree-card";
 import { TreeSkeletonCard } from "@/components/skeleton/skeleton-card";
 import { TreeTable } from "@/components/table/tree-table";
-import { getTreesByUser } from "@/stores/store";
+import { getTreesByUser } from "@/stores/tree";
 
 interface TreeWithImage extends Tree {
     treeImage:string;
@@ -68,24 +68,11 @@ export default function TreePage() {
         setLoading(true);
         try {
             if(!userInfo?.userID) return
-            // const response = await fetch(`/api/user/${userInfo?.userID}/tree`);
-            // if (!response.ok) {
-            //     throw new Error("Failed to fetch image details");
-            // }
-            // const data = await response.json();
             const t = getTreesByUser(userInfo.userID)
-            console.log(t)
             if(t){
                 setTrees(t as TreeWithImage[]);
-                console.log(t)
                 setLoading(false);
             }
-            // if(response.ok){
-            //     // setTrees(t as TreeWithImage[]);
-            //     console.log(data.treeWidthImage);
-            //     console.log(t)
-            //     setLoading(false);
-            // }
         } catch (error) {
             console.error("Error fetching trees:", error);
         } finally {

@@ -8,19 +8,16 @@ import React, {
     useEffect,
 } from "react";
 import { jwtDecode } from "jwt-decode";
-import {
-    deleteUserCredentials,
-    getUserCredentials,
-} from "@/utils/indexedDB/store/user-info-store";
 import { usePathname, useRouter } from "next/navigation";
+import { getUser, removeUser } from "@/stores/user-store";
 
 interface UserInfo {
-    userID: number;
+    userID: string;
     role: number;
 }
 
 interface UserDredentials {
-    userID: number;
+    userID: string;
     fName: string;
     lName: string;
     email: string;
@@ -50,11 +47,10 @@ function getTokenFromCookie(): string | null {
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [token, setToken] = useState<string | null>(null);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [userInfo, setUserInfo] = useState<UserDredentials | null>(null);
     const [decodedToken, setDecodedToken] = useState<UserInfo | null>(null);
     const pathname = usePathname();
     const router = useRouter();
-    
+    const userInfo = getUser();
     // useEffect(() => {
     //     const role = userInfo?.role
     //     if(pathname === "/"){
@@ -82,42 +78,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsLoaded(true);
     }, []);
 
-    useEffect(() => {
-        const fetchUserInfo = async () => {
-            if (token) {
-                try {
-                    const decoded = jwtDecode<UserInfo>(token);
-                    setDecodedToken(decoded);
-                    const userCredentials = await getUserCredentials(
-                        decoded.userID
-                    );
-
-                    if (
-                        userCredentials?.userID &&
-                        userCredentials.fName &&
-                        userCredentials.lName &&
-                        userCredentials.email
-                    ) {
-                        setUserInfo({
-                            userID: userCredentials.userID,
-                            fName: userCredentials.fName,
-                            lName: userCredentials.lName,
-                            email: userCredentials.email,
-                            role: decoded.role,
-                            profileImage: userCredentials.profileImage || "",
-                        });
-                    }
-                } catch (error) {
-                    console.error("Error decoding token:", error);
-                }
-            }
-        };
-        fetchUserInfo();
-    }, [token]);
+    // useEffect(() => {
+    //     const fetchUserInfo = async () => {
+    //         if (token) {
+    //             try {
+    //                 const decoded = jwtDecode<UserInfo>(token);
+    //                 setDecodedToken(decoded);
+    //                 const userCredentials = getUser()
+    //                 if (
+    //                     userCredentials?.userID &&
+    //                     userCredentials.fName &&
+    //                     userCredentials.lName &&
+    //                     userCredentials.email
+    //                 ) {
+    //                     setUserInfo({
+    //                         userID: userCredentials.userID,
+    //                         fName: userCredentials.fName,
+    //                         lName: userCredentials.lName,
+    //                         email: userCredentials.email,
+    //                         role: decoded.role,
+    //                         profileImage: userCredentials.profileImage || "",
+    //                     });
+    //                 }
+    //             } catch (error) {
+    //                 console.error("Error decoding token:", error);
+    //             }
+    //         }
+    //     };
+    //     fetchUserInfo();
+    // }, [token]);
 
     const resetToken = async () => {
         if (token && decodedToken?.userID) {
-            await deleteUserCredentials(decodedToken.userID);
+            removeUser();
             setToken(null);
             setDecodedToken(null);
         }

@@ -2,7 +2,7 @@ export type ImageAnalysisDetails = Tree &
     Image & { analyzedImage: string } & Analysis & { diseases: (DiseaseIdentified & Disease)[] | TfJsDisease[]};
 
 export interface TfJsDisease{
-    diseaseIdentifiedID: string;
+    diseaseIdentifiedID?: string;
     diseaseName:string
     likelihoodScore: number;
 }
@@ -71,7 +71,7 @@ export interface Disease {
     addedAt: Date;
 }
 export interface DiseaseIdentified {
-    diseaseIdentifiedID: string;
+    diseaseidentifiedID: string;
     analysisID: string;
     diseaseID: string | null;
     diseaseName:string;
@@ -85,7 +85,7 @@ export interface Analysis {
 }
 export interface Image {
     imageID: string;
-    userID: number;
+    userID: string;
     treeID: string;
     imageData: string;
     status: number;
@@ -93,14 +93,14 @@ export interface Image {
 }
 export interface Tree {
     treeID: string;
-    userID: number;
+    userID: string;
     treeCode: string;
     description: string;
     status: number;
     addedAt: Date;
 }
 export interface User {
-    userID: number;
+    userID: string;
     fName: string;
     lName: string;
     email: string;

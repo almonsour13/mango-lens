@@ -56,7 +56,7 @@ import { useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { Tree } from "@/types/types";
 import React from "react";
-import { getTreeByID, updateTreeByID } from "@/stores/store";
+import { getTreeByID, updateTreeByID } from "@/stores/tree";
 
 const formSchema = z.object({
     treeCode: z
@@ -121,7 +121,7 @@ export default function Page({
         } finally {
             setLoading(false);
         }
-    }, [userInfo?.userID, treeID, form]);
+    }, [treeID, form]);
 
     useEffect(() => {
         if (treeID && userInfo?.userID) {

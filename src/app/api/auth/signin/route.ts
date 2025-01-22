@@ -3,6 +3,7 @@ import { sign } from "jsonwebtoken";
 import { compare } from "bcrypt";
 import { query } from "@/lib/db/db";
 import { User } from "@/types/types";
+import { supabase } from "@/supabase/supabase";
 
 export async function POST(req: Request) {
     try {
@@ -16,20 +17,21 @@ export async function POST(req: Request) {
         const { email, password } = await req.json();
 
         // Get user from database
-        const users = (await query(
-            "SELECT * FROM user WHERE email = ?",
-            [email]
-        )) as (User & {password:string})[];
+        const { data, error } = await supabase.from("user").select("*").eq("email", email);
+        if(!data || data.length === 0) {
+            return NextResponse.json(
+                { error: "User not found" },
+                { status: 404 });
+        }
 
-        const user = users[0];
-
+        const user = data[0];
+        
         if (!user) {
             return NextResponse.json(
                 { error: "User not found" },
                 { status: 404 }
             );
         }
-
         const passwordMatch = await compare(password, user.password);
 
         if (!passwordMatch) {
@@ -38,12 +40,8 @@ export async function POST(req: Request) {
                 { status: 401 }
             );
         }
-
-        const hasProfile = (await query(
-            `SELECT imageData FROM userprofileimage WHERE status = 1 AND userID = ?`,
-            [user.userID]
-        )) as { imageData: string }[];
-
+        
+        const hasProfile = await supabase.from("userprofileimage").select("imageData").eq("userID", user.userID);
         const token = sign(
             {
                 userID: user.userID,
@@ -62,7 +60,7 @@ export async function POST(req: Request) {
                 fName: user.fName,
                 lName: user.lName,
                 role: user.role,
-                profileImage: hasProfile.length > 0?hasProfile[0].imageData : "",
+                profileImage: hasProfile?.data && hasProfile.data[0]?.imageData ? hasProfile.data[0].imageData : ''
             },
 
         });

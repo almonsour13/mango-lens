@@ -12,13 +12,13 @@ import {
 import { useAuth } from "@/context/auth-context";
 import { useScanResult } from "@/context/scan-result-context";
 import { toast } from "@/hooks/use-toast";
-import { saveScan } from "@/stores/store";
-import { Trash2, X } from "lucide-react";
+import { LoaderCircle, Save, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import ResultImage from "../../result-image";
 import AnalysisCarousel from "../../result-image-carousel";
 import ResultDetails from "./result-details";
 import ShowImage from "./show-image";
+import { saveScan } from "@/stores/image";
 
 export default function ResultDisplay() {
     const { scanResult, setScanResult } = useScanResult();
@@ -153,13 +153,13 @@ export default function ResultDisplay() {
                     <Button
                         className="bg-primary"
                         onClick={handleSave}
-                        // disabled={isSaving}
+                        disabled={isSaving}
                     >
-                        {/* {isSaving ? (
+                        {isSaving ? (
                             <LoaderCircle className="h-4 w-4 animate-spin" />
                         ) : (
                             <Save className="h-4 w-4" />
-                        )} */}
+                        )}
                         Save Result
                     </Button>
                 </CardFooter>

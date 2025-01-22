@@ -5,7 +5,7 @@ import { DB_CONFIG } from "../indexedDBconfig";
 
 const USER_INFO_STORE = DB_CONFIG.stores.user;
 
-export async function getUserCredentials(userID: number): Promise<User | null> {
+export async function getUserCredentials(userID: string): Promise<User | null> {
     const userCredentials = await dbOperation<User | null>(USER_INFO_STORE, 'readonly', (store) => store.get(userID));
     if (!userCredentials) return null;
     return {
@@ -25,7 +25,7 @@ export async function updateUserCredentials(userID: number, profile: Partial<Use
         store.put({...profile, userID})
     );
 }
-export async function deleteUserCredentials(userID: number): Promise<void> {
+export async function deleteUserCredentials(userID: string): Promise<void> {
     return dbOperation<void>(USER_INFO_STORE, 'readwrite', (store) => 
         store.delete(userID)
     );

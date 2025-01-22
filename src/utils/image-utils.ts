@@ -1,4 +1,4 @@
-export function convertBlobToBase64(imageData: string | null | Buffer<ArrayBuffer>): string | null {
+export function convertBlobToBase64(imageData: string | null | Buffer): string | null {
     if (!imageData) return null;
     return `data:image/jpeg;base64,${Buffer.from(imageData).toString('base64')}`;
 }

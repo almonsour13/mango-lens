@@ -33,6 +33,7 @@ import {
     getUserCredentials,
     storeUserCredentials,
 } from "@/utils/indexedDB/store/user-info-store";
+import { getUser, removeUser, setUser } from "@/stores/user-store";
 
 const formSchema = z.object({
     email: z.string().email({ message: "Please enter a valid email address." }),
@@ -65,10 +66,10 @@ export default function LoginForm() {
 
             if (response.ok) {
                 const { user, redirect } = await response.json();
-                if (await getUserCredentials(user.userID)) {
-                    await deleteUserCredentials(user.userID);
+                if(getUser()){
+                    removeUser()
                 }
-                await storeUserCredentials(user);
+                setUser(user)
 
                 router.push(redirect);
             } else {
@@ -196,7 +197,7 @@ export default function LoginForm() {
                     </CardContent>
                 </Card>
             </div>
-            <div className="flex-1 hidden md:block bg-muted">
+            {/* <div className="flex-1 hidden md:block bg-muted">
                 <div className="flex items-center justify-center w-full h-full">
                     <Image
                         src="/assets/icon/icon.png"
@@ -206,7 +207,7 @@ export default function LoginForm() {
                         className="object-cover w-56 h-56"
                     />
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }

@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
 import Link from "next/link";
 import { TreeImageSkeletonCard } from "@/components/skeleton/skeleton-card";
-import { getImagesByUserID } from "@/stores/store";
+import { getImagesByUserID } from "@/stores/image";
 
 type images = img & {analyzedImage:string} & { treeCode: number } & {
     diseases: { likelihoodScore: number; diseaseName: string }[];

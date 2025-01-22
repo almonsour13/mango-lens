@@ -26,7 +26,8 @@ import { useAuth } from "@/context/auth-context";
 import { Tree } from "@/types/types";
 import { toast } from "@/hooks/use-toast";
 import { DialogDescription } from "@radix-ui/react-dialog";
-import { getTreesByUser, migrateImage } from "@/stores/store";
+import { getTreesByUser } from "@/stores/tree";
+import { migrateImage } from "@/stores/image";
 
 const formSchema = z.object({
     treeCode: z

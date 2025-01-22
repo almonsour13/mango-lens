@@ -30,7 +30,6 @@ import { useEffect, useState } from "react";
 import { generateImage } from "@/actions/generate-image-analysis-report";
 import { DiseaseColor } from "@/constant/color";
 import { useAuth } from "@/context/auth-context";
-import { getImageByID } from "@/stores/store";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import Link from "next/link";
 import ConfirmationModal from "../modal/confirmation-modal";
@@ -44,6 +43,7 @@ import { Progress } from "../ui/progress";
 import { Separator } from "../ui/separator";
 import ResultImage from "./result-image";
 import AnalysisCarousel from "./result-image-carousel";
+import { getImageByID } from "@/stores/image";
 
 export default function ImageDetails({ imageID }: { imageID: string }) {
     const { toast } = useToast();
@@ -271,7 +271,7 @@ function ResultDetails({
                     <Trees className="h-5 w-5 text-muted-foreground" />
                     <span className="text-base font-medium">Tree Code:</span>
                     <Link
-                        href={`/user/tree/${imageDetails.treeCode}`}
+                        href={`/user/tree/${imageDetails.treeID}`}
                         className="text-base font-semibold hover:underline"
                     >
                         {imageDetails.treeCode || "N/A"}
@@ -295,11 +295,11 @@ function ResultDetails({
                     </span>
                 </div>
                 <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
-                    {imageDetails.diseases.map((disease) => {
+                    {imageDetails.diseases.map((disease, index) => {
                         const color: string = DiseaseColor(disease.diseaseName);
                         return (
                             <Card
-                                key={disease.diseaseIdentifiedID}
+                                key={index}
                                 className={`border border-${color} text-${color}`}
                             >
                                 <CardHeader className="pb-2">

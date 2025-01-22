@@ -47,7 +47,7 @@ import { Separator } from "@/components/ui/separator";
 import React from "react";
 import { use$ } from "@legendapp/state/react";
 import "@legendapp/state/react";
-import { addTree } from "@/stores/store";
+import { addTree } from "@/stores/tree";
 
 interface Message {
     id: string;
@@ -105,6 +105,7 @@ export default function Page() {
             // treeImage: values.treeImage,
         };
         try {
+            console.log("adding")
             addTree(userInfo?.userID, values.treeCode, values.description);
             toast({
                 title: "Tree Added",    
@@ -135,7 +136,6 @@ export default function Page() {
             //         description: error,
             //     });
             // }
-            console.log("Asdads");
         } catch (error) {
             console.log(error);
             setError("Failed to add tree. Please try again.");

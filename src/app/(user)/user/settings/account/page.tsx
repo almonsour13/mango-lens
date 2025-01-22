@@ -122,7 +122,7 @@ export default function AccountSettings() {
                         email: values.email,
                         profileImage: userInfo.profileImage,
                     };
-                    await updateUserCredentials(userInfo?.userID, userData);
+                    // await updateUserCredentials(userInfo?.userID, userData);
                 }
             } else {
                 if (data.error === "Incorrect Password") {

@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { sign, verify } from "jsonwebtoken";
 import { hash } from "bcrypt";
-import { query } from "@/lib/db/db";
+// import { query } from "@/lib/db/db";
+import { supabase } from "@/supabase/supabase";
+import { v4 as uuidv4 } from "uuid";
 
 export async function POST(request: Request) {
     try {
@@ -30,13 +32,12 @@ export async function POST(request: Request) {
                 verificationCode: string;
             };
         } catch (error) {
-            console.log(error)
+            console.log(error);
             return NextResponse.json(
                 { success: false, message: "Invalid token." },
-                { status: 400 },
+                { status: 400 }
             );
         }
-        console.log(decodedToken);
 
         const { fName, lName, password, verificationCode } = decodedToken;
 
@@ -49,12 +50,30 @@ export async function POST(request: Request) {
 
         const hashedPassword = await hash(password, 10);
 
-        const result = (await query(
-            "INSERT INTO user (fName, lName, email, password, role) VALUES (?, ?, ?, ?, ?)",
-            [fName, lName, email, hashedPassword, 2]
-        )) as { insertId: number };
+        const { data, error } = await supabase.from("user").insert([
+            {
+                userID: uuidv4(),
+                fName: fName,
+                lLame: lName,
+                email: email,
+                password: hashedPassword,
+                role: 2,
+            },
+        ]);
 
-        const newUserId = result.insertId;
+        if (error) {
+            console.error("Error inserting user:", error);
+        } else {
+            console.log("User inserted successfully:", data);
+        }
+        if(!data) {
+            return NextResponse.json(
+                { success: false, message: "An error occurred during verification." },
+                { status: 500 }
+            );
+        }
+        console.log(data);
+        const newUserId = 1;
 
         const newToken = sign(
             {
@@ -67,7 +86,7 @@ export async function POST(request: Request) {
         const response = NextResponse.json({
             success: true,
             message: "Email verified successfully. Account created.",
-            redirect:'/user',
+            redirect: "/user",
             role: 2,
             user: {
                 userID: newUserId,
@@ -75,7 +94,7 @@ export async function POST(request: Request) {
                 lName,
                 email,
                 role: 2,
-                profileImage:''
+                profileImage: "",
             },
         });
 

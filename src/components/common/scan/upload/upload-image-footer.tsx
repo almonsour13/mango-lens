@@ -27,7 +27,7 @@ import { storePendingProcessItem } from "@/utils/indexedDB/store/pending-store";
 import { predict } from "@/utils/api/predict";
 import { usePendingProcess } from "@/context/pending-process-context";
 import { useModel } from "@/context/model-context";
-import { getTreesByUser } from "@/stores/store";
+import { getTreesByUser } from "@/stores/tree";
 
 interface FooterProps {
     isNonSquare: boolean;
@@ -66,14 +66,8 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
         const fetchTrees = async () => {
             setLoading(true);
             try {
-                // const response = await fetch(
-                //     `/api/user/${userInfo?.userID}/tree?type=2`
-                // );
-                // if (!response.ok) {
-                //     throw new Error("Failed to fetch trees");
-                // }
-                // const data = await response.json();
-                const t = getTreesByUser(userInfo?.userID || 0);
+                if(!userInfo?.userID) return;
+                const t = getTreesByUser(userInfo?.userID );
                 setTrees(t);
                 setLoading(false);
             } catch (error) {
@@ -144,7 +138,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
             imageUrl: croppedImage || capturedImage,
         };
         setOpenPendingModal(false);
-        await storePendingProcessItem(data);
+        // await storePendingProcessItem(data);
         fetchPendings();
         toast({
             description: "Successfully added to the pending",

@@ -123,7 +123,7 @@ export default function ProfileSettings() {
                         profileImage:
                         data.user.imageData ,
                     };
-                    await updateUserCredentials(userInfo?.userID, userData);
+                    // await updateUserCredentials(userInfo?.userID, userData);
                     setCapturedImage("");
                 }
             } else {

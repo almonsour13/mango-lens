@@ -34,7 +34,7 @@ export const TreeImagesTable = ({ images }: TreeImagesTableProps) => {
         []
     );
 
-    const handleRowClick = (imageId: number) => {
+    const handleRowClick = (imageId: string) => {
         router.push(`${pathname}/${imageId}`);
     };
 

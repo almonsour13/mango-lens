@@ -52,7 +52,7 @@ const formSchema = z.object({
 });
 export interface Tree {
     treeID: string;
-    userID: number;
+    userID: string;
     treeCode: string;
     description: string;
     status: number;
@@ -197,7 +197,7 @@ export default function TreeModal({
                             {
                                 ...values,
                                 treeID: tree.treeID,
-                                userID: userInfo?.userID ?? 0,
+                                userID: userInfo?.userID ?? '',
                                 addedAt: tree.addedAt,
                                 status: status,
                             },
