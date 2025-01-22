@@ -26,6 +26,8 @@ import { useCameraContext } from "@/context/camera-context";
 import { storePendingProcessItem } from "@/utils/indexedDB/store/pending-store";
 import { predict } from "@/utils/api/predict";
 import { usePendingProcess } from "@/context/pending-process-context";
+import { useModel } from "@/context/model-context";
+import { getTreesByUser } from "@/stores/store";
 
 interface FooterProps {
     isNonSquare: boolean;
@@ -57,19 +59,22 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
 
     const [openTreeModal, setOpenTreeModal] = useState(false);
 
-    const {fetchPendings} = usePendingProcess();
+    const { fetchPendings } = usePendingProcess();
+
+    const { tfPredict } = useModel();
     useEffect(() => {
         const fetchTrees = async () => {
             setLoading(true);
             try {
-                const response = await fetch(
-                    `/api/user/${userInfo?.userID}/tree?type=2`
-                );
-                if (!response.ok) {
-                    throw new Error("Failed to fetch trees");
-                }
-                const data = await response.json();
-                setTrees(data.treeWidthImage);
+                // const response = await fetch(
+                //     `/api/user/${userInfo?.userID}/tree?type=2`
+                // );
+                // if (!response.ok) {
+                //     throw new Error("Failed to fetch trees");
+                // }
+                // const data = await response.json();
+                const t = getTreesByUser(userInfo?.userID || 0);
+                setTrees(t);
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching trees:", error);
@@ -107,11 +112,17 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
         setIsScanning(true);
 
         try {
-            const result = await predict(croppedImage || capturedImage);
-            if (result) {
+            // const result = await predict(croppedImage || capturedImage);
+
+            const result = await tfPredict(croppedImage || capturedImage);
+            console.log(result);
+            if (result && result.originalImage && result.analyzedImage) {
                 setScanResult({
                     ...result,
                     treeCode: treeCode,
+                    originalImage: result.originalImage,
+                    analyzedImage: result.analyzedImage,
+                    diseases: result.diseases || [],
                 });
             }
         } catch (error) {
@@ -198,14 +209,12 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
             </div>
             <Button
                 className={`w-full ${
-                    !capturedImage || !treeCode || isScanning || isNonSquare
+                    !capturedImage || isScanning
                         ? " bg-primary/50"
                         : " bg-primary"
                 }`}
                 onClick={handleScan}
-                disabled={
-                    !capturedImage || !treeCode || isScanning || isNonSquare
-                }
+                disabled={!capturedImage || isScanning}
             >
                 {" "}
                 {isScanning ? (

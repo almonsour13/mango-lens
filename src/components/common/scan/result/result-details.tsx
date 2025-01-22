@@ -7,6 +7,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { DiseaseColor } from "@/constant/color";
 import { ScanResult } from "@/types/types";
 import { Trees } from "lucide-react";
@@ -34,11 +35,11 @@ export default function ResultDetails({
                 <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
                     {scanResult.diseases &&
                         scanResult.diseases.length > 0 &&
-                        scanResult.diseases.map((disease) => {
+                        scanResult.diseases.map((disease, index) => {
                             const color = DiseaseColor(disease.diseaseName);
                             return (
                                 <Card
-                                    key={disease.diseaseID}
+                                    key={index}
                                     className={`border ${"border-" + color}`}
                                 >
                                     <CardHeader className="pb-2">
@@ -52,9 +53,12 @@ export default function ResultDetails({
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent>
-                                        <p className="text-sm">
-                                            {disease.description}
-                                        </p>
+                                        <Progress
+                                            value={
+                                                disease.likelihoodScore * 100
+                                            }
+                                            className="h-2"
+                                        />
                                     </CardContent>
                                 </Card>
                             );

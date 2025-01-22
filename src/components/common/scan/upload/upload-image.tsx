@@ -67,15 +67,15 @@ export default function UploadField() {
                         />
                     </CardContent>
                     <CardFooter className="flex-1 p-0">
-        <Suspense fallback={<div>sad</div>}>
-                        <ImageUploadFooter
-                            isNonSquare={isNonSquare}
-                            croppedImage={croppedImage}
-                            setCroppedImage={setCroppedImage}
-                            isScanning={isScanning}
-                            setIsScanning={setIsScanning}
-                        />
-        </Suspense>
+                        <Suspense fallback={<div>sad</div>}>
+                            <ImageUploadFooter
+                                isNonSquare={isNonSquare}
+                                croppedImage={croppedImage}
+                                setCroppedImage={setCroppedImage}
+                                isScanning={isScanning}
+                                setIsScanning={setIsScanning}
+                            />
+                        </Suspense>
                     </CardFooter>
                 </Card>
             </PageWrapper>

@@ -51,7 +51,7 @@ const formSchema = z.object({
     treeImage: z.string().optional(),
 });
 export interface Tree {
-    treeID: number;
+    treeID: string;
     userID: number;
     treeCode: string;
     description: string;
@@ -65,7 +65,7 @@ interface TreeModalProps {
     setOpenDialog: (value: boolean) => void;
     editingTrees?:
         | {
-              treeID: number;
+              treeID: string;
               treeCode: string;
               description: string;
               imagesLength: number;
@@ -76,7 +76,7 @@ interface TreeModalProps {
         | Tree;
     setEditingTrees?: (
         value: {
-            treeID: number;
+            treeID: string;
             treeCode: string;
             description: string;
             imagesLength: number;

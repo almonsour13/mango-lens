@@ -14,10 +14,10 @@ import {
 import Link from "next/link";
 
 interface ActionMenuProps {
-    treeID: number;
+    treeID: string;
     treeCode: string;
     status: number;
-    handleAction: (e: React.MouseEvent<HTMLDivElement>, action: string, treeID: number) => void;
+    handleAction: (e: React.MouseEvent<HTMLDivElement>, action: string, treeID: string) => void;
 }
 export function TreeActionMenu({
     treeID,

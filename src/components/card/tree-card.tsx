@@ -8,7 +8,7 @@ import { TreeActionMenu } from "../action menu/tree-action-menu";
 
 interface TreeWithImage extends Tree {
     treeImage: string;
-    recentImage: string;
+    recentImage: string | null;
     imagesLength: number;
 }
 
@@ -17,7 +17,7 @@ export default function TreeCard({
     handleAction,
 }: {
     tree: TreeWithImage;
-    handleAction: (e: React.MouseEvent<HTMLDivElement>, action: string, treeID: number) => void;
+    handleAction: (e: React.MouseEvent<HTMLDivElement>, action: string, treeID: string) => void;
 }) {
     const pathname = usePathname();
 

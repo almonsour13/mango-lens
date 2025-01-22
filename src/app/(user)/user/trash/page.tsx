@@ -30,6 +30,7 @@ import { toast } from "@/hooks/use-toast";
 import { TrashTable } from "@/components/table/trash-table";
 import { Separator } from "@/components/ui/separator";
 import { TrashSkeletonCard } from "@/components/skeleton/skeleton-card";
+import { getTrashByUserID } from "@/stores/trash";
 
 type TrashItem = TRS & { item: Tree | img };
 
@@ -48,6 +49,8 @@ export default function Trash() {
     const fetchTrashes = useCallback(async () => {
         setLoading(true);
         try {
+            if(!userInfo?.userID) return
+            const t = getTrashByUserID(userInfo.userID)
             const response = await fetch(`/api/user/${userInfo?.userID}/trash`);
             const data = await response.json();
 

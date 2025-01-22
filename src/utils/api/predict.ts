@@ -18,7 +18,7 @@ export const predict = async (image: string): Promise<PredictionResponse | null>
         // Handle error if the response is not OK
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        } 
 
         // Parse the prediction response
         const data = await response.json();

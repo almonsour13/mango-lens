@@ -26,6 +26,7 @@ import { useAuth } from "@/context/auth-context";
 import { Tree } from "@/types/types";
 import { toast } from "@/hooks/use-toast";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import { getTreesByUser, migrateImage } from "@/stores/store";
 
 const formSchema = z.object({
     treeCode: z
@@ -37,7 +38,7 @@ interface EditModalProps {
     openDialog: boolean;
     setOpenDialog: (value: boolean) => void;
     onMigrate: (newTreeCode: string) => void;
-    initialData: { imageID: number; currentTreeCode: string };
+    initialData: { imageID: string; currentTreeCode: string };
 }
 
 export default function MigrateImageModal({
@@ -61,14 +62,16 @@ export default function MigrateImageModal({
     useEffect(() => {
         const fetchTrees = async () => {
             try {
-                const response = await fetch(
-                    `/api/user/${userInfo?.userID}/tree?type=2`
-                );
-                if (!response.ok) {
-                    throw new Error("Failed to fetch trees");
-                }
-                const data = await response.json();
-                const treeData = data.treeWidthImage as Tree[];
+                if(!userInfo?.userID) return;
+                const t = getTreesByUser(userInfo?.userID)
+                // const response = await fetch(
+                //     `/api/user/${userInfo?.userID}/tree?type=2`
+                // );
+                // if (!response.ok) {
+                //     throw new Error("Failed to fetch trees");
+                // }
+                // const data = await response.json();
+                const treeData = t as Tree[];
 
                 setTrees(
                     treeData.filter(
@@ -101,20 +104,21 @@ export default function MigrateImageModal({
                     "New tree code must be different from the current one"
                 );
             }
-            const response = await fetch(
-                `/api/user/${userInfo?.userID}/images/${initialData.imageID}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        currentTreeCode: initialData.currentTreeCode,
-                        newTreeCode: values.treeCode,
-                    }),
-                }
-            );
-            if(response.ok){
+            // const response = await fetch(
+            //     `/api/user/${userInfo?.userID}/images/${initialData.imageID}`,
+            //     {
+            //         method: "PUT",
+            //         headers: {
+            //             "Content-Type": "application/json",
+            //         },
+            //         body: JSON.stringify({
+            //             currentTreeCode: initialData.currentTreeCode,
+            //             newTreeCode: values.treeCode,
+            //         }),
+            //     }
+            // );
+            const res = migrateImage(initialData.imageID, values.treeCode)
+            if(res){
                 await onMigrate(values.treeCode);
                 toast({
                     title: "Success",

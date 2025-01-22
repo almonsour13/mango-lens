@@ -12,7 +12,7 @@ import { TreeActionMenu } from "../action menu/tree-action-menu";
 import { formatDate } from "date-fns";
 
 interface TreeWithImage extends Tree {
-    recentImage: string;
+    recentImage: string | null;
     imagesLength: number;
 }
 export const TreeTable = ({
@@ -20,7 +20,7 @@ export const TreeTable = ({
     handleAction,
 }: {
     trees: TreeWithImage[];
-    handleAction: (e: React.MouseEvent<HTMLDivElement>, action: string, treeID: number) => void;
+    handleAction: (e: React.MouseEvent<HTMLDivElement>, action: string, treeID: string) => void;
 }) => {
     return (
         <Table className="border-0">

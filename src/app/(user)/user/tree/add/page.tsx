@@ -45,6 +45,15 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
+import { use$ } from "@legendapp/state/react";
+import "@legendapp/state/react";
+import { addTree } from "@/stores/store";
+
+interface Message {
+    id: string;
+    text: string;
+    timestamp: string;
+}
 
 const formSchema = z.object({
     treeCode: z
@@ -54,7 +63,6 @@ const formSchema = z.object({
     description: z.string().or(z.literal("")),
     treeImage: z.string().optional(),
 });
-
 
 export default function Page() {
     const [loading, setLoading] = useState(false);
@@ -71,7 +79,7 @@ export default function Page() {
     const { userInfo } = useAuth();
     const { setIsCameraOpen } = useCameraContext();
 
-    const router = useRouter()
+    const router = useRouter();
     const handleImageUpload = (file: File) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -89,38 +97,47 @@ export default function Page() {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setLoading(true);
+        if (!userInfo?.userID) return;
         const payload = {
+            userID: userInfo?.userID,
             treeCode: values.treeCode,
             description: values.description,
-            treeImage: values.treeImage,
+            // treeImage: values.treeImage,
         };
         try {
-            const response = await fetch(
-                `/api/user/${userInfo?.userID}/tree/`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(payload),
-                }
-            );
-            const data = await response.json();
-            if (response.ok) {
-                toast({
-                    title: "Tree Added",
-                    description: `Tree Added successfully.`,
-                });
-                router.back();
-            }else{
-                const error = data.error
-                toast({
-                    title: "Error Adding",
-                    description: error,
-                });
-            }
+            addTree(userInfo?.userID, values.treeCode, values.description);
+            toast({
+                title: "Tree Added",    
+                description: `Tree Added successfully.`,
+            });
+            router.back();
+            // const response = await fetch(
+            //     `/api/user/${userInfo?.userID}/tree/`,
+            //     {
+            //         method: "POST",
+            //         headers: {
+            //             "Content-Type": "application/json",
+            //         },
+            //         body: JSON.stringify(payload),
+            //     }
+            // );
+            // const data = await response.json();
+            // if (response.ok) {
+            //     toast({
+            //         title: "Tree Added",
+            //         description: `Tree Added successfully.`,
+            //     });
+            //     router.back();
+            // }else{
+            //     const error = data.error
+            //     toast({
+            //         title: "Error Adding",
+            //         description: error,
+            //     });
+            // }
+            console.log("Asdads");
         } catch (error) {
-            console.log(error)
+            console.log(error);
             setError("Failed to add tree. Please try again.");
         } finally {
             setLoading(false);

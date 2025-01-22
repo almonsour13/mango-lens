@@ -18,8 +18,9 @@ import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
 import Link from "next/link";
 import { TreeImageSkeletonCard } from "@/components/skeleton/skeleton-card";
+import { getImagesByUserID } from "@/stores/store";
 
-type images = img & {analyzedImage:string|null} & { treeCode: number } & {
+type images = img & {analyzedImage:string} & { treeCode: number } & {
     diseases: { likelihoodScore: number; diseaseName: string }[];
 };
 
@@ -35,13 +36,18 @@ export default function Gallery() {
     const fetchImages = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await fetch(
-                `/api/user/${userInfo?.userID}/images`,
-            );
-            if (response.ok) {
-                const data = await response.json();
-                setImages(data.images);
+            if(!userInfo?.userID) return;   
+            const i = getImagesByUserID(userInfo?.userID);
+            if(i){
+                setImages(i as images[]);
             }
+            // const response = await fetch(
+            //     `/api/user/${userInfo?.userID}/images`,
+            // );
+            // if (response.ok) {
+            //     const data = await response.json();
+            //     setImages(data.images);
+            // }
         } catch (error) {
             console.error("Error fetching trees:", error);
         } finally {

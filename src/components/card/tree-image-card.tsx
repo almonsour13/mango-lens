@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { Image as img } from "@/types/types";
 import { formatDistanceToNow } from "date-fns";
 
-type images = img & { analyzedImage: string | null } & { treeCode?: number } & {
+type images = img & { analyzedImage: string } & { treeCode?: number } & {
     diseases: { likelihoodScore: number; diseaseName: string }[];
 };
 

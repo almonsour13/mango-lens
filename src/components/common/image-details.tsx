@@ -1,19 +1,5 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { formatDate } from "date-fns";
-import {
-    Edit,
-    Trash2,
-    Trees,
-    Calendar,
-    ArrowLeft,
-    ArrowDownToLine,
-    MessageCircle,
-    MoreVertical,
-    RefreshCcw,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -22,35 +8,44 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
 import PageWrapper from "@/components/wrapper/page-wrapper";
+import { useToast } from "@/hooks/use-toast";
 import {
-    Tree,
-    Image as Img,
-    Analysis,
-    DiseaseIdentified,
-    Disease,
-    ImageAnalysisDetails,
-    BoundingBox,
+    ImageAnalysisDetails
 } from "@/types/types";
+import { formatDate } from "date-fns";
+import {
+    ArrowDownToLine,
+    ArrowLeft,
+    Calendar,
+    Edit,
+    MessageCircle,
+    MoreVertical,
+    Trash2,
+    Trees
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-import ResultImage from "./result-image";
-import { Separator } from "../ui/separator";
-import { useAuth } from "@/context/auth-context";
-import ConfirmationModal from "../modal/confirmation-modal";
-import { DiseaseColor } from "@/constant/color";
-import MigrateImageModal from "../modal/migrate-image-modal";
-import Link from "next/link";
 import { generateImage } from "@/actions/generate-image-analysis-report";
+import { DiseaseColor } from "@/constant/color";
+import { useAuth } from "@/context/auth-context";
+import { getImageByID } from "@/stores/store";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
+import Link from "next/link";
+import ConfirmationModal from "../modal/confirmation-modal";
+import MigrateImageModal from "../modal/migrate-image-modal";
 import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { Progress } from "../ui/progress";
+import { Separator } from "../ui/separator";
+import ResultImage from "./result-image";
 import AnalysisCarousel from "./result-image-carousel";
 
-export default function ImageDetails({ imageID }: { imageID: number }) {
+export default function ImageDetails({ imageID }: { imageID: string }) {
     const { toast } = useToast();
     const router = useRouter();
     const [imageDetails, setImageDetails] =
@@ -62,13 +57,16 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
     useEffect(() => {
         const fetchImageDetails = async () => {
             try {
-                const response = await fetch(
-                    `/api/user/${userInfo?.userID}/images/${imageID}`
-                );
-                if (!response.ok)
-                    throw new Error("Failed to fetch image details");
-                const data = await response.json();
-                setImageDetails(data);
+                const i = await getImageByID(imageID);
+                console.log(i)
+                setImageDetails(i as ImageAnalysisDetails);
+                // const response = await fetch(
+                //     `/api/user/${userInfo?.userID}/images/${imageID}`
+                // );
+                // if (!response.ok)
+                //     throw new Error("Failed to fetch image details");
+                // const data = await response.json();
+                // setImageDetails(data);
             } catch (error) {
                 console.error("Error fetching image details:", error);
                 toast({
@@ -228,12 +226,12 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
                             <ResultImage
                                 originalImage={imageDetails.imageData}
                                 analyzedImage={imageDetails.analyzedImage || ""}
-                                boundingBoxes={imageDetails.boundingBoxes}
+                                // boundingBoxes={imageDetails.boundingBoxes}
                             />
                             <AnalysisCarousel
                                 originalImage={imageDetails.imageData}
                                 analyzedImage={imageDetails.analyzedImage || ""}
-                                boundingBoxes={imageDetails.boundingBoxes}
+                                // boundingBoxes={imageDetails.boundingBoxes}
                             />
 
                             <ResultDetails imageDetails={imageDetails} />
@@ -251,7 +249,7 @@ export default function ImageDetails({ imageID }: { imageID: number }) {
                         setOpenDialog={setIsMigrateModalOpen}
                         onMigrate={handleMigrateImage}
                         initialData={{
-                            imageID: imageDetails?.imageID || 0,
+                            imageID: imageDetails?.imageID || '',
                             currentTreeCode: imageDetails?.treeCode || "",
                         }}
                     />
@@ -301,7 +299,7 @@ function ResultDetails({
                         const color: string = DiseaseColor(disease.diseaseName);
                         return (
                             <Card
-                                key={disease.diseaseID}
+                                key={disease.diseaseIdentifiedID}
                                 className={`border border-${color} text-${color}`}
                             >
                                 <CardHeader className="pb-2">
@@ -314,9 +312,12 @@ function ResultDetails({
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <p className="text-sm">
-                                        {disease.description}
-                                    </p>
+                                <Progress
+                                            value={
+                                                disease.likelihoodScore * 100
+                                            }
+                                            className="h-2"
+                                        />
                                 </CardContent>
                             </Card>
                         );

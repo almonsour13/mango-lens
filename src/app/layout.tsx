@@ -6,6 +6,7 @@ import { AuthProvider } from "@/context/auth-context";
 // import { CameraProvider } from "@/context/user-camera-context";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { MetaData } from "@/constant/metaData";
+import { ModelProvider } from "@/context/model-context";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -56,7 +57,9 @@ export default function RootLayout({
           <AuthProvider>
             {/* <CameraProvider>
               <CaptureImageProvider> */}
+              <ModelProvider>
                 <ScrollArea>{children}</ScrollArea>
+                </ModelProvider>
               {/* </CaptureImageProvider>
             </CameraProvider> */}
           </AuthProvider>

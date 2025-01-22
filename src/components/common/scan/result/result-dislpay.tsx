@@ -1,24 +1,24 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
-import { X, Save, Trash2, LoaderCircle } from "lucide-react";
+import ConfirmationModal from "@/components/modal/confirmation-modal";
+import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
+    CardFooter,
     CardHeader,
     CardTitle,
-    CardFooter,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
-import { useScanResult } from "@/context/scan-result-context";
 import { useAuth } from "@/context/auth-context";
+import { useScanResult } from "@/context/scan-result-context";
+import { toast } from "@/hooks/use-toast";
+import { saveScan } from "@/stores/store";
+import { Trash2, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import ResultImage from "../../result-image";
+import AnalysisCarousel from "../../result-image-carousel";
 import ResultDetails from "./result-details";
 import ShowImage from "./show-image";
-import ConfirmationModal from "@/components/modal/confirmation-modal";
-import { Disease, DiseaseIdentified } from "@/types/types";
-import AnalysisCarousel from "../../result-image-carousel";
 
 export default function ResultDisplay() {
     const { scanResult, setScanResult } = useScanResult();
@@ -43,28 +43,38 @@ export default function ResultDisplay() {
             if (isSaving) return;
 
             setIsSaving(true);
-            const saveResponse = await fetch("/api/scan/save", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userID: userInfo?.userID, scanResult }),
-            });
-            console.log(scanResult)
-            if (!saveResponse.ok) {
-                const { error } = await saveResponse.json();
-                throw new Error(error || "Failed to save analysis result.");
-            }
-            if (saveResponse.ok) {
-                setIsVisible(false);
-                setScanResult(null);
-                setTimeout(() => {
-                    toast({
-                        title: "Result Saved",
-                        description:
-                            "The scan result has been saved successfully.",
-                    });
-                }, 300);
-                setIsSaving(false);
-            }
+            // const saveResponse = await fetch("/api/scan/save", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify({ userID: userInfo?.userID, scanResult }),
+            // });
+            // if (!saveResponse.ok) {
+            //     const { error } = await saveResponse.json();
+            //     throw new Error(error || "Failed to save analysis result.");
+            // }
+            // if (saveResponse.ok) {
+            //     setIsVisible(false);
+            //     setScanResult(null);
+            //     setTimeout(() => {
+            //         toast({
+            //             title: "Result Saved",
+            //             description:
+            //                 "The scan result has been saved successfully.",
+            //         });
+            //     }, 300);
+            //     setIsSaving(false);
+            // }
+            if (!userInfo?.userID) return;
+            await saveScan(scanResult, userInfo?.userID);
+            setIsVisible(false);
+            setScanResult(null);
+            setTimeout(() => {
+                toast({
+                    title: "Result Saved",
+                    description: "The scan result has been saved successfully.",
+                });
+            }, 300);
+            setIsSaving(false);
         } catch (error) {
             console.error("Error while saving scan result:", error);
             toast({
@@ -143,13 +153,13 @@ export default function ResultDisplay() {
                     <Button
                         className="bg-primary"
                         onClick={handleSave}
-                        disabled={isSaving}
+                        // disabled={isSaving}
                     >
-                        {isSaving ? (
+                        {/* {isSaving ? (
                             <LoaderCircle className="h-4 w-4 animate-spin" />
                         ) : (
                             <Save className="h-4 w-4" />
-                        )}
+                        )} */}
                         Save Result
                     </Button>
                 </CardFooter>

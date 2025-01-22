@@ -34,10 +34,11 @@ import { Toggle } from "@/components/ui/toggle";
 import TreeCard from "@/components/card/tree-card";
 import { TreeSkeletonCard } from "@/components/skeleton/skeleton-card";
 import { TreeTable } from "@/components/table/tree-table";
+import { getTreesByUser } from "@/stores/store";
 
 interface TreeWithImage extends Tree {
     treeImage:string;
-    recentImage: string;
+    recentImage: string | null;
     imagesLength: number;
 }
 
@@ -48,10 +49,10 @@ export default function TreePage() {
     const { userInfo } = useAuth();
     const [loading, setLoading] = useState(true);
     const [editingTrees, setEditingTrees] = useState<{
-        treeID: number;
+        treeID: string;
         treeCode: string;
         description: string;
-        imagesLength: number;
+        imagesLength?: number;
         status: number;
     } | null>(null);
 
@@ -61,20 +62,30 @@ export default function TreePage() {
     const [viewMode, setViewMode] = useState<"table" | "grid">("grid");
 
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
-    const [selectedTreeID, setSelectedTreeID] = useState(0);
+    const [selectedTreeID, setSelectedTreeID] = useState('');
 
     const fetchTrees = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await fetch(`/api/user/${userInfo?.userID}/tree`);
-            if (!response.ok) {
-                throw new Error("Failed to fetch image details");
-            }
-            const data = await response.json();
-            if(response.ok){
-                setTrees(data.treeWidthImage);
+            if(!userInfo?.userID) return
+            // const response = await fetch(`/api/user/${userInfo?.userID}/tree`);
+            // if (!response.ok) {
+            //     throw new Error("Failed to fetch image details");
+            // }
+            // const data = await response.json();
+            const t = getTreesByUser(userInfo.userID)
+            console.log(t)
+            if(t){
+                setTrees(t as TreeWithImage[]);
+                console.log(t)
                 setLoading(false);
             }
+            // if(response.ok){
+            //     // setTrees(t as TreeWithImage[]);
+            //     console.log(data.treeWidthImage);
+            //     console.log(t)
+            //     setLoading(false);
+            // }
         } catch (error) {
             console.error("Error fetching trees:", error);
         } finally {
@@ -129,11 +140,11 @@ export default function TreePage() {
         } catch (error) {
             console.error("Error deleting disease:", error);
         }
-        setSelectedTreeID(0);
+        setSelectedTreeID('');
         setConfirmationModalOpen(false);
     };
 
-    const handleAction = async (e: any, action: string, treeID: number) => {
+    const handleAction = async (e: any, action: string, treeID: string) => {
         e.preventDefault();
         switch (action) {
             case "Delete":
@@ -353,13 +364,13 @@ export default function TreePage() {
                 </CardContent>
             </PageWrapper>
             <AddButton setOpenDialog={setOpenDialog} />
-            <TreeModal
+            {/* <TreeModal
                 openDialog={openDialog}
                 setOpenDialog={setOpenDialog}
                 editingTrees={editingTrees}
                 setEditingTrees={setEditingTrees}
                 handleTreeAction={handleTreeAction}
-            />
+            /> */}
             <ConfirmationModal
                 open={confirmationModalOpen}
                 onClose={() => setConfirmationModalOpen(false)}
