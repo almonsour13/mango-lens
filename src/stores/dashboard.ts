@@ -69,7 +69,7 @@ export async function dashboardMetrics(userID: string) {
     return metrics;
 }
 
-export function recentAnalysis(userID: string) {
+export async function recentAnalysis(userID: string) {
     const trees = Object.values(observable(tree$).get() || {});
     const images = Object.values(observable(image$).get() || {});
     const i = images

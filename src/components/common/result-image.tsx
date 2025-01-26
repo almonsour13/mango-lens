@@ -2,17 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import ResultImageCard from "./scan/result-image-card";
-import { BoundingBox } from "@/types/types";
 
 interface ResultImageProps {
     originalImage: string;
     analyzedImage: string;
-    boundingBoxes?: BoundingBox[];
 }
 export default function ResultImage({
     originalImage,
     analyzedImage,
-    boundingBoxes,
 }: ResultImageProps) {
     const [currentImage, setCurrentImage] = useState<"original" | "analyzed">(
         "original"
@@ -31,7 +28,6 @@ export default function ResultImage({
                 originalImage={originalImage}
                 analyzedImage={analyzedImage}
                 label="Analyzed Image"
-                boundingBoxes={boundingBoxes}
             />
         </div>
     );

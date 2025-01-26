@@ -1,4 +1,4 @@
-import { observable } from "@legendapp/state";
+import { observable, syncState } from "@legendapp/state";
 import { observablePersistIndexedDB } from "@legendapp/state/persist-plugins/indexeddb";
 import { configureSynced, syncObservable } from "@legendapp/state/sync";
 import { configureSyncedSupabase, syncedSupabase } from '@legendapp/state/sync-plugins/supabase';
@@ -10,7 +10,6 @@ const generateId = () => uuidv4();
 configureSyncedSupabase({
     generateId
 });
-
 export const persistOptions = configureSynced(syncedSupabase, {
     persist: {
         plugin: observablePersistIndexedDB({

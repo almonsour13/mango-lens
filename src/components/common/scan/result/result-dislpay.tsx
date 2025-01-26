@@ -43,27 +43,6 @@ export default function ResultDisplay() {
             if (isSaving) return;
 
             setIsSaving(true);
-            // const saveResponse = await fetch("/api/scan/save", {
-            //     method: "POST",
-            //     headers: { "Content-Type": "application/json" },
-            //     body: JSON.stringify({ userID: userInfo?.userID, scanResult }),
-            // });
-            // if (!saveResponse.ok) {
-            //     const { error } = await saveResponse.json();
-            //     throw new Error(error || "Failed to save analysis result.");
-            // }
-            // if (saveResponse.ok) {
-            //     setIsVisible(false);
-            //     setScanResult(null);
-            //     setTimeout(() => {
-            //         toast({
-            //             title: "Result Saved",
-            //             description:
-            //                 "The scan result has been saved successfully.",
-            //         });
-            //     }, 300);
-            //     setIsSaving(false);
-            // }
             if (!userInfo?.userID) return;
             await saveScan(scanResult, userInfo?.userID);
             setIsVisible(false);
@@ -132,12 +111,10 @@ export default function ResultDisplay() {
                     <ResultImage
                         originalImage={scanResult.originalImage}
                         analyzedImage={scanResult.analyzedImage}
-                        boundingBoxes={scanResult.boundingBoxes}
                     />
                     <AnalysisCarousel
                         originalImage={scanResult.originalImage}
                         analyzedImage={scanResult.analyzedImage || ""}
-                        boundingBoxes={scanResult.boundingBoxes}
                     />
                     <ResultDetails scanResult={scanResult} />
                 </CardContent>

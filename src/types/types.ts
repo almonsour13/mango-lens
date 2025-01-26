@@ -10,7 +10,6 @@ export interface ScanResult {
     treeCode: string;
     originalImage: string;
     analyzedImage: string;
-    boundingBoxes?: BoundingBox[];
     diseases: (DiseaseIdentified & Disease)[] | TfJsDisease[] 
 }
 export interface PendingItem {
@@ -31,13 +30,13 @@ export interface Trash {
     deletedAt: Date;
 }
 
-export interface BoundingBox {
-    diseaseName: string;
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-}
+// export interface BoundingBox {
+//     diseaseName: string;
+//     x: number;
+//     y: number;
+//     w: number;
+//     h: number;
+// }
 interface DiseaseDetected {
     disease: Disease;
     likelihoodScore: number;

@@ -6,7 +6,6 @@ import {
     CarouselPrevious,
     type CarouselApi,
 } from "@/components/ui/carousel";
-import { BoundingBox } from "@/types/types";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "../ui/card";
@@ -16,13 +15,11 @@ import { Button } from "../ui/button";
 interface AnalysisCarouselProps {
     originalImage: string;
     analyzedImage: string;
-    boundingBoxes?: BoundingBox[];
 }
 
 export default function AnalysisCarousel({
     originalImage,
     analyzedImage,
-    boundingBoxes = [],
 }: AnalysisCarouselProps) {
     const [api, setApi] = useState<CarouselApi>();
     const [current, setCurrent] = useState(0);
@@ -43,31 +40,6 @@ export default function AnalysisCarousel({
         { src: analyzedImage, alt: "Analyzed Image", label: "Analyzed Image" },
     ];
 
-    const renderBoundingBoxes = () => (
-        <svg
-            className="absolute top-0 left-0 w-full h-full"
-            viewBox="0 0 244 244"
-            style={{ pointerEvents: "none" }}
-        >
-            {boundingBoxes?.map((box, index) => {
-                const color = "stroke-red-500";
-                return (
-                    <g key={index}>
-                        <rect
-                            x={box.x}
-                            y={box.y}
-                            width={box.w}
-                            height={box.h}
-                            fill="none"
-                            className={`${color}`}
-                            strokeWidth="2"
-                            style={{ pointerEvents: "all", cursor: "pointer" }}
-                        />
-                    </g>
-                );
-            })}
-        </svg>
-    );
     return (
         <Carousel setApi={setApi} className="w-full md:w-80 mx-auto md:hidden">
             <CarouselContent>
@@ -94,26 +66,6 @@ export default function AnalysisCarousel({
                                             {image.label}
                                         </p>
                                     </div>
-                                    {showBoundingBoxes &&
-                                        index == 1 &&
-                                        renderBoundingBoxes()}
-                                    {image.label === "Analyzed Image" &&
-                                        analyzedImage &&
-                                        boundingBoxes?.length && (
-                                            <div className="absolute top-4 right-4">
-                                                <Button
-                                                    variant="default"
-                                                    onClick={() =>
-                                                        setShowBoundingBoxes(
-                                                            !showBoundingBoxes
-                                                        )
-                                                    }
-                                                    className=" bg-black bg-opacity-50 w-8 h-8"
-                                                >
-                                                    <RefreshCcw className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        )}
                                 </div>
                             </CardContent>
                         </Card>

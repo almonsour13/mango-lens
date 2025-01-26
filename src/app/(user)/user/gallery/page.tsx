@@ -1,11 +1,16 @@
 "use client";
-import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
 import { useAuth } from "@/context/auth-context";
 import { useCallback, useEffect, useState } from "react";
 import { Image as img } from "@/types/types";
 import { TreeImageCard } from "@/components/card/tree-image-card";
 import PageWrapper from "@/components/wrapper/page-wrapper";
-import { ArrowDownUp, Grid, List, Plus, SlidersHorizontal } from 'lucide-react';
+import { ArrowDownUp, Grid, List, Plus, SlidersHorizontal } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -20,7 +25,7 @@ import Link from "next/link";
 import { TreeImageSkeletonCard } from "@/components/skeleton/skeleton-card";
 import { getImagesByUserID } from "@/stores/image";
 
-type images = img & {analyzedImage:string} & { treeCode: number } & {
+type images = img & { analyzedImage: string } & { treeCode: number } & {
     diseases: { likelihoodScore: number; diseaseName: string }[];
 };
 
@@ -29,50 +34,66 @@ export default function Gallery() {
     const [loading, setLoading] = useState(true);
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const [filterTreeCode, setFilterTreeCode] = useState<number | null>(null);
-    const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0)
+    const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
     const [viewMode, setViewMode] = useState<"table" | "grid">("grid");
     const { userInfo } = useAuth();
 
     const fetchImages = useCallback(async () => {
         setLoading(true);
         try {
-            if(!userInfo?.userID) return;   
+            if (!userInfo?.userID) return;
             const i = getImagesByUserID(userInfo?.userID);
-            if(i){
+            if (i) {
                 setImages(i as images[]);
+                console.log(i);
             }
-            // const response = await fetch(
-            //     `/api/user/${userInfo?.userID}/images`,
-            // );
-            // if (response.ok) {
-            //     const data = await response.json();
-            //     setImages(data.images);
-            // }
         } catch (error) {
             console.error("Error fetching trees:", error);
         } finally {
             setLoading(false);
         }
-    },[userInfo?.userID]);
+    }, [userInfo?.userID]);
 
     useEffect(() => {
         fetchImages();
     }, [userInfo?.userID, fetchImages]);
 
-    const uniqueTreeCodes = Array.from(new Set(images.map(img => img.treeCode))).sort((a, b) => a - b);
+    const uniqueTreeCodes = Array.from(
+        new Set(images.map((img) => img.treeCode))
+    ).sort((a, b) => a - b);
 
     const filteredImages = images
-        .filter((image) => (filterTreeCode === null || image.treeCode === filterTreeCode))
-        .filter((image) => 
-            filterStatus === 0 ||
-            filterStatus === 1 && image.diseases.some((disease) => disease.diseaseName === "Healthy" && disease.likelihoodScore > 50) ||
-            filterStatus === 2 && image.diseases.some((disease) => disease.diseaseName !== "Healthy" && disease.likelihoodScore > 50)
-        )    
+        .filter(
+            (image) =>
+                filterTreeCode === null || image.treeCode === filterTreeCode
+        )
+        .filter(
+            (image) =>
+                filterStatus === 0 ||
+                (filterStatus === 1 &&
+                    image.diseases.some(
+                        (disease) =>
+                            disease.diseaseName === "Healthy" &&
+                            disease.likelihoodScore > 50
+                    )) ||
+                (filterStatus === 2 &&
+                    image.diseases.some(
+                        (disease) =>
+                            disease.diseaseName !== "Healthy" &&
+                            disease.likelihoodScore > 50
+                    ))
+        )
         .sort((a, b) => {
             if (sortBy === "Newest") {
-                return new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime();
+                return (
+                    new Date(b.uploadedAt).getTime() -
+                    new Date(a.uploadedAt).getTime()
+                );
             } else {
-                return new Date(a.uploadedAt).getTime() - new Date(b.uploadedAt).getTime();
+                return (
+                    new Date(a.uploadedAt).getTime() -
+                    new Date(b.uploadedAt).getTime()
+                );
             }
         });
 
@@ -82,12 +103,10 @@ export default function Gallery() {
                 <div className="flex gap-2 h-5 items-center">
                     <h1 className="text-md">Gallery</h1>
                 </div>
-                
+
                 <Link href={`/user/scan`}>
-                    <Button
-                        variant="outline"
-                        className="w-10 md:w-auto">
-                        <Plus className="h-5 w-5"/>
+                    <Button variant="outline" className="w-10 md:w-auto">
+                        <Plus className="h-5 w-5" />
                         <span className="hidden md:block text-sm">
                             Scan New Image
                         </span>
@@ -117,7 +136,9 @@ export default function Gallery() {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="start">
-                                    <DropdownMenuLabel>Sort by: </DropdownMenuLabel>
+                                    <DropdownMenuLabel>
+                                        Sort by:{" "}
+                                    </DropdownMenuLabel>
                                     <DropdownMenuCheckboxItem
                                         checked={sortBy == "Newest"}
                                         onCheckedChange={() => {
@@ -140,63 +161,90 @@ export default function Gallery() {
                                 <DropdownMenuTrigger asChild>
                                     <Button
                                         variant="outline"
-                                        className={`gap-1 w-10 md:w-auto ${(filterStatus != 0 || filterTreeCode != null) && "border-primary"}`}
+                                        className={`gap-1 w-10 md:w-auto ${
+                                            (filterStatus != 0 ||
+                                                filterTreeCode != null) &&
+                                            "border-primary"
+                                        }`}
                                     >
                                         <SlidersHorizontal className="h-3.5 w-3.5" />
                                         <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                                { filterTreeCode ==  null &&  filterStatus == 0?
-                                                    "Filter" :
-                                                    filterTreeCode == null && filterStatus != 0?filterStatus == 1?"Healthy":"Diseases" :
-                                                    filterTreeCode !== null && filterStatus == 0?filterTreeCode:`${filterTreeCode} | ${filterStatus == 1?"Healthy":"Diseaeses"}`
-
-                                                }
+                                                {filterTreeCode == null &&
+                                                filterStatus == 0
+                                                    ? "Filter"
+                                                    : filterTreeCode == null &&
+                                                      filterStatus != 0
+                                                    ? filterStatus == 1
+                                                        ? "Healthy"
+                                                        : "Diseases"
+                                                    : filterTreeCode !== null &&
+                                                      filterStatus == 0
+                                                    ? filterTreeCode
+                                                    : `${filterTreeCode} | ${
+                                                          filterStatus == 1
+                                                              ? "Healthy"
+                                                              : "Diseaeses"
+                                                      }`}
                                             </span>
                                         </span>
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="start">
-                                    <DropdownMenuLabel>TreeCode: </DropdownMenuLabel>
+                                    <DropdownMenuLabel>
+                                        TreeCode:{" "}
+                                    </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuCheckboxItem
                                         checked={filterTreeCode === null}
-                                        onCheckedChange={() => setFilterTreeCode(null)}
+                                        onCheckedChange={() =>
+                                            setFilterTreeCode(null)
+                                        }
                                     >
                                         All
                                     </DropdownMenuCheckboxItem>
-                                    {uniqueTreeCodes.map(code => (
+                                    {uniqueTreeCodes.map((code, index) => (
                                         <DropdownMenuCheckboxItem
-                                            key={code}
+                                            key={index}
                                             checked={filterTreeCode === code}
-                                            onCheckedChange={() => setFilterTreeCode(code)}
+                                            onCheckedChange={() =>
+                                                setFilterTreeCode(code)
+                                            }
                                         >
                                             {code}
                                         </DropdownMenuCheckboxItem>
                                     ))}
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuLabel>Status: </DropdownMenuLabel>
+                                    <DropdownMenuLabel>
+                                        Status:{" "}
+                                    </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuCheckboxItem 
+                                    <DropdownMenuCheckboxItem
                                         checked={filterStatus == 0}
-                                        onCheckedChange={() => setFilterStatus(0)}
+                                        onCheckedChange={() =>
+                                            setFilterStatus(0)
+                                        }
                                     >
                                         All
                                     </DropdownMenuCheckboxItem>
-                                    <DropdownMenuCheckboxItem 
+                                    <DropdownMenuCheckboxItem
                                         checked={filterStatus == 1}
-                                        onCheckedChange={() => setFilterStatus(1)}
+                                        onCheckedChange={() =>
+                                            setFilterStatus(1)
+                                        }
                                     >
                                         Healthy
                                     </DropdownMenuCheckboxItem>
-                                    <DropdownMenuCheckboxItem 
+                                    <DropdownMenuCheckboxItem
                                         checked={filterStatus == 2}
-                                        onCheckedChange={() => setFilterStatus(2)}
+                                        onCheckedChange={() =>
+                                            setFilterStatus(2)
+                                        }
                                     >
                                         Diseases
                                     </DropdownMenuCheckboxItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                                                            
                         </div>
                         <Toggle
                             aria-label="Toggle view"
@@ -216,18 +264,22 @@ export default function Gallery() {
                     </div>
                 </div>
                 <CardContent className="p-0">
-                    {loading?(
-                        <TreeImageSkeletonCard/>
-                    ):(
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4">
-                        {filteredImages.map((image) => (
-                            <TreeImageCard key={image.imageID} image={image} />
-                        ))}
-                    </div>
+                    {loading ? (
+                        <div className="flex-1 w-full flex items-center justify-center">
+                            loading
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4">
+                            {filteredImages.map((image) => (
+                                <TreeImageCard
+                                    key={image.imageID}
+                                    image={image}
+                                />
+                            ))}
+                        </div>
                     )}
                 </CardContent>
             </PageWrapper>
         </>
     );
 }
-

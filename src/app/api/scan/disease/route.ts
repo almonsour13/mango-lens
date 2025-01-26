@@ -1,7 +1,6 @@
-import { NextResponse } from "next/server";
 import { query } from "@/lib/db/db";
-import { convertImageToBlob } from "@/utils/image-utils";
-import { BoundingBox, Disease } from "@/types/types";
+import { Disease } from "@/types/types";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
     try {

@@ -1,4 +1,4 @@
-import { BoundingBox, Disease, DiseaseIdentified, ScanResult } from "@/types/types";
+import { Disease, DiseaseIdentified, ScanResult } from "@/types/types";
 
 const API_BASE_URL = "https://pcjkn8p3-5000.asse.devtunnels.ms"
 

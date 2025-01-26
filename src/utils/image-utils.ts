@@ -1,6 +1,9 @@
 export function convertBlobToBase64(imageData: string | null | Buffer): string | null {
     if (!imageData) return null;
-    return `data:image/jpeg;base64,${Buffer.from(imageData).toString('base64')}`;
+    const parsedObject  = JSON.parse(imageData.toString())
+    const dataArray = parsedObject.data; 
+    const bufferFromData = Buffer.from(dataArray);
+    return `data:image/jpeg;base64,${bufferFromData.toString('base64')}`;
 }
 
 export function convertImageToBlob(imageData:string){

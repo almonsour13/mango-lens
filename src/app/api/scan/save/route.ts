@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
 import { query } from "@/lib/db/db";
+import {  Tree } from "@/types/types";
 import { convertImageToBlob } from "@/utils/image-utils";
-import { BoundingBox, Tree } from "@/types/types";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
     try {
@@ -60,25 +60,25 @@ export async function POST(req: Request) {
                     [analysisID, diseaseID, likelihoodScore]
                 )) as { insertId: number };
 
-                if (diseaseIdentifiedID) {
-                    const boundingbox = boundingBoxes.filter(
-                        (box: BoundingBox) => box.diseaseName === diseaseName
-                    )[0];
+                // if (diseaseIdentifiedID) {
+                //     const boundingbox = boundingBoxes.filter(
+                //         (box: BoundingBox) => box.diseaseName === diseaseName
+                //     )[0];
 
-                    if (boundingbox) {
-                        await query(
-                            `INSERT INTO boundingbox (diseaseIdentifiedID, x, y, w, h) 
-                             VALUES (?, ?, ?, ?, ?)`,
-                            [
-                                diseaseIdentifiedID.insertId,
-                                boundingbox.x,
-                                boundingbox.y,
-                                boundingbox.w,
-                                boundingbox.h,
-                            ]
-                        );
-                    }
-                }
+                //     if (boundingbox) {
+                //         await query(
+                //             `INSERT INTO boundingbox (diseaseIdentifiedID, x, y, w, h) 
+                //              VALUES (?, ?, ?, ?, ?)`,
+                //             [
+                //                 diseaseIdentifiedID.insertId,
+                //                 boundingbox.x,
+                //                 boundingbox.y,
+                //                 boundingbox.w,
+                //                 boundingbox.h,
+                //             ]
+                //         );
+                //     }
+                // }
             }
             
             const analyzedImageBlob = convertImageToBlob(analyzedImage);

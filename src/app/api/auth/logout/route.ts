@@ -6,9 +6,8 @@ import { insertLog } from '@/lib/logging/insert-log';
 
 export async function POST(req: NextRequest) {
   try {
-    console.log(req)
     const token = (await cookies()).get('token')?.value;
-
+    console.log(token)
     if (!process.env.JWT_SECRET_KEY) {
       throw new Error('JWT secret key is not set.');
     }
@@ -21,15 +20,10 @@ export async function POST(req: NextRequest) {
 
     // Type-safe payload
     const { payload }: JWTVerifyResult<JWTPayload> = await jwtVerify(token, secret);
-    const userID: number = payload?.userID as number;
-    const fName = payload?.fName;
-    const lName = payload?.lName;
+    const userID = payload?.userID;
+    console.log(userID)
 
-    if (!userID || isNaN(userID)) {
-      throw new Error('Invalid user ID in token payload');
-    }
-
-    const activity = `${fName} ${lName} logged out`;
+    const activity = `just logged out`;
 
     // Insert log
     // await insertLog(userID, 2, activity);

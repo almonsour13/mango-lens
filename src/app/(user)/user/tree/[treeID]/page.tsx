@@ -159,7 +159,7 @@ export default function Page({
                 </Link>
             </div>
             {loading ? (
-                <div className="min-h-screen w-full flex items-center justify-center">
+                <div className="flex-1 w-full flex items-center justify-center">
                     loading
                 </div>
             ) : (

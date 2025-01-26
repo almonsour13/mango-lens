@@ -14,32 +14,6 @@ export default function UploadField() {
     const { capturedImage, setCapturedImage } = useCameraContext();
     const [isScanning, setIsScanning] = useState(false);
     const [croppedImage, setCroppedImage] = useState<string | null>(null);
-    const [isNonSquare, setIsNonSquare] = useState(false);
-
-    useEffect(() => {
-        const checkImageAspectRatio = async () => {
-            try {
-                const img = document.createElement("img");
-                img.src = capturedImage;
-                img.onload = () => {
-                    const isSquare = img.naturalWidth === img.naturalHeight;
-                    setIsNonSquare(!isSquare);
-                };
-
-                img.onerror = (error) => {
-                    console.error("Error loading image:", error);
-                };
-            } catch (error) {
-                console.error("Error checking image aspect ratio:", error);
-            }
-        };
-        if (capturedImage && !croppedImage) {
-            checkImageAspectRatio();
-        } else {
-            setIsNonSquare(false);
-        }
-    }, [capturedImage, croppedImage]);
-
     return (
         <>
             <div className="h-14 w-full px-4 flex items-center justify-between border-b">
@@ -52,14 +26,9 @@ export default function UploadField() {
                     <CardContent
                         className={`relative h-80 p-0 flex items-center justify-center overflow-hidden bg-card border rounded-lg`}
                     >
-                        {isNonSquare && (
-                            <div className="absolute bottom-0 left-0 right-0 bg-secondary/80 text-white p-1 text-center text-xs z-20">
-                                Warning: Image is not square (1:1 aspect ratio)
-                            </div>
-                        )}
+                        
 
                         <UploadImage
-                            isNonSquare={isNonSquare}
                             croppedImage={croppedImage}
                             setCroppedImage={setCroppedImage}
                             isScanning={isScanning}
@@ -69,7 +38,6 @@ export default function UploadField() {
                     <CardFooter className="flex-1 p-0">
                         <Suspense fallback={<div>sad</div>}>
                             <ImageUploadFooter
-                                isNonSquare={isNonSquare}
                                 croppedImage={croppedImage}
                                 setCroppedImage={setCroppedImage}
                                 isScanning={isScanning}
@@ -84,14 +52,12 @@ export default function UploadField() {
 }
 
 interface UploadImageProps {
-    isNonSquare: boolean;
     croppedImage: string | null;
     setCroppedImage: (value: string | null) => void;
     isScanning: boolean;
     setIsScanning: (isScanning: boolean) => void;
 }
 const UploadImage: React.FC<UploadImageProps> = ({
-    isNonSquare,
     croppedImage,
     setCroppedImage,
     isScanning,
@@ -124,7 +90,11 @@ const UploadImage: React.FC<UploadImageProps> = ({
 
     const handleImageUpload = (file: File) => {
         const reader = new FileReader();
-        reader.onload = (e) => setCapturedImage(e.target?.result as string);
+        reader.onload = (e) => {
+            const img = e.target?.result
+            
+            setCapturedImage(e.target?.result as string)
+        };
         reader.readAsDataURL(file);
     };
 
@@ -156,9 +126,7 @@ const UploadImage: React.FC<UploadImageProps> = ({
                     {isCropping ? (
                         <>
                             <ImageCropper
-                                image={capturedImage!}
-                                // croppedImage={croppedImage}
-                                // setCroppedImage={setCroppedImage}
+                                image={capturedImage!}  
                                 crop={crop}
                                 setCrop={setCrop}
                                 zoom={zoom}
@@ -174,7 +142,7 @@ const UploadImage: React.FC<UploadImageProps> = ({
                             <Image
                                 src={croppedImage || capturedImage}
                                 alt="Uploaded"
-                                className="h-80 w-auto object-cover"
+                                className="h-80 w-auto object-fill"
                                 width={256}
                                 height={256}
                             />

@@ -1,32 +1,19 @@
 "use client";
 
-import { BoundingBox, PendingItem } from "@/types/types";
+import { usePendingActions } from "@/hooks/use-pending";
+import { useToast } from "@/hooks/use-toast";
+import { PendingItem } from "@/types/types";
+import { usePathname } from "next/navigation";
 import React, {
     createContext,
-    useState,
-    useContext,
     ReactNode,
-    useEffect,
     useCallback,
+    useContext,
+    useEffect,
+    useState,
 } from "react";
 import { useAuth } from "./auth-context";
-import useOnlineStatus from "@/hooks/use-online";
-import { useToast } from "@/hooks/use-toast";
-import Link from "next/link";
 import { useScanResult } from "./scan-result-context";
-import { usePathname } from "next/navigation";
-import {
-    deleteSelectedPendingProcessItems,
-    getAllPendingProcessItems,
-    updatePendingProcessItem,
-} from "@/utils/indexedDB/store/pending-store";
-import {
-    deleteProcessedResult,
-    getProcessedResultItem,
-    saveProcessedResult,
-} from "@/utils/indexedDB/store/result-store";
-import { predict } from "@/utils/api/predict";
-import { usePendingActions } from "@/hooks/use-pending";
 
 interface PendingProcessContextType {
     fetchPendings: () => void;

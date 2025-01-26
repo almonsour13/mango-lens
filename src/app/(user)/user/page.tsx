@@ -349,16 +349,12 @@ const RecentAnalysis = () => {
             setLoading(true);
             if (!userInfo?.userID) return;
             try {
-                // const response = await fetch(
-                //     `/api/user/${userInfo?.userID}/dashboard/recent-analysis`
-                // );
-
-                const res = recentAnalysis(userInfo?.userID);
-                // if (response.ok) {
-                //     const data = await response.json();
-                setAnalysis(res );
+                const res = await recentAnalysis(userInfo?.userID);
+                if(res){
+                    setAnalysis(res);
+                    console.log(res)
+                }
                 setLoading(false);
-                // }
             } catch (error) {
                 console.error("Error retrieving images:", error);
             }
@@ -467,106 +463,6 @@ const RecentAnalysis = () => {
                         </Table>
                     </ScrollArea>
                 )}
-            </CardContent>
-        </Card>
-    );
-};
-type Activity = {
-    id: string;
-    type: "upload" | "analysis" | "report";
-    description: string;
-    timestamp: string;
-};
-
-const RecentActivities = () => {
-    const activities: Activity[] = [
-        {
-            id: "1",
-            type: "upload",
-            description: "Uploaded 5 new images",
-            timestamp: "2 hours ago",
-        },
-        {
-            id: "2",
-            type: "analysis",
-            description: "Completed analysis of Tree #1234",
-            timestamp: "4 hours ago",
-        },
-        {
-            id: "3",
-            type: "report",
-            description: "Generated monthly health report",
-            timestamp: "1 day ago",
-        },
-        {
-            id: "4",
-            type: "upload",
-            description: "Uploaded 3 new images",
-            timestamp: "2 days ago",
-        },
-        {
-            id: "5",
-            type: "analysis",
-            description: "Completed analysis of Tree #5678",
-            timestamp: "3 days ago",
-        },
-        {
-            id: "6",
-            type: "upload",
-            description: "Uploaded 3 new images",
-            timestamp: "2 days ago",
-        },
-        {
-            id: "7",
-            type: "analysis",
-            description: "Completed analysis of Tree #5678",
-            timestamp: "3 days ago",
-        },
-    ];
-    const getIcon = (type: Activity["type"]) => {
-        switch (type) {
-            case "upload":
-                return <ImageIcon className="h-4 w-4" />;
-            case "analysis":
-                return <TreeDeciduous className="h-4 w-4" />;
-            case "report":
-                return <FileText className="h-4 w-4" />;
-        }
-    };
-    return (
-        <Card className="flex-1 border-0">
-            <div className="py-4 w-full flex items-center justify-between">
-                <CardTitle className="text-lg">Recent Activity </CardTitle>
-                <Link
-                    href={`/user/images`}
-                    className="hover:underline text-primary"
-                >
-                    View All
-                </Link>
-            </div>
-            <CardContent className="p-0 bg-card rounded-md border overflow-hidden">
-                <ScrollArea className="h-[300px]">
-                    <ul className="space-y-4 relative p-4">
-                        {activities.map((activity) => (
-                            <li
-                                key={activity.id}
-                                className="flex items-start gap-4"
-                            >
-                                <div className="bg-primary/10 p-2 rounded-full">
-                                    {getIcon(activity.type)}
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-sm font-medium">
-                                        {activity.description}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">
-                                        {activity.timestamp}
-                                    </p>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                </ScrollArea>
             </CardContent>
         </Card>
     );

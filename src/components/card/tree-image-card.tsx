@@ -64,7 +64,7 @@ export const TreeImageCard = ({ image }: { image: images }) => {
                     <div className="absolute left-2 top-2 z-30 flex gap-1 items-center">
                         {!isDisease ? (
                             <div className="bg-destructive text-white px-2.5 py-0.5 rounded-full text-xs flex items-center">
-                                Diseases
+                                Diseased
                             </div>
                         ) : (
                             <div className="bg-primary text-white px-2.5 py-0.5 rounded-full text-xs flex items-center">

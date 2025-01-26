@@ -49,31 +49,25 @@ export async function POST(request: Request) {
         }
 
         const hashedPassword = await hash(password, 10);
-
-        const { data, error } = await supabase.from("user").insert([
+        
+        const newUserId = uuidv4();
+        const {  error } = await supabase.from("user").insert([
             {
-                userID: uuidv4(),
+                userID: newUserId,
                 fName: fName,
-                lLame: lName,
+                lName: lName,
                 email: email,
                 password: hashedPassword,
                 role: 2,
             },
         ]);
-
-        if (error) {
-            console.error("Error inserting user:", error);
-        } else {
-            console.log("User inserted successfully:", data);
-        }
-        if(!data) {
+        console.log(error)
+        if(error) {
             return NextResponse.json(
                 { success: false, message: "An error occurred during verification." },
                 { status: 500 }
             );
         }
-        console.log(data);
-        const newUserId = 1;
 
         const newToken = sign(
             {

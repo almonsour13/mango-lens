@@ -269,7 +269,7 @@ function ResultDetails({
             <div className="flex flex-col md:flex-row gap-2">
                 <div className="flex space-x-2">
                     <Trees className="h-5 w-5 text-muted-foreground" />
-                    <span className="text-base font-medium">Tree Code:</span>
+                    {/* <span className="text-base font-medium">Tree Code:</span> */}
                     <Link
                         href={`/user/tree/${imageDetails.treeID}`}
                         className="text-base font-semibold hover:underline"
@@ -279,9 +279,9 @@ function ResultDetails({
                 </div>
                 <div className="flex space-x-2">
                     <Calendar className="h-5 w-5 text-muted-foreground" />
-                    <span className="text-base font-medium">
-                        Analyzed Date:
-                    </span>
+                    {/* <span className="text-base font-medium">
+                        Date Processed:
+                    </span> */}
                     <span className="text-base font-semibold">
                         {formatDate(imageDetails.analyzedAt, "MMM dd, yyyy")}
                     </span>
@@ -298,28 +298,19 @@ function ResultDetails({
                     {imageDetails.diseases.map((disease, index) => {
                         const color: string = DiseaseColor(disease.diseaseName);
                         return (
-                            <Card
-                                key={index}
-                                className={`border border-${color} text-${color}`}
-                            >
-                                <CardHeader className="pb-2">
-                                    <CardTitle className="text-lg font-semibold">
-                                        {disease.diseaseName}
-                                    </CardTitle>
-                                    <CardDescription>
-                                        Likelihood:{" "}
-                                        {disease.likelihoodScore.toFixed(2)}%
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                <Progress
-                                            value={
-                                                disease.likelihoodScore * 100
-                                            }
-                                            className="h-2"
-                                        />
-                                </CardContent>
-                            </Card>
+                            <div className="flex flex-col" key={index}>
+                                    <div className="flex justify-between text-sm mb-1">
+                                        <span>{disease.diseaseName}</span>
+                                        <span>
+                                            {disease.likelihoodScore.toFixed(1)}
+                                            %
+                                        </span>
+                                    </div>
+                                    <Progress
+                                        value={disease.likelihoodScore * 100}
+                                        className="h-2"
+                                    />
+                                </div>
                         );
                     })}
                 </div>

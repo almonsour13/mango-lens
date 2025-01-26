@@ -34,6 +34,7 @@ import {
     storeUserCredentials,
 } from "@/utils/indexedDB/store/user-info-store";
 import { getUser, removeUser, setUser } from "@/stores/user-store";
+import { initializeStore } from "@/stores/stores";
 
 const formSchema = z.object({
     email: z.string().email({ message: "Please enter a valid email address." }),
@@ -70,7 +71,7 @@ export default function LoginForm() {
                     removeUser()
                 }
                 setUser(user)
-
+                await initializeStore()
                 router.push(redirect);
             } else {
                 const { error } = await response.json();

@@ -130,20 +130,40 @@ export function ModelProvider({ children }: { children: ReactNode }) {
             const predictionWithClasses:TfJsDisease[] = Array.from(predictionArray).map(
                 (prob, idx) => ({
                     diseaseName: classes[idx],
-                    likelihoodScore: prob,
+                    likelihoodScore: prob * 100,
                 })
-            );
+            ).filter(prob => prob.likelihoodScore > 30);
 
             predictionWithClasses.sort((a, b) => b.likelihoodScore - a.likelihoodScore);
             const heatmaps = await gradClassActivationMap(model, inputTensor, [
                 predictedClassIndex,
             ]);
             const heatmapUrl = await generateHeatmapOverlay(heatmaps[0], img);
+            const resizedOriginal = await resizeImage(image, 224, 224);
+            
+            const resizedHeatmap = await resizeImage(heatmapUrl || '', 224, 224);
+            
             const result:ScanResult = {
                 treeCode:"",
-                originalImage:image as string,
-                analyzedImage:heatmapUrl as string,
+                originalImage: resizedOriginal,
+                analyzedImage: resizedHeatmap,
                 diseases:predictionWithClasses
+            }
+
+            // Helper function to resize images
+            async function resizeImage(dataUrl: string, width: number, height: number): Promise<string> {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx?.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg'));
+                    };
+                    img.src = dataUrl;
+                });
             }
             tf.dispose([inputTensor, predictionTensor]);
             return result;

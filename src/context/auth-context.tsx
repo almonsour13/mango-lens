@@ -10,6 +10,7 @@ import React, {
 import { jwtDecode } from "jwt-decode";
 import { usePathname, useRouter } from "next/navigation";
 import { getUser, removeUser } from "@/stores/user-store";
+import { clearDatabase } from "@/stores/stores";
 
 interface UserInfo {
     userID: string;
@@ -71,7 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     //       }
     //     }
     // }, [pathname, userInfo, token, isLoaded]);
-
+    
     useEffect(() => {
         const cookieToken = getTokenFromCookie();
         setToken(cookieToken);
@@ -109,11 +110,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // }, [token]);
 
     const resetToken = async () => {
-        if (token && decodedToken?.userID) {
+        // if (token && decodedToken?.userID) {
             removeUser();
             setToken(null);
             setDecodedToken(null);
-        }
+            
+            // deleteAllStores();
+            // clearDatabase()
+        // }
     };
 
     return (

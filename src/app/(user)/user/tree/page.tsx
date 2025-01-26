@@ -37,7 +37,7 @@ import { TreeTable } from "@/components/table/tree-table";
 import { getTreesByUser } from "@/stores/tree";
 
 interface TreeWithImage extends Tree {
-    treeImage:string;
+    treeImage: string;
     recentImage: string | null;
     imagesLength: number;
 }
@@ -62,14 +62,14 @@ export default function TreePage() {
     const [viewMode, setViewMode] = useState<"table" | "grid">("grid");
 
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
-    const [selectedTreeID, setSelectedTreeID] = useState('');
+    const [selectedTreeID, setSelectedTreeID] = useState("");
 
     const fetchTrees = useCallback(async () => {
         setLoading(true);
         try {
-            if(!userInfo?.userID) return
-            const t = getTreesByUser(userInfo.userID)
-            if(t){
+            if (!userInfo?.userID) return;
+            const t = getTreesByUser(userInfo.userID);
+            if (t) {
                 setTrees(t as TreeWithImage[]);
                 setLoading(false);
             }
@@ -78,10 +78,12 @@ export default function TreePage() {
         } finally {
             setLoading(false);
         }
-    },[userInfo?.userID]);
+    }, [userInfo?.userID]);
 
     useEffect(() => {
-        fetchTrees();
+        if(userInfo?.userID){
+            fetchTrees();
+        }
     }, [userInfo?.userID, fetchTrees]);
 
     const filteredTree = trees
@@ -127,7 +129,7 @@ export default function TreePage() {
         } catch (error) {
             console.error("Error deleting disease:", error);
         }
-        setSelectedTreeID('');
+        setSelectedTreeID("");
         setConfirmationModalOpen(false);
     };
 
@@ -201,15 +203,12 @@ export default function TreePage() {
                     <h1 className="text-md">Tree</h1>
                 </div>
                 <Link href={`${pathname}/add`}>
-                <Button
-                    variant="outline"
-                    className="w-10 md:w-auto"
-                >
-                    <Plus className="h-5 w-5" />
-                    <span className="hidden md:block text-sm">
-                        Add New Tree
-                    </span>
-                </Button>
+                    <Button variant="outline" className="w-10 md:w-auto">
+                        <Plus className="h-5 w-5" />
+                        <span className="hidden md:block text-sm">
+                            Add New Tree
+                        </span>
+                    </Button>
                 </Link>
             </div>
             <PageWrapper className="gap-4">
@@ -325,7 +324,9 @@ export default function TreePage() {
                 </div>
                 <CardContent className="p-0">
                     {loading && trees.length === 0 ? (
-                        <TreeSkeletonCard />
+                        <div className="flex-1 w-full flex items-center justify-center">
+                            loading
+                        </div>
                     ) : trees && trees.length > 0 ? (
                         viewMode === "grid" ? (
                             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4">

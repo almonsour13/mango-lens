@@ -43,7 +43,9 @@ export function getTreesByUser(userID: string): TreeWithImage[] {
             (image) => image.treeID === tree.treeID
         );
         const recentImage = images.sort(
-            (a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime()
+            (a, b) => 
+                new Date(b.uploadedAt).getTime() -
+                new Date(a.uploadedAt).getTime()
         )[0];
         const treeImage = "";
         return {
@@ -81,6 +83,3 @@ export function updateTreeByID({
     return tree$[treeID].get();
 }
 
-function convertToBase64Image(imageData: string): any {
-    throw new Error("Function not implemented.");
-}

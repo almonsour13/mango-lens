@@ -286,9 +286,9 @@ export default function SignupForm() {
                                         ? "Logging in..."
                                         : "Create an account"}
                                 </Button>
-                                <Button variant="outline" className="w-full">
+                                {/* <Button variant="outline" className="w-full">
                                     Login with Google
-                                </Button>
+                                </Button> */}
                                 <div className="mt-4 text-center text-sm">
                                     Already have an account?{" "}
                                     <Link href="signin" className="underline">

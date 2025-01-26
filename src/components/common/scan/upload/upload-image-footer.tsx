@@ -1,7 +1,7 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
-import { Plus, Camera, Scan, LoaderCircle } from "lucide-react";
+import { Camera, LoaderCircle, Plus, Scan } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,32 +12,28 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-import { useScanResult } from "@/context/scan-result-context";
 import { useAuth } from "@/context/auth-context";
+import { useScanResult } from "@/context/scan-result-context";
 
 import { useSearchParams } from "next/navigation";
 
-import { BoundingBox, Tree } from "@/types/types";
 import AddPendingModal from "@/components/modal/add-pending-modal";
-import useOnlineStatus from "@/hooks/use-online";
-import { toast } from "@/hooks/use-toast";
 import TreeModal from "@/components/modal/tree-modal";
 import { useCameraContext } from "@/context/camera-context";
-import { storePendingProcessItem } from "@/utils/indexedDB/store/pending-store";
-import { predict } from "@/utils/api/predict";
-import { usePendingProcess } from "@/context/pending-process-context";
 import { useModel } from "@/context/model-context";
+import { usePendingProcess } from "@/context/pending-process-context";
+import useOnlineStatus from "@/hooks/use-online";
+import { toast } from "@/hooks/use-toast";
 import { getTreesByUser } from "@/stores/tree";
+import { Tree } from "@/types/types";
 
 interface FooterProps {
-    isNonSquare: boolean;
     croppedImage: string | null;
     setCroppedImage: (value: string | null) => void;
     isScanning: boolean;
     setIsScanning: (isScanning: boolean) => void;
 }
 export const ImageUploadFooter: React.FC<FooterProps> = ({
-    isNonSquare,
     croppedImage,
     setCroppedImage,
     isScanning,
@@ -92,24 +88,12 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
     };
 
     const handleScan = async () => {
-        const data = {
-            userID: userInfo?.userID,
-            treeCode: treeCode,
-            imageUrl: croppedImage || capturedImage,
-        };
-
-        if (!isOnline) {
-            setOpenPendingModal(true);
-            return;
-        }
 
         setIsScanning(true);
 
         try {
-            // const result = await predict(croppedImage || capturedImage);
-
             const result = await tfPredict(croppedImage || capturedImage);
-            console.log(result);
+
             if (result && result.originalImage && result.analyzedImage) {
                 setScanResult({
                     ...result,
@@ -125,8 +109,6 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
                 description: "Error during scanning.",
                 variant: "destructive",
             });
-
-            // setOpenPendingModal(true);
         } finally {
             setIsScanning(false);
         }
@@ -203,12 +185,12 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
             </div>
             <Button
                 className={`w-full ${
-                    !capturedImage || isScanning
+                    !capturedImage || isScanning || !treeCode
                         ? " bg-primary/50"
                         : " bg-primary"
                 }`}
                 onClick={handleScan}
-                disabled={!capturedImage || isScanning}
+                disabled={!capturedImage || isScanning || !treeCode}
             >
                 {" "}
                 {isScanning ? (
