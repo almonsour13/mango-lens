@@ -24,6 +24,7 @@ import TreeStatistic from "./tree-statistic";
 import { useAuth } from "@/context/auth-context";
 import { CustomDateRange } from "./date-range-picker";
 import { format } from "date-fns";
+import { overview } from "@/stores/statistic";
 
 export default function Statistic() {
     const [openDownloadModal, setOpenDownloadModal] = useState(false);
@@ -177,47 +178,43 @@ const Overview = () => {
     const { userInfo } = useAuth();
     const fetchOverview = useCallback(async () => {
         try {
-            // Simulated API call
-            const response = await fetch(
-                `/api/user/${userInfo?.userID}/statistic/overview`
-            );
-            const data = await response.json();
-            if (response.ok) {
-                const overview = data.overview;
+            if (!userInfo?.userID) return;
+            const overv = overview(userInfo.userID);
+            if (overv) {
                 const overviewData = [
                     {
                         label: "Total Trees",
-                        value: overview.totalTrees,
+                        value: overv.totalTrees,
                         icon: TreeDeciduous,
                         description: "+5 this month",
                     },
                     {
                         label: "Healthy Trees",
-                        value: overview.healthyTrees,
+                        value: overv.healthyTrees,
                         icon: TreeDeciduous,
                         description: "80% of total trees",
                     },
                     {
                         label: "Diseased Trees",
-                        value: overview.diseasedTrees,
+                        value: overv.diseasedTrees,
                         icon: TreeDeciduous,
                         description: "20% of total trees",
                     },
                     {
                         label: "Total Images",
-                        value: overview.totalImages,
+                        value: overv.totalImages,
                         icon: ImageIcon,
                         description: "+5 this month",
                     },
                     {
                         label: "Healthy Leaves",
-                        value: overview.healthyImages,
+                        value: overv.healthyLeaves,
                         icon: Leaf,
                         description: "65% of total leaves",
                     },
                     {
                         label: "Diseased Leaves",
-                        value: overview.diseasedImages,
+                        value: overv.healthyLeaves,
                         icon: AlertTriangle,
                         description: "35% of total leaves",
                     },

@@ -21,6 +21,7 @@ export function addTree(
     treeCode: string,
     description: string
 ): Tree {
+    const observableTree = observable(tree$);
     const treeID = uuidv4();
     const newTree = {
         treeID,
@@ -30,7 +31,7 @@ export function addTree(
         status: 1,
         addedAt: new Date(),
     };
-    tree$[treeID].assign(newTree);  
+    observableTree[treeID].assign(newTree);  
     return newTree;
 }
 
@@ -61,7 +62,8 @@ export function getTreesByUser(userID: string): TreeWithImage[] {
 }
 
 export function getTreeByID(treeID: string): Tree | null {
-    return tree$[treeID].get() || null;
+    const tree = observable(tree$)
+    return tree[treeID].get() || null;
 }
 
 export function updateTreeByID({
@@ -69,17 +71,17 @@ export function updateTreeByID({
     treeCode,
     description,
     status,
-    treeImage,
 }: UpdateTree) {
-    const tree = tree$[treeID].get();
+    const observableTree = observable(tree$);
+    const tree = observableTree[treeID].get();
     if (!tree) return null;
 
-    tree$[treeID].set({
+    observableTree[treeID].set({
         ...tree,
         treeCode,
         description,
         status,
     });
-    return tree$[treeID].get();
+    return observableTree[treeID].get();
 }
 

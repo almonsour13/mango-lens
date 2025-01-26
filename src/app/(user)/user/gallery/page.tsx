@@ -25,7 +25,7 @@ import Link from "next/link";
 import { TreeImageSkeletonCard } from "@/components/skeleton/skeleton-card";
 import { getImagesByUserID } from "@/stores/image";
 
-type images = img & { analyzedImage: string } & { treeCode: number } & {
+type images = img & { analyzedImage: string } & { treeCode: string } & {
     diseases: { likelihoodScore: number; diseaseName: string }[];
 };
 
@@ -33,9 +33,8 @@ export default function Gallery() {
     const [images, setImages] = useState<images[]>([]);
     const [loading, setLoading] = useState(true);
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
-    const [filterTreeCode, setFilterTreeCode] = useState<number | null>(null);
+    const [filterTreeCode, setFilterTreeCode] = useState<string | null>(null);
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
-    const [viewMode, setViewMode] = useState<"table" | "grid">("grid");
     const { userInfo } = useAuth();
 
     const fetchImages = useCallback(async () => {
@@ -60,7 +59,7 @@ export default function Gallery() {
 
     const uniqueTreeCodes = Array.from(
         new Set(images.map((img) => img.treeCode))
-    ).sort((a, b) => a - b);
+    ).sort((a, b) => a.localeCompare(b));
 
     const filteredImages = images
         .filter(
@@ -246,21 +245,6 @@ export default function Gallery() {
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
-                        <Toggle
-                            aria-label="Toggle view"
-                            pressed={viewMode === "grid"}
-                            onPressedChange={(pressed) =>
-                                setViewMode(pressed ? "grid" : "table")
-                            }
-                            variant="outline"
-                            className="bg-transparent"
-                        >
-                            {viewMode === "table" ? (
-                                <Grid className="h-4 w-4" />
-                            ) : (
-                                <List className="h-4 w-4" />
-                            )}
-                        </Toggle>
                     </div>
                 </div>
                 <CardContent className="p-0">
@@ -268,7 +252,7 @@ export default function Gallery() {
                         <div className="flex-1 w-full flex items-center justify-center">
                             loading
                         </div>
-                    ) : (
+                    ) : filteredImages.length > 0 ? (
                         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4">
                             {filteredImages.map((image) => (
                                 <TreeImageCard
@@ -276,6 +260,10 @@ export default function Gallery() {
                                     image={image}
                                 />
                             ))}
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-center">
+                            No Images
                         </div>
                     )}
                 </CardContent>

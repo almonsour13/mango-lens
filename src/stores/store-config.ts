@@ -17,6 +17,7 @@ export const persistOptions = configureSynced(syncedSupabase, {
             version: 1,
             tableNames: [
                 "tree",
+                "treeimage",
                 "image",
                 "analysis",
                 "analyzedimage",
@@ -34,8 +35,41 @@ export const persistOptions = configureSynced(syncedSupabase, {
     fieldUpdatedAt: "updated_at",
     fieldDeleted: "deleted",
 });
+export async function createResultsObservable(store: string) {
+    const request = indexedDB.open("mango-lens", 1);
+    console.log(store)
+    request.onupgradeneeded = (event) => {
+        const db = (event.target as IDBOpenDBRequest).result;
+        if (!db.objectStoreNames.contains(store)) {
+            db.createObjectStore(store, { keyPath: 'id', autoIncrement: true });
+            console.log("store name initialized:",store)
+        }
+    }
+    return observable(
+        persistOptions({
+            supabase,
+            collection: store,
+            select: (from) => from.select('*'),
+            persist: {
+                name: "results",
+                retrySync: true,
+            },
+            retry: {
+                infinite: true,
+            },
+            changesSince: 'last-sync'
+        })
+    );
+}
 
 export function createStore<T>(name: string) {
+    // const request = await indexedDB.open("mango-lens", 1);
+    // request.onupgradeneeded = (event) => {
+    //     const db = (event.target as IDBOpenDBRequest).result;
+    //     if (!db.objectStoreNames.contains(name)) {
+    //         db.createObjectStore(name, { keyPath: 'id', autoIncrement: true });
+    //     }
+    // }
     const store = observable<Record<string, T>>();
     syncObservable(
         store,

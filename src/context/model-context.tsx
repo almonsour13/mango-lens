@@ -130,7 +130,7 @@ export function ModelProvider({ children }: { children: ReactNode }) {
             const predictionWithClasses:TfJsDisease[] = Array.from(predictionArray).map(
                 (prob, idx) => ({
                     diseaseName: classes[idx],
-                    likelihoodScore: prob * 100,
+                    likelihoodScore: Number((prob * 100).toFixed(1)),
                 })
             ).filter(prob => prob.likelihoodScore > 30);
 

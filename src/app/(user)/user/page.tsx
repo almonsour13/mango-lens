@@ -196,7 +196,7 @@ const Welcome = () => {
     return (
         <div className="w-full px-4 py-0 flex flex-col items-center justify-center">
             <div className="w-full flex flex-col md:gap-2">
-                <h1 className="text-3xl font-bold">
+                <h1 className="text-2xl font-bold">
                     <span>Good {getGreeting()}, </span>
                     <span>{userInfo?.fName}</span>
                 </h1>
@@ -350,9 +350,8 @@ const RecentAnalysis = () => {
             if (!userInfo?.userID) return;
             try {
                 const res = await recentAnalysis(userInfo?.userID);
-                if(res){
+                if (res) {
                     setAnalysis(res);
-                    console.log(res)
                 }
                 setLoading(false);
             } catch (error) {
@@ -401,7 +400,7 @@ const RecentAnalysis = () => {
                                     const isHealthy = image.diseases?.some(
                                         (disease) =>
                                             disease.diseaseName === "Healthy" &&
-                                            disease.likelihoodScore > 50
+                                            disease.likelihoodScore > 30
                                     );
                                     return (
                                         <TableRow
@@ -440,7 +439,21 @@ const RecentAnalysis = () => {
                                                     </Badge>
                                                 ) : (
                                                     <Badge variant="destructive">
-                                                        Diseases
+                                                        {image.diseases
+                                                            .filter(
+                                                                (di) =>
+                                                                    di.diseaseName !==
+                                                                    "Healthy"
+                                                            )
+                                                            .reduce(
+                                                                (
+                                                                    acc,
+                                                                    disease
+                                                                ) =>
+                                                                    acc +
+                                                                    disease.likelihoodScore,
+                                                                0
+                                                            ).toFixed(1) + "% Diseased"}
                                                     </Badge>
                                                 )}
                                             </TableCell>

@@ -1,4 +1,5 @@
 import { query } from "@/lib/db/db";
+import { supabase } from "@/supabase/supabase";
 import { NextResponse } from "next/server";
 
 function generateMonthlyRange(from: string, to: string) {
@@ -39,34 +40,27 @@ export async function GET(
         }
 
         // Query the database for tree counts
-        const data = await query(
-            `SELECT 
-                YEAR(t.addedAt) AS year,
-                MONTH(t.addedAt) AS month,
-                COUNT(*) AS treeCount
-            FROM 
-                tree t
-            WHERE 
-                t.addedAt BETWEEN ? AND ?
-            GROUP BY 
-                YEAR(t.addedAt), MONTH(t.addedAt)
-            ORDER BY 
-                YEAR(t.addedAt), MONTH(t.addedAt);`,
-            [from, to]
-        ) as { year: number; month: number; treeCount: number }[];
-
+        const { data, error } = await supabase.rpc(
+            "get_user_tree_stats",
+            {
+                filter_start_date: from,
+                filter_end_date: to,
+                filter_user_id: userID,
+            }
+        );
+        console.log(data)
         // Generate the full monthly range
         const monthlyRange = generateMonthlyRange(from, to);
 
         // Merge the query results with the monthly range
         const mergedData = monthlyRange.map((month) => {
             const match = data.find(
-                (item) => item.year === month.year && item.month === month.month
+                (item:any) => item.year === month.year && item.month === month.month
             );
             return {
                 year: month.year,
                 month: month.month,
-                treeCount: match ? match.treeCount : 0, // Use query result or default to 0
+                treeCount: match ? match : 0, // Use query result or default to 0
             };
         });
 

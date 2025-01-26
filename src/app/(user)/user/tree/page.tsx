@@ -1,12 +1,14 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import TreeCard from "@/components/card/tree-card";
+import ConfirmationModal from "@/components/modal/confirmation-modal";
+import { TreeTable } from "@/components/table/tree-table";
+import { Button } from "@/components/ui/button";
 import {
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -14,8 +16,12 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useToast } from "@/hooks/use-toast";
+import { Toggle } from "@/components/ui/toggle";
 import PageWrapper from "@/components/wrapper/page-wrapper";
+import { useAuth } from "@/context/auth-context";
+import { useToast } from "@/hooks/use-toast";
+import { getTreesByUser } from "@/stores/tree";
+import { Tree } from "@/types/types";
 import {
     ArrowDownUp,
     Grid,
@@ -24,17 +30,9 @@ import {
     PlusIcon,
     SlidersHorizontal,
 } from "lucide-react";
-import { Tree } from "@/types/types";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAuth } from "@/context/auth-context";
-import TreeModal from "@/components/modal/tree-modal";
-import ConfirmationModal from "@/components/modal/confirmation-modal";
-import { Toggle } from "@/components/ui/toggle";
-import TreeCard from "@/components/card/tree-card";
-import { TreeSkeletonCard } from "@/components/skeleton/skeleton-card";
-import { TreeTable } from "@/components/table/tree-table";
-import { getTreesByUser } from "@/stores/tree";
+import { useCallback, useEffect, useState } from "react";
 
 interface TreeWithImage extends Tree {
     treeImage: string;
@@ -59,8 +57,6 @@ export default function TreePage() {
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
 
-    const [viewMode, setViewMode] = useState<"table" | "grid">("grid");
-
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [selectedTreeID, setSelectedTreeID] = useState("");
 
@@ -81,7 +77,7 @@ export default function TreePage() {
     }, [userInfo?.userID]);
 
     useEffect(() => {
-        if(userInfo?.userID){
+        if (userInfo?.userID) {
             fetchTrees();
         }
     }, [userInfo?.userID, fetchTrees]);
@@ -305,21 +301,6 @@ export default function TreePage() {
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
-                        <Toggle
-                            aria-label="Toggle view"
-                            pressed={viewMode === "grid"}
-                            onPressedChange={(pressed) =>
-                                setViewMode(pressed ? "grid" : "table")
-                            }
-                            variant="outline"
-                            className="bg-transparent"
-                        >
-                            {viewMode === "table" ? (
-                                <Grid className="h-4 w-4" />
-                            ) : (
-                                <List className="h-4 w-4" />
-                            )}
-                        </Toggle>
                     </div>
                 </div>
                 <CardContent className="p-0">
@@ -328,22 +309,15 @@ export default function TreePage() {
                             loading
                         </div>
                     ) : trees && trees.length > 0 ? (
-                        viewMode === "grid" ? (
-                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4">
-                                {filteredTree.map((tree) => (
-                                    <TreeCard
-                                        tree={tree}
-                                        key={tree.treeID}
-                                        handleAction={handleAction}
-                                    />
-                                ))}
-                            </div>
-                        ) : (
-                            <TreeTable
-                                trees={filteredTree}
-                                handleAction={handleAction}
-                            />
-                        )
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4">
+                            {filteredTree.map((tree) => (
+                                <TreeCard
+                                    tree={tree}
+                                    key={tree.treeID}
+                                    handleAction={handleAction}
+                                />
+                            ))}
+                        </div>
                     ) : (
                         <div className="flex items-center justify-center">
                             No Trees

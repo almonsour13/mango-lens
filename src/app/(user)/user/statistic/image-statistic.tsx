@@ -29,6 +29,7 @@ import Link from "next/link";
 import { TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { useAuth } from "@/context/auth-context";
+import { imageStatistic } from "@/stores/statistic";
 
 const chartData = [
     { month: "January", healthy: 186, diseased: 80 },
@@ -53,6 +54,12 @@ interface DateRange {
     from: string;
     to: string;
 }
+interface ImageStatistic{
+    month:string,
+    year:string;
+    diseasedCount:number;
+    healthyCount:number;
+}
 export default function ImageStatistic({
     DateRange,
 }: {
@@ -60,47 +67,41 @@ export default function ImageStatistic({
 }) {
     const pathname = usePathname();
     const { userInfo } = useAuth();
-    const [chartData, setChartData] = useState<
-        { month: string; treeCount: number }[] | []
-    >([]);
+    const [chartData, setChartData] = useState<{
+        month: string;
+        healthy: number;
+        diseased: number;
+    }[]>([]);
     const [loading, setLoading] = useState(false);
 
     const fetchImages = useCallback(async () => {
         setLoading(true);
-        let endpoint = `/api/user/${userInfo?.userID}/statistic/image`;
-        if (DateRange?.from && DateRange?.to) {
-            endpoint += `?from=${DateRange?.from}&to=${DateRange?.to}`;
-        }
-        try {
-            const response = await fetch(endpoint);
-            const data = await response.json();
-            if (response.ok) {
-                // const ch = data.chartData
-                const formattedData = data.chartData.map(
-                    (item: {
-                        year: number;
-                        month: number;
-                        heathlyCount: number;
-                        diseasedCount: number;
-                    }) => {
-                        const monthName = format(
-                            new Date(item.year, item.month - 1),
-                            "MMMM"
-                        );
-                        return {
-                            month: monthName,
-                            healthy: item.heathlyCount,
-                            diseased: item.diseasedCount,
-                        };
-                    }
-                );
-                setChartData(formattedData);
-            }
-        } catch (error) {
-            console.error("Failed to fetch overview data:", error);
-        } finally {
-            setLoading(false);
-        }
+        if (!userInfo?.userID || !DateRange) return;
+        const data = imageStatistic(
+            DateRange?.from,
+            DateRange?.to,
+                userInfo?.userID)
+                if (data) {
+                    const formattedData = data.map(
+                        (item:{
+                            month:number,
+                            year:number;
+                            diseasedCount:number;
+                            healthyCount:number;
+                        }) => {
+                            const monthName = format(
+                                new Date(item.year, item.month - 1),
+                                "MMMM"
+                            );
+                            return {
+                                month: monthName,
+                                healthy: item.healthyCount,
+                                diseased: item.diseasedCount,
+                            };
+                        }
+                    );
+                    setChartData(formattedData);
+                }
     }, [userInfo?.userID, DateRange]);
 
     useEffect(() => {

@@ -64,8 +64,6 @@ export default function Page({
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
 
-    const [viewMode, setViewMode] = useState<"table" | "grid">("grid");
-
     useEffect(() => {
         const fetchTree = async () => {
             setLoading(true);
@@ -351,22 +349,7 @@ export default function Page({
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
-                        <div className="">
-                            <Toggle
-                                aria-label="Toggle view"
-                                variant="outline"
-                                pressed={viewMode === "grid"}
-                                onPressedChange={(pressed) =>
-                                    setViewMode(pressed ? "grid" : "table")
-                                }
-                            >
-                                {viewMode === "table" ? (
-                                    <Grid className="h-4 w-4" />
-                                ) : (
-                                    <List className="h-4 w-4" />
-                                )}
-                            </Toggle>
-                        </div>
+                        <div className=""></div>
                     </div>
                     {/* <CardHeader>
                     <CardTitle>Image Gallery</CardTitle>
@@ -378,18 +361,14 @@ export default function Page({
                         {loading ? (
                             <TreeImageSkeletonCard />
                         ) : filteredImages && filteredImages.length > 0 ? (
-                            viewMode === "grid" ? (
-                                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4">
-                                    {filteredImages.map((image) => (
-                                        <TreeImageCard
-                                            key={image.imageID}
-                                            image={image}
-                                        />
-                                    ))}
-                                </div>
-                            ) : (
-                                <TreeImagesTable images={filteredImages} />
-                            )
+                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4">
+                                {filteredImages.map((image) => (
+                                    <TreeImageCard
+                                        key={image.imageID}
+                                        image={image}
+                                    />
+                                ))}
+                            </div>
                         ) : (
                             <div className="flex items-center justify-center p-6 text-muted-foreground">
                                 No images available for this tree.

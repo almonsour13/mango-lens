@@ -29,6 +29,7 @@ import { usePathname } from "next/navigation";
 import { TreeDeciduous, TrendingUp } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { format } from "date-fns";
+import { treeStatistic } from "@/stores/statistic";
 
 const chartConfig = {
     treeCount: {
@@ -54,34 +55,23 @@ export default function TreeStatistic({
 
     const fetchTree = useCallback(async () => {
         setLoading(true);
-        let endpoint = `/api/user/${userInfo?.userID}/statistic/tree`;
-        if (DateRange?.from && DateRange?.to) {
-            endpoint += `?from=${DateRange?.from}&to=${DateRange?.to}`;
-        }
-        try {
-            const response = await fetch(endpoint);
-            const data = await response.json();
-            if (response.ok) {
-                // const ch = data.chartData
-                const formattedData = data.chartData.map(
-                    (item: {
-                        year: number;
-                        month: number;
-                        treeCount: number;
-                    }) => {
-                        const monthName = format(
-                            new Date(item.year, item.month - 1),
-                            "MMMM"
-                        );
-                        return { month: monthName, treeCount: item.treeCount };
-                    }
-                );
-                setChartData(formattedData);
-            }
-        } catch (error) {
-            console.error("Failed to fetch overview data:", error);
-        } finally {
-            setLoading(false);
+        if (!userInfo?.userID || !DateRange) return;
+        const ch = treeStatistic(
+            DateRange?.from,
+            DateRange?.to,
+            userInfo?.userID
+        );
+        if (ch) {
+            const formattedData = ch.map(
+                (item: { year: number; month: number; treeCount: number }) => {
+                    const monthName = format(
+                        new Date(item.year, item.month - 1),
+                        "MMMM"
+                    );
+                    return { month: monthName, treeCount: item.treeCount };
+                }
+            );
+            setChartData(formattedData);
         }
     }, [userInfo?.userID, DateRange]);
 
@@ -106,11 +96,11 @@ export default function TreeStatistic({
                     {/* <CardTitle className="text-lg">Tree Added</CardTitle> */}
                     <CardDescription>
                         {DateRange?.from
-                            ? format(new Date(DateRange.from), 'MMM, dd yyyy')
+                            ? format(new Date(DateRange.from), "MMM, dd yyyy")
                             : ""}
                         {" - "}
                         {DateRange?.to
-                            ? format(new Date(DateRange.to), 'MMM, dd yyyy')
+                            ? format(new Date(DateRange.to), "MMM, dd yyyy")
                             : ""}
                     </CardDescription>
                 </CardHeader>

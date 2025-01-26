@@ -69,7 +69,7 @@ export async function dashboardMetrics(userID: string) {
     return metrics;
 }
 
-export async function recentAnalysis(userID: string) {
+export function recentAnalysis(userID: string) {
     const trees = Object.values(observable(tree$).get() || {});
     const images = Object.values(observable(image$).get() || {});
     const i = images
@@ -107,7 +107,7 @@ export async function recentAnalysis(userID: string) {
             diseases: diseases.map((d) => {
                 return {
                     diseaseName: d.diseaseName,
-                    likelihoodScore: d.likelihoodScore,
+                    likelihoodScore: Number(d.likelihoodScore.toFixed(1)),
                 };
             }),
         };
