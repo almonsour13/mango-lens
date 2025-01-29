@@ -1,16 +1,12 @@
 "use client";
+import { TreeImageCard } from "@/components/card/tree-image-card";
+import { Button } from "@/components/ui/button";
 import {
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { useAuth } from "@/context/auth-context";
-import { useCallback, useEffect, useState } from "react";
-import { Image as img } from "@/types/types";
-import { TreeImageCard } from "@/components/card/tree-image-card";
-import PageWrapper from "@/components/wrapper/page-wrapper";
-import { ArrowDownUp, Grid, List, Plus, SlidersHorizontal } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -19,11 +15,13 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Toggle } from "@/components/ui/toggle";
-import Link from "next/link";
-import { TreeImageSkeletonCard } from "@/components/skeleton/skeleton-card";
+import PageWrapper from "@/components/wrapper/page-wrapper";
+import { useAuth } from "@/context/auth-context";
 import { getImagesByUserID } from "@/stores/image";
+import { Image as img } from "@/types/types";
+import { ArrowDownUp, Plus, SlidersHorizontal } from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 
 type images = img & { analyzedImage: string } & { treeCode: string } & {
     diseases: { likelihoodScore: number; diseaseName: string }[];
@@ -41,10 +39,9 @@ export default function Gallery() {
         setLoading(true);
         try {
             if (!userInfo?.userID) return;
-            const i = getImagesByUserID(userInfo?.userID);
-            if (i) {
-                setImages(i as images[]);
-                console.log(i);
+            const res = await getImagesByUserID()
+            if(res.success){
+                setImages(res.data as images[])
             }
         } catch (error) {
             console.error("Error fetching trees:", error);

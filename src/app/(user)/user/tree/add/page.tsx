@@ -1,10 +1,17 @@
 "use client";
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 // UI Components
+import { Button } from "@/components/ui/button";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
     Form,
     FormControl,
@@ -14,14 +21,7 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 // Icons
 import { ArrowLeft, TreeDeciduous } from "lucide-react";
@@ -31,23 +31,23 @@ import { useAuth } from "@/context/auth-context";
 import { useCameraContext } from "@/context/camera-context";
 
 // Utils
-import { toast } from "@/hooks/use-toast";
-import PageWrapper from "@/components/wrapper/page-wrapper";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
-import { useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
-import React from "react";
-import { use$ } from "@legendapp/state/react";
+import { Textarea } from "@/components/ui/textarea";
+import PageWrapper from "@/components/wrapper/page-wrapper";
+import { toast } from "@/hooks/use-toast";
 import "@legendapp/state/react";
+import { useRouter } from "next/navigation";
+import React from "react";
 import { addTree } from "@/stores/tree";
+// import { addTree } from "@/stores/tree";
 
 interface Message {
     id: string;
@@ -105,37 +105,14 @@ export default function Page() {
             // treeImage: values.treeImage,
         };
         try {
-            console.log("adding")
-            addTree(userInfo?.userID, values.treeCode, values.description);
+            const res = await addTree(values.treeCode, values.description);
             toast({
-                title: "Tree Added",    
-                description: `Tree Added successfully.`,
+                title: res.success ? "Tree Added" : "Failed to Add Tree",
+                description: res.message,
             });
-            router.back();
-            // const response = await fetch(
-            //     `/api/user/${userInfo?.userID}/tree/`,
-            //     {
-            //         method: "POST",
-            //         headers: {
-            //             "Content-Type": "application/json",
-            //         },
-            //         body: JSON.stringify(payload),
-            //     }
-            // );
-            // const data = await response.json();
-            // if (response.ok) {
-            //     toast({
-            //         title: "Tree Added",
-            //         description: `Tree Added successfully.`,
-            //     });
-            //     router.back();
-            // }else{
-            //     const error = data.error
-            //     toast({
-            //         title: "Error Adding",
-            //         description: error,
-            //     });
-            // }
+            if (res.success) {
+                router.back();
+            }
         } catch (error) {
             console.log(error);
             setError("Failed to add tree. Please try again.");
@@ -290,10 +267,6 @@ export default function Page() {
                                                     className="min-h-36"
                                                 />
                                             </FormControl>
-                                            {/* <FormDescription>
-                                    A unique identifier for the tree (e.g.,
-                                    TR001)
-                                </FormDescription> */}
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -314,7 +287,13 @@ export default function Page() {
                                     >
                                         Cancel
                                     </Button>
-                                    <Button type="submit" disabled={loading}>
+                                    <Button
+                                        type="submit"
+                                        disabled={
+                                            loading ||
+                                            !form.getValues().treeCode
+                                        }
+                                    >
                                         {loading ? "Adding..." : "Add Tree"}
                                     </Button>
                                 </div>

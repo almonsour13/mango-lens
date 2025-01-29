@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
@@ -26,19 +26,19 @@ import { useAuth } from "@/context/auth-context";
 import { Tree } from "@/types/types";
 import { toast } from "@/hooks/use-toast";
 import { DialogDescription } from "@radix-ui/react-dialog";
-import { getTreesByUser } from "@/stores/tree";
+import { getTreeByUser } from "@/stores/tree";
 import { migrateImage } from "@/stores/image";
 
 const formSchema = z.object({
     treeCode: z
         .string()
-        .nonempty({ message: "You must select a treeCode to migrate." })
+        .nonempty({ message: "You must select a treeCode to migrate." }),
 });
 
 interface EditModalProps {
     openDialog: boolean;
     setOpenDialog: (value: boolean) => void;
-    onMigrate: (newTreeCode: string) => void;
+    onMigrate: (treeID:string,newTreeCode: string) => void;
     initialData: { imageID: string; currentTreeCode: string };
 }
 
@@ -63,22 +63,17 @@ export default function MigrateImageModal({
     useEffect(() => {
         const fetchTrees = async () => {
             try {
-                if(!userInfo?.userID) return;
-                const t = getTreesByUser(userInfo?.userID)
-                // const response = await fetch(
-                //     `/api/user/${userInfo?.userID}/tree?type=2`
-                // );
-                // if (!response.ok) {
-                //     throw new Error("Failed to fetch trees");
-                // }
-                // const data = await response.json();
-                const treeData = t as Tree[];
-
-                setTrees(
-                    treeData.filter(
-                        (tree) => tree.treeCode !== initialData.currentTreeCode
-                    )
-                );
+                if (!userInfo?.userID) return;
+                const res = await getTreeByUser();
+                if (res.success) {
+                    const treeData = res.data as Tree[];
+                    setTrees(
+                        treeData.filter(
+                            (tree) =>
+                                tree.treeCode !== initialData.currentTreeCode
+                        )
+                    );
+                }
             } catch (error) {
                 console.error("Error fetching trees:", error);
                 setError("Failed to fetch trees. Please try again.");
@@ -105,25 +100,11 @@ export default function MigrateImageModal({
                     "New tree code must be different from the current one"
                 );
             }
-            // const response = await fetch(
-            //     `/api/user/${userInfo?.userID}/images/${initialData.imageID}`,
-            //     {
-            //         method: "PUT",
-            //         headers: {
-            //             "Content-Type": "application/json",
-            //         },
-            //         body: JSON.stringify({
-            //             currentTreeCode: initialData.currentTreeCode,
-            //             newTreeCode: values.treeCode,
-            //         }),
-            //     }
-            // );
-            const res = migrateImage(initialData.imageID, values.treeCode)
-            if(res){
-                await onMigrate(values.treeCode);
+            const res = await migrateImage(initialData.imageID, values.treeCode);
+            if (res.success) {
+                await onMigrate(res.data.treeID,values.treeCode);
                 toast({
-                    title: "Success",
-                    description: `Image migrated to tree ${values.treeCode}`,
+                    description: res.message,
                 });
                 setOpenDialog(false);
             }
@@ -201,10 +182,7 @@ export default function MigrateImageModal({
                         >
                             Cancel
                         </Button>
-                        <Button
-                            type="submit"
-                            disabled={loading}
-                        >
+                        <Button type="submit" disabled={loading}>
                             {loading ? "Migrating..." : "Migrate"}
                         </Button>
                     </div>

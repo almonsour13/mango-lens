@@ -38,7 +38,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getTreeByID } from "@/stores/tree";
-import { getImageByTreeID } from "@/stores/image";
+import { getImageByImageID, getImagesByTreeID } from "@/stores/image";
 
 type images = img & { analyzedImage: string } & {
     diseases: { likelihoodScore: number; diseaseName: string }[];
@@ -68,11 +68,11 @@ export default function Page({
         const fetchTree = async () => {
             setLoading(true);
             try {
-                const er = getTreeByID(treeID);
-                const i = await getImageByTreeID(treeID);
-                if (er) {
-                    setTree(er);
-                    setImages(i as images[]);
+                const tree = await getTreeByID(treeID)
+                const image = await getImagesByTreeID(treeID)
+                if (tree) {
+                    setTree(tree);
+                    setImages(image.data as images[]);
                 }
             } catch (error) {
                 console.error("Error fetching trees:", error);

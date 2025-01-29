@@ -22,9 +22,9 @@ export interface PendingItem {
 }
 
 export interface Trash {
-    trashID: number;
-    userID: number;
-    itemID: number;
+    trashID: string;
+    userID: string;
+    itemID: string;
     type: number;
     status: number;
     deletedAt: Date;

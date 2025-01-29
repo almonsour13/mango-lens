@@ -44,15 +44,21 @@ export default function ResultDisplay() {
 
             setIsSaving(true);
             if (!userInfo?.userID) return;
-            await saveScan(scanResult, userInfo?.userID);
-            setIsVisible(false);
-            setScanResult(null);
+            const res = await saveScan(scanResult);
             setTimeout(() => {
                 toast({
-                    title: "Result Saved",
-                    description: "The scan result has been saved successfully.",
-                });
-            }, 300);
+                    title: res.success
+                        ? "Result Saved"
+                        : "Failed to Save Result",
+                    description: res.message,
+                }),
+                    300;
+            });
+            if (res.success) {
+                setIsVisible(false);
+                setScanResult(null);
+                setIsSaving(false);
+            }
             setIsSaving(false);
         } catch (error) {
             console.error("Error while saving scan result:", error);

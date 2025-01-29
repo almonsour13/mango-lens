@@ -27,16 +27,16 @@ export const TrashTable = ({
 }: {
     trashes: TrashItem[];
     isSelected: boolean;
-    selected: number[];
-    setSelected: (value: number[]) => void;
-    handleAction: (action: number, trashID: number) => void;
+    selected: string[];
+    setSelected: (value: string[]) => void;
+    handleAction: (action: number, trashID: string) => void;
 }) => {
     const handleCheck = useCallback(
-        (trashID: number) => {
+        (trashID: string) => {
             if (isSelected) {
                 setSelected(
                     selected.includes(trashID)
-                        ? selected.filter((id: number) => id !== trashID)
+                        ? selected.filter((id: string) => id !== trashID)
                         : [...selected, trashID]
                 );
             }
@@ -45,7 +45,7 @@ export const TrashTable = ({
     );
 
     const isItemSelected = useCallback(
-        (pendingID: number) => selected.includes(pendingID),
+        (pendingID: string) => selected.includes(pendingID),
         [selected]
     );
 

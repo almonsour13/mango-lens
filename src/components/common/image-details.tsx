@@ -10,9 +10,7 @@ import {
 } from "@/components/ui/card";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useToast } from "@/hooks/use-toast";
-import {
-    ImageAnalysisDetails
-} from "@/types/types";
+import { ImageAnalysisDetails } from "@/types/types";
 import { formatDate } from "date-fns";
 import {
     ArrowDownToLine,
@@ -22,13 +20,12 @@ import {
     MessageCircle,
     MoreVertical,
     Trash2,
-    Trees
+    Trees,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { generateImage } from "@/actions/generate-image-analysis-report";
-import { DiseaseColor } from "@/constant/color";
 import { useAuth } from "@/context/auth-context";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import Link from "next/link";
@@ -43,7 +40,8 @@ import { Progress } from "../ui/progress";
 import { Separator } from "../ui/separator";
 import ResultImage from "./result-image";
 import AnalysisCarousel from "./result-image-carousel";
-import { getImageByID } from "@/stores/image";
+import { getImageByImageID } from "@/stores/image";
+import { moveToTrash } from "@/stores/trash";
 
 export default function ImageDetails({ imageID }: { imageID: string }) {
     const { toast } = useToast();
@@ -53,20 +51,14 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
     const { userInfo } = useAuth();
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [isMigrateModalOpen, setIsMigrateModalOpen] = useState(false);
-
+    
     useEffect(() => {
         const fetchImageDetails = async () => {
             try {
-                const i = await getImageByID(imageID);
-                console.log(i)
-                setImageDetails(i as ImageAnalysisDetails);
-                // const response = await fetch(
-                //     `/api/user/${userInfo?.userID}/images/${imageID}`
-                // );
-                // if (!response.ok)
-                //     throw new Error("Failed to fetch image details");
-                // const data = await response.json();
-                // setImageDetails(data);
+                const res = await getImageByImageID(imageID);
+                if (res.success) {
+                    setImageDetails(res.data);
+                }
             } catch (error) {
                 console.error("Error fetching image details:", error);
                 toast({
@@ -82,22 +74,17 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
 
     const handleConfirmDelete = async () => {
         try {
-            const response = await fetch(
-                `/api/user/${userInfo?.userID}/trash`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ imageID: imageDetails?.imageID }),
-                }
-            );
-
-            const result = await response.json();
-            router.back();
-            if (result.success) {
-                toast({
-                    title: `Image Move to trash`,
-                    description: `Move to Trash action performed on tree ${imageDetails?.imageID}`,
+            if (!userInfo?.userID || !imageDetails) return null;
+            const res = await moveToTrash(imageDetails.imageID,2);
+            if (res.success) {
+                setTimeout(() => {
+                    toast({
+                        title: "Image moved",
+                        description: res.message,
+                    }),
+                        300;
                 });
+                router.back();
             }
         } catch (error) {
             console.error("Error deleting disease:", error);
@@ -118,9 +105,9 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
         router.back();
     };
 
-    const handleMigrateImage = async (newTreeCode: string) => {
+    const handleMigrateImage = async (treeID:string,newTreeCode: string) => {
         setImageDetails((prevDetails) =>
-            prevDetails ? { ...prevDetails, treeCode: newTreeCode } : null
+            prevDetails ? { ...prevDetails, treeCode: newTreeCode, treeID:treeID} : null
         );
     };
 
@@ -249,7 +236,7 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
                         setOpenDialog={setIsMigrateModalOpen}
                         onMigrate={handleMigrateImage}
                         initialData={{
-                            imageID: imageDetails?.imageID || '',
+                            imageID: imageDetails?.imageID || "",
                             currentTreeCode: imageDetails?.treeCode || "",
                         }}
                     />
@@ -296,21 +283,19 @@ function ResultDetails({
                 </div>
                 <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
                     {imageDetails.diseases.map((disease, index) => {
-                        const color: string = DiseaseColor(disease.diseaseName);
                         return (
                             <div className="flex flex-col" key={index}>
-                                    <div className="flex justify-between text-sm mb-1">
-                                        <span>{disease.diseaseName}</span>
-                                        <span>
-                                            {disease.likelihoodScore.toFixed(1)}
-                                            %
-                                        </span>
-                                    </div>
-                                    <Progress
-                                        value={disease.likelihoodScore * 100}
-                                        className="h-2"
-                                    />
+                                <div className="flex justify-between text-sm mb-1">
+                                    <span>{disease.diseaseName}</span>
+                                    <span>
+                                        {disease.likelihoodScore.toFixed(1)}%
+                                    </span>
                                 </div>
+                                <Progress
+                                    value={disease.likelihoodScore * 100}
+                                    className="h-2"
+                                />
+                            </div>
                         );
                     })}
                 </div>

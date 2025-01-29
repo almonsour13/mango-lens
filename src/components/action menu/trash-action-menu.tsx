@@ -8,8 +8,8 @@ import {
 import { MoreVertical, RefreshCw, Trash2 } from "lucide-react";
 
 interface ActionMenuProps {
-    trashID: number;
-    handleAction:(action:number, trashID:number) => void;
+    trashID: string;
+    handleAction:(action:number, trashID:string) => void;
 }
 export function TrashActionMenu({ trashID, handleAction }: ActionMenuProps) {
 

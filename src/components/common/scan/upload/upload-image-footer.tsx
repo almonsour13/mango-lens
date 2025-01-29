@@ -24,8 +24,8 @@ import { useModel } from "@/context/model-context";
 import { usePendingProcess } from "@/context/pending-process-context";
 import useOnlineStatus from "@/hooks/use-online";
 import { toast } from "@/hooks/use-toast";
-import { getTreesByUser } from "@/stores/tree";
 import { Tree } from "@/types/types";
+import { getTreeByUser } from "@/stores/tree";
 
 interface FooterProps {
     croppedImage: string | null;
@@ -63,8 +63,8 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
             setLoading(true);
             try {
                 if(!userInfo?.userID) return;
-                const t = getTreesByUser(userInfo?.userID );
-                setTrees(t);
+                const t = await getTreeByUser();
+                setTrees(t.data as Tree[]);
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching trees:", error);

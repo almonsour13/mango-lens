@@ -16,9 +16,9 @@ type TrashItem = TRS & { item: Tree | ImageType }
 interface TrashCardProps {
   trash: TrashItem
   isSelected: boolean
-  selected: number[]
-  setSelected: (value: number[]) => void
-  handleAction: (action: number, trashID: number) => void
+  selected: string[]
+  setSelected: (value: string[]) => void
+  handleAction: (action: number, trashID: string) => void
 }
 
 export const TrashCard = ({

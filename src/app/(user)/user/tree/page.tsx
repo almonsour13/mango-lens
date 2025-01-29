@@ -1,7 +1,6 @@
 "use client";
 import TreeCard from "@/components/card/tree-card";
 import ConfirmationModal from "@/components/modal/confirmation-modal";
-import { TreeTable } from "@/components/table/tree-table";
 import { Button } from "@/components/ui/button";
 import {
     CardContent,
@@ -16,19 +15,17 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Toggle } from "@/components/ui/toggle";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
-import { getTreesByUser } from "@/stores/tree";
+import { moveToTrash } from "@/stores/trash";
+import { getTreeByUser } from "@/stores/tree";
 import { Tree } from "@/types/types";
 import {
     ArrowDownUp,
-    Grid,
-    List,
     Plus,
     PlusIcon,
-    SlidersHorizontal,
+    SlidersHorizontal
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -64,10 +61,9 @@ export default function TreePage() {
         setLoading(true);
         try {
             if (!userInfo?.userID) return;
-            const t = getTreesByUser(userInfo.userID);
-            if (t) {
-                setTrees(t as TreeWithImage[]);
-                setLoading(false);
+            const res = await getTreeByUser()
+            if(res.success){
+                setTrees(res.data as TreeWithImage[])
             }
         } catch (error) {
             console.error("Error fetching trees:", error);
@@ -102,24 +98,14 @@ export default function TreePage() {
 
     const handleConfirmDelete = async () => {
         try {
-            const response = await fetch(
-                `/api/user/${userInfo?.userID}/trash`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ treeID: selectedTreeID }),
-                }
-            );
-
-            const result = await response.json();
-
-            if (result.success) {
+            const res = await moveToTrash(selectedTreeID,1)
+            if(res.success){
                 setTrees((prevTrees) =>
                     prevTrees.filter((tree) => tree.treeID !== selectedTreeID)
                 );
                 toast({
                     title: `Tree Move to trash`,
-                    description: `Move to Trash action performed on tree ${selectedTreeID}`,
+                    description: res.message,
                 });
             }
         } catch (error) {
@@ -310,10 +296,10 @@ export default function TreePage() {
                         </div>
                     ) : trees && trees.length > 0 ? (
                         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4">
-                            {filteredTree.map((tree) => (
+                            {filteredTree.map((tree, index) => (
                                 <TreeCard
                                     tree={tree}
-                                    key={tree.treeID}
+                                    key={index}
                                     handleAction={handleAction}
                                 />
                             ))}

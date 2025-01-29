@@ -1,6 +1,10 @@
 import { observable } from "@legendapp/state";
-import { analysis$, diseaseIdentified$, image$, tree$ } from "./stores";
 import { format } from "date-fns";
+import { tree$ } from "./tree";
+import { image$ } from "./image";
+import { analysis$ } from "./analysis";
+import { diseaseidentified$ } from "./diseaseidentified-store";
+import { getUser } from "./user-store";
 
 interface Overview {
     totalTrees: number;
@@ -11,16 +15,18 @@ interface Overview {
     diseasedLeaves: number;
 }
 const threshold = 30;
-export function overview(userID: string): Overview {
-    const tree = Object.values(observable(tree$).get() || {}).filter(
-        (t) => t.userID === userID
+const userID = getUser()?.userID
+
+export function overview(): Overview {
+    const tree = Object.values(tree$.get() || {}).filter(
+        (t) => t.userID === userID && t.status === 1
     );
-    const image = Object.values(observable(image$).get() || {}).filter(
-        (t) => t.userID === userID
+    const image = Object.values(image$.get() || {}).filter(
+        (t) => t.userID === userID  && t.status === 1
     );
     const analysis = Object.values(observable(analysis$).get() || {});
     const diseaseidentified = Object.values(
-        observable(diseaseIdentified$).get() || {}
+        observable(diseaseidentified$).get() || {}
     );
     const treeStatus = tree.map((t) => {
         const im = image
@@ -47,10 +53,10 @@ export function overview(userID: string): Overview {
     });
 
     const healthyTrees = treeStatus.filter((t) =>
-        t.images.every((img) => img.diseaseScore < threshold)
+        t.images.every((img:any) => img.diseaseScore < threshold)
     ).length;
     const diseasedTrees = treeStatus.filter((t) =>
-        t.images.some((img) => img.diseaseScore >= threshold)
+        t.images.some((img:any) => img.diseaseScore >= threshold)
     ).length;
 
     const imageStatus = image.map((img) => {
@@ -62,6 +68,7 @@ export function overview(userID: string): Overview {
                         (di) =>
                             di.analysisID === ia.analysisID &&
                             di.diseaseName !== "Healthy"
+                            && di.status === 1
                     )
                     .reduce((acc, disease) => acc + disease.likelihoodScore, 0);
                 return parseFloat(score.toFixed(1));
@@ -103,7 +110,7 @@ function generateMonthlyRange(from: string, to: string) {
 }
 export function treeStatistic(from: string, to: string, userID: string) {
     const tree = Object.values(observable(tree$).get() || {}).filter(
-        (t) => t.userID === userID
+        (t) => t.userID === userID 
     );
     const monthlyRange = generateMonthlyRange(from, to);
     const mergedData = monthlyRange.map((month) => {
@@ -115,7 +122,7 @@ export function treeStatistic(from: string, to: string, userID: string) {
         return {
             year: month.year,
             month: month.month,
-            treeCount: match ? match.length : 0, // Count 1 if tree exists, 0 if not
+            treeCount: match ? match.length : 0, 
         };
     });
     return mergedData;
@@ -128,7 +135,7 @@ export function imageStatistic(from: string, to: string, userID: string) {
     const monthlyRange = generateMonthlyRange(from, to);
     const analysis = Object.values(observable(analysis$).get() || {});
     const diseaseidentified = Object.values(
-        observable(diseaseIdentified$).get() || {}
+        diseaseidentified$.get() || {}
     );
     const mergedData = monthlyRange.map((month) => {
         const match = image.filter(
@@ -143,12 +150,12 @@ export function imageStatistic(from: string, to: string, userID: string) {
                 .map((ia) => {
                     const score = diseaseidentified
                         .filter(
-                            (di) =>
+                            (di:any) =>
                                 di.analysisID === ia.analysisID &&
                                 di.diseaseName !== "Healthy"
                         )
                         .reduce(
-                            (acc, disease) => acc + disease.likelihoodScore,
+                            (acc:number, disease:any) => acc + disease.likelihoodScore,
                             0
                         );
                     return parseFloat(score.toFixed(1));

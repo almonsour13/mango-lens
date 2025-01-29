@@ -1,36 +1,18 @@
-import type {  Tree, Analysis, DiseaseIdentified, Trash } from "@/types/types"
-import { createResultsObservable, createStore } from "./store-config"
-import {Observable, observable, syncState, when } from "@legendapp/state";
+import { analysis$ } from "./analysis";
+import { analyzedimage$ } from "./analyzeimage";
+import { diseaseidentified$ } from "./diseaseidentified-store";
+import { image$ } from "./image";
+import { trash$ } from "./trash";
+import { tree$ } from "./tree";
 
-export interface AnalyzedImage {
-    analyzedimageID: string;
-    analysisID: string;
-    imageData:Buffer;
-}
-export interface TreeImage {
-    treeImageID: string;
-    treeID: string;
-    imageData:Buffer;
-    status:Number;
-    addedAt:Date
-}
-export interface Image {
-    imageID: string;
-    userID: string;
-    treeID: string;
-    imageData: Buffer;
-    status: number;
-    uploadedAt: Date;
-}
-// export const userInfo$ = createStore<UserInfo>("userInfo")
-const tree = observable<Observable<Record<string, Tree>>>()
-export const tree$ = createStore<Tree>("tree")
-export const treeImage$ = createStore<TreeImage>("treeimage")
-export const image$ = createStore<Image>("image")
-export const analysis$ = createStore<Analysis>("analysis")
-export const analyzedImage$ = createStore<AnalyzedImage>("analyzedimage")
-export const diseaseIdentified$ = createStore<DiseaseIdentified>("diseaseidentified")
-export const trash$ = createStore<Trash>("trash")
+// export default {
+//     tree$,
+//     image$,
+//     analysis$,
+//     analyzedimage$,
+//     diseaseidentified$,
+//     trash$
+// };
 
 export const clearDatabase = async () => {
     const dbName = 'mango-lens';
@@ -60,20 +42,17 @@ export const initializeStore = async () => {
         
             const stores:any[] = [
                 { store: tree$, name: 'tree' },
-                { store: treeImage$, name: 'treeImage' },
+                // { store: treeImage$, name: 'treeImage' },
                 { store: image$, name: 'image' },
                 { store: analysis$, name: 'analysis' },
-                { store: analyzedImage$, name: 'analyzedImage' },
-                { store: diseaseIdentified$, name: 'diseaseIdentified' },
+                { store: analyzedimage$, name: 'analyzedImage' },
+                { store: diseaseidentified$, name: 'diseaseIdentified' },
                 { store: trash$, name: 'trash' }
         ]
 
         for (const { store, name } of stores) {
-            const existingData = (await store).get()
-            if (!existingData) {
-                console.log(`Initializing empty store for ${name}`)
-                store.set(createResultsObservable(name));
-            }
+            const existingData = store.get()
+            console.log(existingData)
         }
         console.log('All stores initialized successfully');
     } catch (error) {

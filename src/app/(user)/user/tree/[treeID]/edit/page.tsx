@@ -56,7 +56,11 @@ import { useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { Tree } from "@/types/types";
 import React from "react";
-import { getTreeByID, updateTreeByID } from "@/stores/tree";
+import {
+    getTreeByID,
+    updateTreeByID,
+} from "@/stores/tree";
+import { moveToTrash } from "@/stores/trash";
 
 const formSchema = z.object({
     treeCode: z
@@ -99,13 +103,7 @@ export default function Page({
     const fetchTree = useCallback(async () => {
         setLoading(true);
         try {
-            const tree = getTreeByID(treeID);
-            // const response = await fetch(
-            //     `/api/user/${userInfo?.userID}/tree/${treeID}`
-            // );
-            // const data = await response.json();
-            // const tree = data.tree;
-
+            const tree = await getTreeByID(treeID);
             if (tree) {
                 form.reset({
                     treeCode: tree.treeCode,
@@ -146,32 +144,24 @@ export default function Page({
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setLoading(true);
-        if(!editTree?.treeID) return;
-        const payload = {
-            treeID: editTree.treeID,
-            treeCode: values.treeCode,
-            description: values.description,
-            status: values.status == "Active" ? 1 : 2,
-            treeImage: values.treeImage || "",
-        };
+        if (!editTree?.treeID) return;
         try {
-            const updatedTree = updateTreeByID(payload)
-            // const response = await fetch(
-            //     `/api/user/${userInfo?.userID}/tree/${treeID}`,
-            //     {
-            //         method: "PUT",
-            //         headers: {
-            //             "Content-Type": "application/json",
-            //         },
-            //         body: JSON.stringify(payload),
-            //     }
-            // );
-            if (updatedTree) {
-                toast({
-                    title: "Tree Updated",
-                    description: `Tree updated successfully.`,
-                });
-            }
+            const res = await updateTreeByID(
+                editTree.treeID,
+                values.treeCode,
+                values.description,
+                values.status
+            );
+            toast({
+                title: res.success ? "Tree Updated" : "Failed to Update Tree",
+                description: res.message,
+            });
+            setEditTree({
+                ...editTree,
+                treeCode: values.treeCode,
+                description: values.description,
+                status: values.status === "Active" ? 1 : 2,
+            });
         } catch (error) {
             console.log(error);
             setError("Failed to add tree. Please try again.");
@@ -186,22 +176,15 @@ export default function Page({
 
     const handleConfirmDelete = async () => {
         try {
-            const response = await fetch(
-                `/api/user/${userInfo?.userID}/trash`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ treeID: editTree?.treeID }),
-                }
-            );
-
-            const result = await response.json();
-
-            if (result.success) {
+            if (!editTree) return null;
+            const res = await moveToTrash(editTree?.treeID,1);
+            if (res.success) {
                 toast({
                     title: `Tree Move to trash`,
-                    description: `Move to Trash action performed on tree ${treeID}`,
+                    description: res.message,
                 });
+                setConfirmationModalOpen(false);
+                router.back()
             }
         } catch (error) {
             console.error("Error deleting disease:", error);
@@ -223,7 +206,7 @@ export default function Page({
                     <h1 className="text-md">Edit Tree: {editTree?.treeCode}</h1>
                 </div>
             </div>
-            {loading ? (
+            {loading || !editTree ? (
                 <div className="min-h-screen w-full flex items-center justify-center">
                     loading
                 </div>
@@ -362,10 +345,6 @@ export default function Page({
                                                         className="min-h-36"
                                                     />
                                                 </FormControl>
-                                                {/* <FormDescription>
-                                    A unique identifier for the tree (e.g.,
-                                    TR001)
-                                </FormDescription> */}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -439,7 +418,19 @@ export default function Page({
                                         </Button>
                                         <Button
                                             type="submit"
-                                            disabled={loading}
+                                            disabled={
+                                                loading ||
+                                                (form.getValues().treeCode ===
+                                                    editTree.treeCode &&
+                                                    form.getValues()
+                                                        .description ===
+                                                        editTree.description &&
+                                                    (form.getValues().status ===
+                                                    "Active"
+                                                        ? 1
+                                                        : 2) ===
+                                                        editTree.status)
+                                            }
                                         >
                                             {loading
                                                 ? "Saving..."
