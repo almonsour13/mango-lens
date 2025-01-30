@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { tree$ } from "./tree";
 import { image$ } from "./image";
 import { analysis$ } from "./analysis";
-import { diseaseidentified$ } from "./diseaseidentified-store";
+import { diseaseidentified$ } from "./diseaseidentified";
 import { getUser } from "./user-store";
 
 interface Overview {

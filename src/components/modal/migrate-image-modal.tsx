@@ -38,7 +38,7 @@ const formSchema = z.object({
 interface EditModalProps {
     openDialog: boolean;
     setOpenDialog: (value: boolean) => void;
-    onMigrate: (treeID:string,newTreeCode: string) => void;
+    onMigrate: (treeID: string, newTreeCode: string) => void;
     initialData: { imageID: string; currentTreeCode: string };
 }
 
@@ -100,9 +100,12 @@ export default function MigrateImageModal({
                     "New tree code must be different from the current one"
                 );
             }
-            const res = await migrateImage(initialData.imageID, values.treeCode);
+            const res = await migrateImage(
+                initialData.imageID,
+                values.treeCode
+            );
             if (res.success) {
-                await onMigrate(res.data.treeID,values.treeCode);
+                await onMigrate(res.data.treeID, values.treeCode);
                 toast({
                     description: res.message,
                 });
@@ -174,15 +177,20 @@ export default function MigrateImageModal({
                             {error}
                         </p>
                     )}
-                    <div className="flex justify-end gap-4">
+                    <div className="flex gap-2">
                         <Button
                             type="button"
                             variant="outline"
                             onClick={() => setOpenDialog(false)}
+                            className="flex-1"
                         >
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={loading}>
+                        <Button
+                            type="submit"
+                            disabled={loading}
+                            className="flex-1"
+                        >
                             {loading ? "Migrating..." : "Migrate"}
                         </Button>
                     </div>

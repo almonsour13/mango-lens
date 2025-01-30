@@ -18,26 +18,22 @@ import {
     Table,
     TableBody,
     TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+    TableRow
 } from "@/components/ui/table";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useAuth } from "@/context/auth-context";
 import { usePendingProcess } from "@/context/pending-process-context";
 import { dashboardMetrics, recentAnalysis } from "@/stores/dashboard";
 import { Image as Img } from "@/types/types";
+import { format } from "date-fns";
 import {
-    Activity,
     AlertCircle,
-    Bell,
     Eye,
-    FileText,
     ImageIcon,
     LucideIcon,
     Percent,
     Radar,
-    TreeDeciduous,
+    TreeDeciduous
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -78,17 +74,13 @@ export default function Dashboard() {
             <div className="w-full flex flex-col items-center justify-center">
                 <div className="px-4 h-14 w-full items-center flex justify-between">
                     <div className="flex items-center">
-                        <h1 className="text-md">Dashboard</h1>
-                        {/* <h1 className="text-md">Hi {userInfo?.fName},</h1> */}
+                        {/* <h1 className="text-md">Dashboard</h1> */}
+                        <h1 className="text-md">
+                            <span>Good {getGreeting()}, </span>
+                            <span>{userInfo?.fName}</span>
+                        </h1>
                     </div>
                     <div className="flex items-center justify-between gap-2">
-                        <button
-                            className="relative p-2 rounded-full hover:bg-accent"
-                            aria-label="Notifications"
-                        >
-                            <Bell className="h-5 w-5" />
-                            <span className="absolute top-2 right-2 h-2 w-2 bg-primary rounded-full" />
-                        </button>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Avatar className="cursor-pointer h-8 w-8 border">
@@ -121,6 +113,14 @@ export default function Dashboard() {
                                             Profile
                                             <DropdownMenuShortcut>
                                                 ⌘P
+                                            </DropdownMenuShortcut>
+                                        </DropdownMenuItem>
+                                    </Link>
+                                    <Link href="/user/feedback">
+                                        <DropdownMenuItem>
+                                            Feedback
+                                            <DropdownMenuShortcut>
+                                                ⌘F
                                             </DropdownMenuShortcut>
                                         </DropdownMenuItem>
                                     </Link>
@@ -163,7 +163,12 @@ export default function Dashboard() {
         </>
     );
 }
-
+const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Morning";
+    if (hour < 17) return "Afternoon";
+    return "Evening";
+};
 const Welcome = () => {
     const { userInfo } = useAuth();
     const [pendingCount, setPendingCount] = useState(0);
@@ -184,22 +189,15 @@ const Welcome = () => {
         }
     }, [pendings]);
 
-    const getGreeting = () => {
-        const hour = new Date().getHours();
-        if (hour < 12) return "Morning";
-        if (hour < 17) return "Afternoon";
-        return "Evening";
-    };
-
     const totalCount = pendingCount + unsavedProcessedCount;
 
     return (
         <div className="w-full px-4 py-0 flex flex-col items-center justify-center">
             <div className="w-full flex flex-col md:gap-2">
-                <h1 className="text-2xl font-bold">
+                {/* <h1 className="text-2xl font-bold">
                     <span>Good {getGreeting()}, </span>
                     <span>{userInfo?.fName}</span>
-                </h1>
+                </h1> */}
                 <p className="text-sm text-muted-foreground">
                     Here is a quick overview of your account and the progress
                     you have made.
@@ -261,10 +259,7 @@ const Metrics = () => {
             setLoading(true);
             if (!userInfo?.userID) return;
             try {
-                const res = await dashboardMetrics(userInfo?.userID);
-                // const response = await fetch(
-                //     `/api/user/${userInfo?.userID}/dashboard/metrics`
-                // );
+                const res = await dashboardMetrics();
                 const metricsData = res as Metric[];
                 const icons = [
                     { name: "Total Trees", icon: TreeDeciduous },
@@ -311,7 +306,7 @@ const Metrics = () => {
                           )
                       )
                     : metrics.map((metric, index) => (
-                          <Card key={index} className="bg-card shadow-none">
+                          <Card key={index} className="bg-caard shadow-none">
                               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                   <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
                                       {metric.name}
@@ -347,9 +342,8 @@ const RecentAnalysis = () => {
     useEffect(() => {
         const fetchImages = async () => {
             setLoading(true);
-            if (!userInfo?.userID) return;
             try {
-                const res = await recentAnalysis(userInfo?.userID);
+                const res = await recentAnalysis();
                 if (res) {
                     setAnalysis(res);
                 }
@@ -365,7 +359,7 @@ const RecentAnalysis = () => {
 
     return (
         <Card className="border-0 p-0 shadow-none flex-1">
-            <div className="py-4 w-full flex items-center justify-between">
+            <div className="py-2 w-full flex items-center justify-between">
                 <CardTitle className="text-lg">Recent Analysis </CardTitle>
                 <Link
                     href={`/user/gallery`}
@@ -374,17 +368,15 @@ const RecentAnalysis = () => {
                     View All
                 </Link>
             </div>
-            <CardContent className="p-0 bg-card border rounded-md overflow-hidden">
+            <CardContent className="p-0 bg-carda border-0 rounded-md overflow-hidden">
                 {loading ? (
                     <Skeleton className="flex-1 h-96" />
                 ) : (
-                    <ScrollArea className="h-[300px] ">
-                        <Table className="relative">
-                            <TableHeader className="h-8">
-                                <TableRow>
-                                    <TableHead className="w-[100px]">
-                                        Image
-                                    </TableHead>
+                    <ScrollArea>
+                        <Table className="relative border-0">
+                            {/* <TableHeader className="h-8 bg-transparent border-0">
+                                <TableRow className="border-0 p-0">
+                                    <TableHead>Image</TableHead>
                                     <TableHead className="table-cell">
                                         Tree Code
                                     </TableHead>
@@ -394,9 +386,9 @@ const RecentAnalysis = () => {
                                     </TableHead>
                                     <TableHead className="text-right hidden md:table-cell"></TableHead>
                                 </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {analysis.map((image) => {
+                            </TableHeader> */}
+                            <TableBody className="border-0">
+                                {analysis.slice(0, 5).map((image) => {
                                     const isHealthy = image.diseases?.some(
                                         (disease) =>
                                             disease.diseaseName === "Healthy" &&
@@ -405,26 +397,37 @@ const RecentAnalysis = () => {
                                     return (
                                         <TableRow
                                             key={image.imageID}
-                                            className="cursor-pointer"
+                                            className="cursor-pointer border-0"
                                             onClick={() =>
                                                 router.push(
                                                     `/user/gallery/${image.imageID}`
                                                 )
                                             }
                                         >
-                                            <TableCell>
+                                            <TableCell className="p-0 pb-1 group relative overflow-hidden">
                                                 <Image
                                                     src={image.imageData}
                                                     alt={`Tree ${image.treeCode}`}
                                                     width={64}
                                                     height={64}
-                                                    className="rounded-md h-10 w-10 object-cover"
+                                                    className="rounded h-16 w-16"
                                                 />
+                                                {image.analyzedImage && (
+                                                    <Image
+                                                        src={
+                                                            image.analyzedImage
+                                                        }
+                                                        alt={`Tree ${image.imageID} Analyzed`}
+                                                        width={64}
+                                                        height={64}
+                                                        className="transition-opacity h-16 w-16 duration-300 opacity-0 group-hover:opacity-100 absolute rounded bottom-0 top-0"
+                                                    />
+                                                )}
                                             </TableCell>
-                                            <TableCell className="table-cell font-medium">
+                                            <TableCell className="table-cell font-medium px-0 text-center">
                                                 {image.treeCode}
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell className="table-cell text-right md:text-center px-0">
                                                 {isHealthy ? (
                                                     <Badge
                                                         variant="default"
@@ -453,14 +456,17 @@ const RecentAnalysis = () => {
                                                                     acc +
                                                                     disease.likelihoodScore,
                                                                 0
-                                                            ).toFixed(1) + "% Diseased"}
+                                                            )
+                                                            .toFixed(1) +
+                                                            "% Diseased"}
                                                     </Badge>
                                                 )}
                                             </TableCell>
                                             <TableCell className="hidden md:table-cell">
-                                                {new Date(
-                                                    image.uploadedAt
-                                                ).toLocaleDateString()}
+                                                {format(
+                                                    image.uploadedAt,
+                                                    "d MMM, y hh:mm a"
+                                                )}
                                             </TableCell>
                                             <TableCell className="text-right hidden md:table-cell">
                                                 <Link

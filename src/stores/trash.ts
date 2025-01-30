@@ -76,6 +76,56 @@ export const trash$ = observable(
         updatePartial: true,
     })
 );
+export const manageTrash = async (trashIDs: string[], action: number) => {
+    try {
+        if (!trashIDs.length) {
+            throw new Error("No trash items provided.");
+        }
+
+        // Define action mapping
+        const statusMap = {
+            1: { itemStatus: 1, trashStatus: 3, message: "Trash items restored successfully." },
+            2: { itemStatus: 4, trashStatus: 2, message: "Trash items deleted successfully." },
+        } as const;
+
+        if (action !== 1 && action !== 2) {
+            throw new Error("Invalid action provided.");
+        }
+
+        const { itemStatus, trashStatus, message } = statusMap[action];
+
+        for (const trashID of trashIDs) {
+            const trash = trash$[trashID].get();
+            if (!trash) {
+                console.warn(`Trash item ${trashID} not found. Skipping.`);
+                continue;
+            }
+
+            if (trash.type === 1) {
+                tree$[trash.itemID].set({
+                    status: itemStatus,
+                    updatedAt: new Date(),
+                });
+            } else if (trash.type === 2) {
+                image$[trash.itemID].set({
+                    status: itemStatus,
+                    updatedAt: new Date(),
+                });
+            }
+
+            trash$[trashID].set({ status: trashStatus });
+        }
+
+        return { success: true, message };
+    } catch (error) {
+        console.error(`Error managing trash items (action: ${action}):`, error);
+        return {
+            success: false,
+            message: `An error occurred while trying to ${action === 1 ? "restore" : "delete"} the trash items.`,
+        };
+    }
+};
+
 export const deleteTrash = async (trashID: string) => {
     try {
         const trash = trash$[trashID].get();
@@ -104,7 +154,6 @@ export const deleteTrash = async (trashID: string) => {
         };
     }
 };
-
 export const restoreTrash = async (trashID: string) => {
     try {
         const trash = trash$[trashID].get();

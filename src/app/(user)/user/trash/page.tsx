@@ -30,7 +30,12 @@ import { toast } from "@/hooks/use-toast";
 import { TrashTable } from "@/components/table/trash-table";
 import { Separator } from "@/components/ui/separator";
 import { TrashSkeletonCard } from "@/components/skeleton/skeleton-card";
-import { deleteTrash, getTrashByUser, restoreTrash } from "@/stores/trash";
+import {
+    deleteTrash,
+    getTrashByUser,
+    manageTrash,
+    restoreTrash,
+} from "@/stores/trash";
 
 type TrashItem = TRS & { item: Tree | img };
 
@@ -43,8 +48,6 @@ export default function Trash() {
 
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const [filterType, setFilterType] = useState<0 | 1 | 2>(0);
-
-    const [viewMode, setViewMode] = useState<"table" | "grid">("grid");
 
     const fetchTrashes = useCallback(async () => {
         setLoading(true);
@@ -89,18 +92,15 @@ export default function Trash() {
 
     const handleAction = async (action: number, trashID: string) => {
         try {
-            if (action === 1) {
-                restoreTrash(trashID);
-            } else if (action === 2) {
-                deleteTrash(trashID);
+            const res = await manageTrash([trashID], action);
+            if (res) {
+                setTrashes((prevTrashes) =>
+                    prevTrashes.filter((trash) => trash.trashID !== trashID)
+                );
             }
-            setTrashes((prevTrashes) =>
-                prevTrashes.filter((trash) => trash.trashID !== trashID)
-            );
+
             toast({
-                description: `${
-                    action == 1 ? "Restored" : "Deleted"
-                } successfully.`,
+                description: res.message,
             });
         } catch (error) {
             console.log(error);
@@ -109,29 +109,21 @@ export default function Trash() {
 
     const handleSelectedAction = async (action: number) => {
         try {
-            const response = await fetch(
-                `/api/user/${userInfo?.userID}/trash/`,
-                {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ action, selected }),
-                }
-            );
-
-            if (response.ok) {
+            const res = await manageTrash(selected, action);
+            if (res) {
                 setTrashes((prevTrashes) =>
                     prevTrashes.filter(
                         (trash) => !selected.includes(trash.trashID)
                     )
                 );
-                toast({
-                    description: `Selected Trash ${
-                        action == 1 ? "restored" : "deleted"
-                    } successfully.`,
-                });
+
                 setSelected([]);
                 setIsSelected(false);
             }
+
+            toast({
+                description: res.message,
+            });
         } catch (error) {
             console.log(error);
         }
@@ -318,48 +310,23 @@ export default function Trash() {
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
-                    <div className="">
-                        <Toggle
-                            aria-label="Toggle view"
-                            pressed={viewMode === "grid"}
-                            onPressedChange={(pressed) =>
-                                setViewMode(pressed ? "grid" : "table")
-                            }
-                        >
-                            {viewMode === "table" ? (
-                                <Grid className="h-4 w-4" />
-                            ) : (
-                                <List className="h-4 w-4" />
-                            )}
-                        </Toggle>
-                    </div>
                 </div>
                 <CardContent className="p-0">
                     {loading ? (
                         <TrashSkeletonCard />
                     ) : filteredTrashes && filteredTrashes.length > 0 ? (
-                        viewMode === "grid" ? (
-                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4">
-                                {filteredTrashes.map((trash) => (
-                                    <TrashCard
-                                        key={trash.trashID}
-                                        trash={trash}
-                                        isSelected={isSelected}
-                                        selected={selected}
-                                        setSelected={setSelected}
-                                        handleAction={handleAction}
-                                    />
-                                ))}
-                            </div>
-                        ) : (
-                            <TrashTable
-                                trashes={filteredTrashes}
-                                isSelected={isSelected}
-                                selected={selected}
-                                setSelected={setSelected}
-                                handleAction={handleAction}
-                            />
-                        )
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4">
+                            {filteredTrashes.map((trash) => (
+                                <TrashCard
+                                    key={trash.trashID}
+                                    trash={trash}
+                                    isSelected={isSelected}
+                                    selected={selected}
+                                    setSelected={setSelected}
+                                    handleAction={handleAction}
+                                />
+                            ))}
+                        </div>
                     ) : (
                         <div className="flex items-center justify-center">
                             No Trash

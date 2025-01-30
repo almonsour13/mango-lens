@@ -105,7 +105,7 @@ export default function Page() {
             // treeImage: values.treeImage,
         };
         try {
-            const res = await addTree(values.treeCode, values.description);
+            const res = await addTree(values.treeCode, values.description, values.treeImage);
             toast({
                 title: res.success ? "Tree Added" : "Failed to Add Tree",
                 description: res.message,

@@ -21,12 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { moveToTrash } from "@/stores/trash";
 import { getTreeByUser } from "@/stores/tree";
 import { Tree } from "@/types/types";
-import {
-    ArrowDownUp,
-    Plus,
-    PlusIcon,
-    SlidersHorizontal
-} from "lucide-react";
+import { ArrowDownUp, Plus, PlusIcon, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -61,9 +56,9 @@ export default function TreePage() {
         setLoading(true);
         try {
             if (!userInfo?.userID) return;
-            const res = await getTreeByUser()
-            if(res.success){
-                setTrees(res.data as TreeWithImage[])
+            const res = await getTreeByUser();
+            if (res.success) {
+                setTrees(res.data as TreeWithImage[]);
             }
         } catch (error) {
             console.error("Error fetching trees:", error);
@@ -98,8 +93,8 @@ export default function TreePage() {
 
     const handleConfirmDelete = async () => {
         try {
-            const res = await moveToTrash(selectedTreeID,1)
-            if(res.success){
+            const res = await moveToTrash(selectedTreeID, 1);
+            if (res.success) {
                 setTrees((prevTrees) =>
                     prevTrees.filter((tree) => tree.treeID !== selectedTreeID)
                 );
@@ -195,9 +190,9 @@ export default function TreePage() {
             </div>
             <PageWrapper className="gap-4">
                 <CardHeader className="p-0">
-                    <CardTitle>Your Tree Collection</CardTitle>
+                    {/* <CardTitle>Your Tree Collection</CardTitle> */}
                     <CardDescription>
-                        View and manage your trees
+                        Browse and manage your trees
                     </CardDescription>
                 </CardHeader>
                 <div className="flex justify-between items-center">

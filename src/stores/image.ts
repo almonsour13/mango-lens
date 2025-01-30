@@ -7,7 +7,7 @@ import { tree$ } from "./tree";
 import { convertBlobToBase64, convertImageToBlob } from "@/utils/image-utils";
 import { analysis$ } from "./analysis";
 import { analyzedimage$ } from "./analyzeimage";
-import { diseaseidentified$ } from "./diseaseidentified-store";
+import { diseaseidentified$ } from "./diseaseidentified";
 import { imag } from "@tensorflow/tfjs";
 
 const userID = getUser()?.userID;

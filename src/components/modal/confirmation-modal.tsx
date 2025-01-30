@@ -1,5 +1,5 @@
 import { Button } from "../ui/button";
-import { DialogHeader, DialogFooter, DialogTitle } from "../ui/dialog";
+import { DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "../ui/dialog";
 import ModalDrawer from "./modal-drawer-wrapper"
 
 interface ConfirmationModalProps {
@@ -21,20 +21,22 @@ export default function ConfirmationModal({
         <ModalDrawer open={open} onOpenChange={onClose}>
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
+                    <DialogDescription>{content}</DialogDescription>
                 </DialogHeader>
-                <div className="text-sm text-center">{content}</div>
-                <DialogFooter className="gap-2 flex-row justify-end">
+                <div className="gap-2 flex flex-row">
                     <Button
                         type="button"
                         variant="outline"
                         onClick={()=>onClose(false)}
+                    className="flex-1"
                     >
                         Cancel
                     </Button>
-                    <Button  variant="destructive"  onClick={onConfirm}>
+                    <Button  variant="destructive"  onClick={onConfirm}
+                    className="flex-1">
                         Confirm
                     </Button>
-                </DialogFooter>
+                </div>
         </ModalDrawer>
     );
 }

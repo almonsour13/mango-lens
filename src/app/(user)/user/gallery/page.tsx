@@ -111,7 +111,7 @@ export default function Gallery() {
             </div>
             <PageWrapper>
                 <CardHeader className="p-0">
-                    <CardTitle>Image Gallery</CardTitle>
+                    {/* <CardTitle>Image Gallery</CardTitle> */}
                     <CardDescription>
                         Browse and manage images for all trees
                     </CardDescription>

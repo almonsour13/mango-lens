@@ -58,7 +58,7 @@ export const TrashCard = ({
   return (
     <Card
       className={cn(
-        "overflow-hidden group aspect-square cursor-pointer transition-all duration-200 hover:shadow-md",
+        "overflow-hidden group shadow-none aspect-square cursor-pointer",
         isSelected && "scale-95",
         isSelected && isCheck && "border-4 border-primary scale-100"
       )}

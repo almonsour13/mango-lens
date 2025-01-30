@@ -61,6 +61,7 @@ import {
     updateTreeByID,
 } from "@/stores/tree";
 import { moveToTrash } from "@/stores/trash";
+import { set } from "date-fns";
 
 const formSchema = z.object({
     treeCode: z
@@ -87,6 +88,7 @@ export default function Page({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
+    const [imgsrc, setImgsrc] = useState<string | null>(null);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -109,8 +111,9 @@ export default function Page({
                     treeCode: tree.treeCode,
                     description: tree.description || "",
                     status: tree.status === 1 ? "Active" : "Inactive",
-                    treeImage: "",
+                    treeImage: tree.treeImage || "",
                 });
+                setImgsrc(tree.treeImage);
                 setEditTree(tree);
                 setLoading(false);
             }
@@ -131,6 +134,7 @@ export default function Page({
         const reader = new FileReader();
         reader.onload = (e) => {
             form.setValue("treeImage", e.target?.result as string);
+            setImgsrc(e.target?.result as string);
         };
         reader.readAsDataURL(file);
     };
@@ -150,7 +154,8 @@ export default function Page({
                 editTree.treeID,
                 values.treeCode,
                 values.description,
-                values.status
+                values.status,
+                values.treeImage
             );
             toast({
                 title: res.success ? "Tree Updated" : "Failed to Update Tree",
@@ -161,6 +166,7 @@ export default function Page({
                 treeCode: values.treeCode,
                 description: values.description,
                 status: values.status === "Active" ? 1 : 2,
+                treeImage: values.treeImage,
             });
         } catch (error) {
             console.log(error);
@@ -420,20 +426,14 @@ export default function Page({
                                             type="submit"
                                             disabled={
                                                 loading ||
-                                                (form.getValues().treeCode ===
-                                                    editTree.treeCode &&
-                                                    form.getValues()
-                                                        .description ===
-                                                        editTree.description &&
-                                                    (form.getValues().status ===
-                                                    "Active"
-                                                        ? 1
-                                                        : 2) ===
-                                                        editTree.status)
+                                                ( imgsrc === editTree.treeImage &&
+                                                form.getValues().treeCode === editTree.treeCode &&
+                                                form.getValues().description === editTree.description &&
+                                                (form.getValues().status === "Active" ? 1 : 2) === editTree.status)
                                             }
                                         >
                                             {loading
-                                                ? "Saving..."
+                                                ? "updating..."
                                                 : "Update Tree"}
                                         </Button>
                                     </div>

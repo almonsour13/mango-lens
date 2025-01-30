@@ -3,10 +3,13 @@ import { observable } from "@legendapp/state";
 import { tree$ } from "./tree";
 import { image$ } from "./image";
 import { analysis$ } from "./analysis";
-import { diseaseidentified$ } from "./diseaseidentified-store";
+import { diseaseidentified$ } from "./diseaseidentified";
 import { analyzedimage$ } from "./analyzeimage";
+import { getUser } from "./user-store";
 
-export async function dashboardMetrics(userID: string) {
+const userID = getUser()?.userID;
+
+export async function dashboardMetrics() {
     const trees = Object.values(tree$.get() || {}).filter(t => t.status === 1);
     const images = Object.values(image$.get() || {});
     const i = images.filter((image) => image.userID === userID && image.status === 1);
@@ -62,14 +65,14 @@ export async function dashboardMetrics(userID: string) {
         },
         {
             name: "Detection Rate",
-            value: `${detectionRate}%`,
+            value: `${detectionRate.toFixed(1)}%`,
             detail: "From all images",
         },
     ];
     return metrics;
 }
 
-export async function recentAnalysis(userID: string) {
+export async function recentAnalysis() {
     const trees = Object.values(observable(tree$).get() || {}).filter(t => t.status === 1);
     const images = Object.values(observable(image$).get() || {}).filter(i => i.status === 1);
     const i = await Promise.all(images

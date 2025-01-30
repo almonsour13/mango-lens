@@ -85,7 +85,7 @@ export default function Page({
         }
     }, [userInfo, treeID]);
 
-    const filteredImages = images
+    const filteredImages = images && images
         .filter(
             (image) =>
                 filterStatus === 0 ||

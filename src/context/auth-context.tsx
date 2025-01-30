@@ -10,7 +10,8 @@ import React, {
 import { jwtDecode } from "jwt-decode";
 import { usePathname, useRouter } from "next/navigation";
 import { getUser, removeUser } from "@/stores/user-store";
-import { clearDatabase } from "@/stores/stores";
+import { clearDatabase, initializeStore } from "@/stores/stores";
+import { checkAndInitializeDatabase } from "@/stores/indexeddb";
 
 interface UserInfo {
     userID: string;
@@ -78,6 +79,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setToken(cookieToken);
         setIsLoaded(true);
     }, []);
+    useEffect(()=>{
+        const check = async () => {
+            await checkAndInitializeDatabase()
+        }
+        // if(userInfo){
+            check()
+        // }
+    },[])
 
     // useEffect(() => {
     //     const fetchUserInfo = async () => {

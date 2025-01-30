@@ -56,9 +56,9 @@ export interface Log {
     createdAt: Date;
 }
 export interface Feedback {
-    feedbackID: number;
-    userID: number;
-    description: string;
+    feedbackID: string;
+    userID: string;
+    content: string;
     status: number;
     feedbackAt: Date;
 }

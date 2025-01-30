@@ -63,8 +63,10 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
             setLoading(true);
             try {
                 if(!userInfo?.userID) return;
-                const t = await getTreeByUser();
-                setTrees(t.data as Tree[]);
+                const res = await getTreeByUser();
+                if(res){
+                    setTrees(res.data as Tree[]);
+                }
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching trees:", error);
@@ -159,7 +161,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
                     <SelectContent>
                         {loading ? (
                             <p className="p-1 px-2">loading</p>
-                        ) : trees.length ? (
+                        ) : trees && trees.length ? (
                             <>
                                 {trees.map((tree) => (
                                     <SelectItem

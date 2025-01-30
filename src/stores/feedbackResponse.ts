@@ -2,34 +2,34 @@ import { supabase } from "@/supabase/supabase";
 import { observable } from "@legendapp/state";
 import { syncPlugin } from "./config";
 import { getUser } from "./user-store";
+import { v4 as uuidv4 } from "uuid";
 
 const userID = getUser()?.userID;
 
-export const analysis$ = observable(
+export const feedbackResponse$ = observable(
     syncPlugin({
         list: async () => {
             try {
-                const imageIDs =
+                const feedbackIDs =
                     (
                         await supabase
-                            .from("image")
-                            .select("imageID")
+                            .from("feedback")
+                            .select("feedbackID")
                             .eq("userID", userID)
-                    ).data?.map((t) => t.imageID) || [];
-                    
-                if (!imageIDs || imageIDs.length === 0) {
+                    ).data?.map((t) => t.feedbackID) || [];
+                if (!feedbackIDs || feedbackIDs.length === 0) {
                     return [];
                 }
                 const { data, error } = await supabase
-                    .from("analysis")
+                    .from("feedbackResponse")
                     .select("*")
                     .eq("status", 1)
-                    .in("imageID",imageIDs);
+                    .in("feedbackID", feedbackIDs);
 
                 if (error) throw error;
                 return data;
             } catch (error) {
-                console.error(`Error fetching images:`, error);
+                console.error(`Error fetching feedbackResponse:`, error);
                 throw error;
             }
         },
@@ -40,7 +40,7 @@ export const analysis$ = observable(
                 }
 
                 const { data, error } = await supabase
-                    .from("analysis")
+                    .from("feedbackResponse")
                     .insert([value])
                     .select()
                     .single();
@@ -48,7 +48,7 @@ export const analysis$ = observable(
                 if (error) throw error;
                 return data;
             } catch (error) {
-                console.error(`Error creating analysis:`, error);
+                console.error(`Error creating feedbackResponse:`, error);
                 throw error;
             }
         },
@@ -59,7 +59,7 @@ export const analysis$ = observable(
                 }
 
                 const { data, error } = await supabase
-                    .from("analysis")
+                    .from("feedbackResponse")
                     .update(value)
                     .eq("id", value.id)
                     .select()
@@ -68,12 +68,12 @@ export const analysis$ = observable(
                 if (error) throw error;
                 return data;
             } catch (error) {
-                console.error(`Error updating analysis:`, error);
+                console.error(`Error updating feedbackResponse:`, error);
                 throw error;
             }
         },
         persist: {
-            name: "analysis",
+            name: "feedbackResponse",
             retrySync: true,
         },
         retry: {
@@ -82,3 +82,14 @@ export const analysis$ = observable(
         updatePartial: true,
     })
 );
+interface AddResponseProps {
+    feedbackResponseID: string;
+    feedbackID: string;
+    userID: string;
+    content: string;
+    status: number;
+    feedbackResponseAt: Date;
+}
+export const addResponse = (val:AddResponseProps) => {
+    feedbackResponse$[val.feedbackResponseID].set(val)
+};

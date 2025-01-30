@@ -42,6 +42,7 @@ import ResultImage from "./result-image";
 import AnalysisCarousel from "./result-image-carousel";
 import { getImageByImageID } from "@/stores/image";
 import { moveToTrash } from "@/stores/trash";
+import AddFeedBackModel from "../modal/feedback-modal";
 
 export default function ImageDetails({ imageID }: { imageID: string }) {
     const { toast } = useToast();
@@ -51,7 +52,8 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
     const { userInfo } = useAuth();
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [isMigrateModalOpen, setIsMigrateModalOpen] = useState(false);
-    
+    const [isFeedbackModel, setIsFeedbackModel] = useState(false);
+
     useEffect(() => {
         const fetchImageDetails = async () => {
             try {
@@ -75,16 +77,12 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
     const handleConfirmDelete = async () => {
         try {
             if (!userInfo?.userID || !imageDetails) return null;
-            const res = await moveToTrash(imageDetails.imageID,2);
+            const res = await moveToTrash(imageDetails.imageID, 2);
+            toast({
+                description: res.message,
+            })
             if (res.success) {
-                setTimeout(() => {
-                    toast({
-                        title: "Image moved",
-                        description: res.message,
-                    }),
-                        300;
-                });
-                router.back();
+                    router.back();
             }
         } catch (error) {
             console.error("Error deleting disease:", error);
@@ -105,9 +103,11 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
         router.back();
     };
 
-    const handleMigrateImage = async (treeID:string,newTreeCode: string) => {
+    const handleMigrateImage = async (treeID: string, newTreeCode: string) => {
         setImageDetails((prevDetails) =>
-            prevDetails ? { ...prevDetails, treeCode: newTreeCode, treeID:treeID} : null
+            prevDetails
+                ? { ...prevDetails, treeCode: newTreeCode, treeID: treeID }
+                : null
         );
     };
 
@@ -120,11 +120,7 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
                     </button>
                     <Separator orientation="vertical" />
                     <h1 className="text-md">
-                        {imageDetails &&
-                            formatDate(
-                                imageDetails?.analyzedAt,
-                                "MMM dd, yyyy"
-                            )}
+                        {imageDetails && imageDetails.treeCode+" Image"}
                     </h1>
                 </div>
                 <DropdownMenu>
@@ -134,7 +130,9 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => setIsFeedbackModel(true)}
+                        >
                             <MessageCircle className="mr-2 h-4 w-4" />
                             Feedback
                         </DropdownMenuItem>
@@ -160,7 +158,7 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
                 <div className="hidden md:flex gap-2">
                     <Button
                         variant="outline"
-                        onClick={() => handleDownload()}
+                        onClick={() => setIsFeedbackModel(true)}
                         className="w-10 md:w-auto"
                     >
                         <MessageCircle className="h-5 w-5" />
@@ -224,6 +222,10 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
                             <ResultDetails imageDetails={imageDetails} />
                         </CardContent>
                     </PageWrapper>
+                    <AddFeedBackModel
+                        open={isFeedbackModel}
+                        onClose={() => setIsFeedbackModel(false)}
+                    />
                     <ConfirmationModal
                         open={confirmationModalOpen}
                         onClose={() => setConfirmationModalOpen(false)}
@@ -253,7 +255,7 @@ function ResultDetails({
 }) {
     return (
         <div className="flex-1 flex flex-col gap-4 border p-4 rounded-lg">
-            <div className="flex flex-col md:flex-row gap-2">
+            <div className="flex flex-row justify-between md:justify-start gap-2">
                 <div className="flex space-x-2">
                     <Trees className="h-5 w-5 text-muted-foreground" />
                     {/* <span className="text-base font-medium">Tree Code:</span> */}

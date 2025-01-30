@@ -135,6 +135,7 @@ export function ModelProvider({ children }: { children: ReactNode }) {
             ).filter(prob => prob.likelihoodScore > 30);
 
             predictionWithClasses.sort((a, b) => b.likelihoodScore - a.likelihoodScore);
+                
             const heatmaps = await gradClassActivationMap(model, inputTensor, [
                 predictedClassIndex,
             ]);

@@ -38,7 +38,7 @@ const ModalDrawer = React.forwardRef<HTMLDivElement, ModalDrawerProps>(
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent
           ref={ref}
-          className={cn("p-4 mt-12 space-y-6 max-h-[calc(100vh-56px)]", className)}
+          className={cn("p-4 mt-12 space-y-4 max-h-[80vh]", className)}
           {...props}
         />
       </Drawer>

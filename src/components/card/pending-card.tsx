@@ -56,7 +56,7 @@ export default function PendingCard({
 
     return (
         <Card
-            className={`overflow-hidden group border bg-card cursor-pointer transition-all duration-100  ${
+            className={`overflow-hidden group shadow-none border bg-card cursor-pointer transition-all duration-100  ${
                 isSelected ? "scale-95" : ""
             } ${
                 isSelected &&

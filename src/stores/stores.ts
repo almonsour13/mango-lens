@@ -1,6 +1,6 @@
 import { analysis$ } from "./analysis";
 import { analyzedimage$ } from "./analyzeimage";
-import { diseaseidentified$ } from "./diseaseidentified-store";
+import { diseaseidentified$ } from "./diseaseidentified";
 import { image$ } from "./image";
 import { trash$ } from "./trash";
 import { tree$ } from "./tree";
