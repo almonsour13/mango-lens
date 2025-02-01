@@ -47,7 +47,7 @@ export default function Feedback() {
     const fetchFeedback = useCallback(async () => {
         setLoading(true);
         try {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            await new Promise((resolve) => setTimeout(resolve, 500));
             const res = await getFeedbackWithResponses();
             if (res.success) {
                 setFeedbacks(res.data as Feedback[]);

@@ -63,6 +63,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
             setLoading(true);
             try {
                 if(!userInfo?.userID) return;
+                await new Promise((resolve) => setTimeout(resolve, 500));
                 const res = await getTreeByUser();
                 if(res){
                     setTrees(res.data as Tree[]);

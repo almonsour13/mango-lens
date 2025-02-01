@@ -57,7 +57,7 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
     useEffect(() => {
         const fetchImageDetails = async () => {
             try {
-                await new Promise((resolve) => setTimeout(resolve, 200));
+                await new Promise((resolve) => setTimeout(resolve, 500));
                 const res = await getImageByImageID(imageID);
                 if (res.success) {
                     setImageDetails(res.data);

@@ -64,6 +64,7 @@ export default function MigrateImageModal({
         const fetchTrees = async () => {
             try {
                 if (!userInfo?.userID) return;
+                await new Promise((resolve) => setTimeout(resolve, 500));
                 const res = await getTreeByUser();
                 if (res.success) {
                     const treeData = res.data as Tree[];

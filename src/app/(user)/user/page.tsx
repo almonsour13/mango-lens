@@ -267,7 +267,7 @@ const Metrics = () => {
             
             setLoading(true);
             try {
-                await new Promise((resolve) => setTimeout(resolve, 200));
+                await new Promise((resolve) => setTimeout(resolve, 500));
                 const metricsData = await dashboardMetrics();
                 const formattedMetrics = (metricsData as Metric[]).map((metric) => ({
                     ...metric,
@@ -333,14 +333,15 @@ const RecentAnalysis = () => {
         const fetchImages = async () => {
             setLoading(true);
             try {
-                await new Promise((resolve) => setTimeout(resolve, 200));
+                await new Promise((resolve) => setTimeout(resolve, 500));
                 const res = await recentAnalysis();
                 if (res) {
                     setAnalysis(res);
                 }
-                setLoading(false);
             } catch (error) {
                 console.error("Error retrieving images:", error);
+            } finally {
+                setLoading(false);
             }
         };
         if (userInfo?.userID !== undefined && userInfo?.userID !== null) {
