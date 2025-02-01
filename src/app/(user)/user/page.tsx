@@ -25,6 +25,7 @@ import { useAuth } from "@/context/auth-context";
 import { usePendingProcess } from "@/context/pending-process-context";
 import { dashboardMetrics, recentAnalysis } from "@/stores/dashboard";
 import { Image as Img } from "@/types/types";
+import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import {
     AlertCircle,
@@ -40,7 +41,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 // import { getPendingTotalCount } from "@/utils/indexedDB/store/pending-store";
-import { useQuery } from '@tanstack/react-query';
 
 export default function Dashboard() {
     const { userInfo, resetToken } = useAuth();
@@ -250,20 +250,22 @@ interface Metric {
     icon: LucideIcon;
 }
 
-const icons = [
-    { name: "Total Trees", icon: TreeDeciduous },
-    { name: "Total Images", icon: ImageIcon },
-    { name: "Disease Detected", icon: Radar },
-    { name: "Detection Rate", icon: Percent },
-];
-
 const Metrics = () => {
     const { userInfo } = useAuth();
+    const [loading, setLoading] = useState(true);
+    // const [metrics, setMetrics] = useState<Metric[]>([]);
 
+    const icons = [
+        { name: "Total Trees", icon: TreeDeciduous },
+        { name: "Total Images", icon: ImageIcon },
+        { name: "Disease Detected", icon: Radar },
+        { name: "Detection Rate", icon: Percent },
+    ];
     const { data: metrics, isLoading, error } = useQuery({
         queryKey: ['metrics', userInfo?.userID],
         queryFn: async () => {
             const metricsData = await dashboardMetrics();
+            console.log("fetct",metricsData)
             return (metricsData as Metric[]).map((metric) => ({
                 ...metric,
                 icon: icons.find((icon) => icon.name === metric.name)?.icon || TreeDeciduous,
@@ -273,17 +275,32 @@ const Metrics = () => {
         staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
         // cacheTime: 30 * 60 * 1000, // Cache data for 30 minutes
     });
+    console.log("metrics",metrics)
 
-    if (error) {
-        return (
-            <Card className="border-0 p-4 shadow-none">
-                <div className="text-red-500">
-                    Error loading metrics. Please try again later.
-                </div>
-            </Card>
-        );
-    }
-
+    // useEffect(() => {
+    //     const loadMetrics = async () => {
+    //         if (!userInfo?.userID) return;
+            
+    //         setLoading(true);
+    //         try {
+    //             const metricsData = await dashboardMetrics();
+    //             const formattedMetrics = (metricsData as Metric[]).map((metric) => ({
+    //                 ...metric,
+    //                 icon: icons.find((icon) => icon.name === metric.name)?.icon || TreeDeciduous,
+    //             }));
+    //             setMetrics(formattedMetrics);
+    //             console.log("formatted",formattedMetrics)
+    //         } catch (error) {
+    //             console.error("Error loading metrics:", error);
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     };
+    //    //if(!metrics){
+    //     loadMetrics();
+    //    // }
+    // }, [userInfo?.userID]);
+    
     return (
         <Card className="border-0 p-0 shadow-none">
             <div className="grid gap-2 md:gap-4 grid-cols-2 lg:grid-cols-4">
