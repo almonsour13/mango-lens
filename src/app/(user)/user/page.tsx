@@ -248,97 +248,78 @@ interface Metric {
     detail: string;
     icon: LucideIcon;
 }
+
 const Metrics = () => {
     const { userInfo } = useAuth();
-    // const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [metrics, setMetrics] = useState<Metric[]>([]);
 
-    useEffect(() => {
-        const fetch = async () => {
-            const res = await dashboardMetrics();
-            const metricsData = res as Metric[];
-            console.log("without depencies")
-            console.log(metricsData)
-        }
-        fetch();
-    },[])
+    // Define icons configuration outside component to prevent recreating on each render
+    const icons = [
+        { name: "Total Trees", icon: TreeDeciduous },
+        { name: "Total Images", icon: ImageIcon },
+        { name: "Disease Detected", icon: Radar },
+        { name: "Detection Rate", icon: Percent },
+    ];
+
     useEffect(() => {
         const fetchMetrics = async () => {
-            setLoading(true);
             if (!userInfo?.userID) return;
+            
+            setLoading(true);
             try {
                 const res = await dashboardMetrics();
                 const metricsData = res as Metric[];
-                console.log("with depencies")
-                console.log(metricsData)
-                const icons = [
-                    { name: "Total Trees", icon: TreeDeciduous },
-                    { name: "Total Images", icon: ImageIcon },
-                    { name: "Disease Detected", icon: Radar },
-                    { name: "Detection Rate", icon: Percent },
-                ];
-                const updatedMetrics = metricsData.map((metric) => {
-                    const iconConfig = icons.find(
-                        (icon) => icon.name === metric.name
-                    );
-                    return {
-                        name: metric.name,
-                        value: metric.value,
-                        detail: metric.detail,
-                        icon: iconConfig?.icon || TreeDeciduous,
-                    };
-                });
+                
+                const updatedMetrics = metricsData.map((metric) => ({
+                    ...metric,
+                    icon: icons.find((icon) => icon.name === metric.name)?.icon || TreeDeciduous,
+                }));
+                
                 setMetrics(updatedMetrics);
-                setLoading(false);
             } catch (error) {
                 console.error("Error retrieving metrics:", error);
             } finally {
                 setLoading(false);
             }
         };
-        if (userInfo?.userID) {
-            fetchMetrics();
-        }
-    }, [userInfo?.userID]);
+
+        fetchMetrics();
+    }, [userInfo?.userID]); // Only dependency is userID
 
     return (
         <Card className="border-0 p-0 shadow-none">
-            {/* <CardHeader className="px-0">
-                <CardTitle className="text-lg">Metrics</CardTitle>
-            </CardHeader> */}
             <div className="grid gap-2 md:gap-4 grid-cols-2 lg:grid-cols-4">
-                {loading
-                    ? Array.from({ length: 4 }).map(
-                          (_: unknown, index: number) => (
-                              <Card key={index} className="overflow-hidden">
-                                  <div className="h-24 w-full flex items-center justify-center p-8 animate-pulse bg-muted"></div>
-                              </Card>
-                          )
-                      )
-                    : metrics.map((metric, index) => (
-                          <Card key={index} className="bg-caard shadow-none">
-                              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                  <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
-                                      {metric.name}
-                                  </CardTitle>
-                                  <metric.icon className="text-primary h-5 w-5" />
-                              </CardHeader>
-                              <CardContent>
-                                  <div className="text-2xl font-bold">
-                                      {metric.value}
-                                  </div>
-                                  <p className="text-xs text-muted-foreground">
-                                      {metric.detail}
-                                  </p>
-                              </CardContent>
-                          </Card>
-                      ))}
+                {loading ? (
+                    Array.from({ length: 4 }).map((_, index) => (
+                        <Card key={index} className="overflow-hidden">
+                            <div className="h-24 w-full flex items-center justify-center p-8 animate-pulse bg-muted" />
+                        </Card>
+                    ))
+                ) : (
+                    metrics.map((metric, index) => (
+                        <Card key={index} className="bg-caard shadow-none">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
+                                    {metric.name}
+                                </CardTitle>
+                                <metric.icon className="text-primary h-5 w-5" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">
+                                    {metric.value}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {metric.detail}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    ))
+                )}
             </div>
         </Card>
     );
 };
-
 type Images = Img & {
     analyzedImage: string | null;
     treeCode: string;

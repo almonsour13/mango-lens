@@ -2,7 +2,7 @@ import { observablePersistIndexedDB } from "@legendapp/state/persist-plugins/ind
 import { configureSynced } from "@legendapp/state/sync";
 import { syncedCrud } from "@legendapp/state/sync-plugins/crud";
 
-export const DATABASE_NAME = "mango-lens";
+export const DATABASE_NAME = process.env.NODE_ENV === "development"?"mango-lens-development":"mango-lens";
 export const DATABASE_VERSION = 2;
 export const TABLE_NAMES = [
     "tree",

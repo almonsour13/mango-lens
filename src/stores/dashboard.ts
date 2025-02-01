@@ -10,26 +10,31 @@ import { getUser } from "./user-store";
 const userID = getUser()?.userID;
 
 export async function dashboardMetrics() {
-    const trees = Object.values(tree$.get() || {}).filter(t => t.status === 1);
+    const trees = Object.values(tree$.get() || {}).filter(
+        (t) => t.status === 1
+    );
     const images = Object.values(image$.get() || {});
-    const i = images.filter((image) => image.userID === userID && image.status === 1);
+    const i = images.filter(
+        (image) => image.userID === userID && image.status === 1
+    );
     const analysis = Object.values(analysis$.get() || {});
     const an = i.map((image) => {
         return analysis.filter((a) => a.imageID === image.imageID)[0];
     });
-    const diseaseidentified = Object.values(
-        diseaseidentified$.get() || {}
-    );
+    const diseaseidentified = Object.values(diseaseidentified$.get() || {});
     const di = an.map((a) => {
         return {
             a,
             ...diseaseidentified.filter(
-                (d) => d.analysisID === a.analysisID 
+                (d) => d.analysisID === a.analysisID
             )[0],
         };
     });
-    const detectionRate = di.filter((d) => d.diseaseName !== "Healthy")
-           .reduce((acc, curr) => acc + (curr.likelihoodScore || 0), 0)/di.length
+    const detectionRate =
+        di
+            .filter((d) => d.diseaseName !== "Healthy")
+            .reduce((acc, curr) => acc + (curr.likelihoodScore || 0), 0) /
+        di.length;
 
     const currentDate = new Date();
     const firstDayOfMonth = new Date(
@@ -40,7 +45,7 @@ export async function dashboardMetrics() {
     const thisMonthTrees = trees.filter(
         (tree) => new Date(tree.addedAt) >= firstDayOfMonth
     ).length;
-    
+
     const thisMonthImages = images.filter(
         (image) => new Date(image.uploadedAt) >= firstDayOfMonth
     ).length;
@@ -73,23 +78,36 @@ export async function dashboardMetrics() {
 }
 
 export async function recentAnalysis() {
-    const trees = Object.values(observable(tree$).get() || {}).filter(t => t.status === 1);
-    const images = Object.values(observable(image$).get() || {}).filter(i => i.status === 1);
-    const i = await Promise.all(images
-        .filter((image) => image.userID === userID && image.status === 1)
-        .slice(0,5).map(async (image) => {
-            return {
-                ...image,
-                imageData: await convertBlobToBase64(image.imageData) as string,
-            };
-        }));
+    const trees = Object.values(observable(tree$).get() || {}).filter(
+        (t) => t.status === 1
+    );
+    const images = Object.values(observable(image$).get() || {}).filter(
+        (i) => i.status === 1
+    );
+    const i = await Promise.all(
+        images
+            .filter((image) => image.userID === userID && image.status === 1)
+            .slice(0, 5)
+            .map(async (image) => {
+                return {
+                    ...image,
+                    imageData: (await convertBlobToBase64(
+                        image.imageData
+                    )) as string,
+                };
+            })
+    );
 
     const t = i.map((image) => {
-        const treeCode = trees.filter((t) => t.treeID === image.treeID && t.status === 1)[0];
-        return {
-            ...image,
-            treeCode:treeCode?treeCode.treeCode:null
-        };
+        const treeCode = trees.filter(
+            (t) => t.treeID === image.treeID && t.status === 1
+        )[0];
+        if (treeCode && treeCode.status === 1) {
+            return {
+                ...image,
+                treeCode: treeCode ? treeCode.treeCode : null,
+            };
+        }
     });
 
     const analysis = Object.values(observable(analysis$).get() || {});
