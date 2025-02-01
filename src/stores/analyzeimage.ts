@@ -2,6 +2,7 @@ import { supabase } from "@/supabase/supabase";
 import { observable } from "@legendapp/state";
 import { syncPlugin } from "./config";
 import { getUser } from "./user-store";
+import { loadingStore$ } from "./loading-store";
 
 const userID = getUser()?.userID;
 
@@ -9,15 +10,18 @@ export const analyzedimage$ = observable(
     syncPlugin({
         list: async () => {
             try {
+                loadingStore$.analyzedimage.set(true);
                 const { data, error } = await supabase
                     .from("analyzedimage")
-                    .select("*")
+                    .select("*");
 
                 if (error) throw error;
                 return data;
             } catch (error) {
                 console.error(`Error fetching images:`, error);
                 throw error;
+            } finally {
+                loadingStore$.analyzedimage.set(false);
             }
         },
         create: async (value) => {

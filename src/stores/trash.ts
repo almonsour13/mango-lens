@@ -6,6 +6,7 @@ import { getUser } from "./user-store";
 import { tree$ } from "./tree";
 import { image$ } from "./image";
 import { convertBlobToBase64 } from "@/utils/image-utils";
+import { loadingStore$ } from "./loading-store";
 
 const userID = getUser()?.userID;
 
@@ -13,6 +14,7 @@ export const trash$ = observable(
     syncPlugin({
         list: async () => {
             try {
+                loadingStore$.trash.set(true);
                 const { data, error } = await supabase
                     .from("trash")
                     .select("*")
@@ -22,8 +24,10 @@ export const trash$ = observable(
                 if (error) throw error;
                 return data;
             } catch (error) {
-                console.error(`Error fetching predictions:`, error);
+                console.error(`Error fetching asas:`, error);
                 throw error;
+            } finally {
+                loadingStore$.trash.set(false);
             }
         },
         create: async (value) => {

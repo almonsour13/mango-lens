@@ -39,9 +39,15 @@ import { loadingStore$ } from "@/stores/loading-store";
 import { observable, observe } from "@legendapp/state";
 import { whenReady } from "@legendapp/state";
 import { useStoresLoading } from "@/context/loading-store-context";
+import { useMetrics } from "@/hooks/use-metrics";
 
 export default function Dashboard() {
     const { userInfo, resetToken } = useAuth();
+    const [treeLoading, setTreeLoading] = useState(false);
+    const [imageLoading, setImageLoading] = useState(false);
+
+    loadingStore$.tree.onChange(({ value }) => setTreeLoading(value));
+    loadingStore$.image.onChange(({ value }) => setImageLoading(value));
     
     const handleLogout = async () => {
         const response = await fetch("/api/auth/logout", {
@@ -53,7 +59,10 @@ export default function Dashboard() {
             resetToken();
         }
     };
-    
+    useEffect(() => {
+        console.log(treeLoading);
+        console.log(imageLoading);
+    }, [treeLoading, imageLoading]);
     useEffect(() => {
         if (userInfo) {
         }
@@ -182,44 +191,7 @@ interface Metric {
 }
 
 const Metrics = () => {
-    const { userInfo } = useAuth();
-    const [loading, setLoading] = useState(true);
-    const [metrics, setMetrics] = useState<Metric[]>([]);
-    const {areStoresLoading} = useStoresLoading();
-
-    const icons = [
-        { name: "Total Trees", icon: TreeDeciduous },
-        { name: "Total Images", icon: ImageIcon },
-        { name: "Disease Detected", icon: Radar },
-        { name: "Detection Rate", icon: Percent },
-    ];
-
-    useEffect(() => {
-        const loadMetrics = async () => {
-            if (!userInfo?.userID) return;
-
-            setLoading(true);
-            try {
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-                const metricsData = await dashboardMetrics();
-                const formattedMetrics = (metricsData as Metric[]).map(
-                    (metric) => ({
-                        ...metric,
-                        icon:
-                            icons.find((icon) => icon.name === metric.name)
-                                ?.icon || TreeDeciduous,
-                    })
-                );
-                setMetrics(formattedMetrics);
-                setLoading(false);
-            } catch (error) {
-                console.error("Error loading metrics:", error);
-            } 
-        };
-        if (!areStoresLoading.get()) {
-            loadMetrics();
-        }
-    }, [areStoresLoading]);
+    const { loading, metrics } = useMetrics();
 
     return (
         <Card className="border-0 p-0 shadow-none">
@@ -261,11 +233,7 @@ const RecentAnalysis = () => {
     const [analysis, setAnalysis] = useState<Images[]>([]);
     const { userInfo } = useAuth();
     const router = useRouter();
-    const [treeLoading, setTreeLoading] = useState(false);
-    const [imageLoading, setImageLoading] = useState(false);
-
-    loadingStore$.tree.onChange(({ value }) => setTreeLoading(value));
-    loadingStore$.image.onChange(({ value }) => setImageLoading(value));
+        const { areStoresLoading } = useStoresLoading();
 
     useEffect(() => {
         const fetchImages = async () => {
@@ -282,10 +250,10 @@ const RecentAnalysis = () => {
                 setLoading(false);
             }
         };
-        if (!imageLoading && !treeLoading) {
+        if (!areStoresLoading) {
             fetchImages();
         }
-    }, [userInfo?.userID,imageLoading,treeLoading]);
+    }, [areStoresLoading]);
 
     return (
         <Card className="border-0 p-0 shadow-none flex-1">

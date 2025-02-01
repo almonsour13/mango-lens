@@ -3,12 +3,14 @@ import { observable } from "@legendapp/state";
 import { syncPlugin } from "./config";
 import { getUser } from "./user-store";
 import { getTreeByUser } from "./tree";
+import { loadingStore$ } from "./loading-store";
 
 const userID = getUser()?.userID;
 export const treeimage$ = observable(
     syncPlugin({
         list: async () => {
             try {
+                loadingStore$.treeimage.set(true);
                 const treeIDs =
                     (
                         await supabase
@@ -33,6 +35,8 @@ export const treeimage$ = observable(
             } catch (error) {
                 console.error(`Error fetching treeimage:`, error);
                 throw error;
+            } finally {
+                loadingStore$.treeimage.set(false);
             }
         },
         create: async (value) => {

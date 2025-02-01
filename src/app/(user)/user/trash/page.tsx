@@ -59,7 +59,7 @@ export default function Trash() {
     }, [areStoresLoading]);
 
     useEffect(() => {
-        if (!areStoresLoading.get()) {
+        if (!areStoresLoading) {
             fetchTrashes();
         }
     }, [areStoresLoading]);

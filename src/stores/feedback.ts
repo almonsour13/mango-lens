@@ -4,6 +4,7 @@ import { syncPlugin } from "./config";
 import { getUser } from "./user-store";
 import { v4 as uuidv4 } from "uuid";
 import { feedbackResponse$ } from "./feedbackResponse";
+import { loadingStore$ } from "./loading-store";
 
 const userID = getUser()?.userID;
 
@@ -11,6 +12,7 @@ export const feedback$ = observable(
     syncPlugin({
         list: async () => {
             try {
+                loadingStore$.feedback.set(true);
                 const { data, error } = await supabase
                     .from("feedback")
                     .select("*")
@@ -21,6 +23,8 @@ export const feedback$ = observable(
             } catch (error) {
                 console.error(`Error fetching feedback:`, error);
                 throw error;
+            } finally {
+                loadingStore$.feedback.set(false);
             }
         },
         create: async (value) => {
@@ -76,19 +80,22 @@ export const getFeedbackWithResponses = async () => {
     try {
         const feedbackEntries = Object.values(feedback$.get() || {});
         const responseEntries = Object.values(feedbackResponse$.get() || {});
-        const combinedFeedback = feedbackEntries.map(feedback => {
+        const combinedFeedback = feedbackEntries.map((feedback) => {
             const associatedResponses = responseEntries.filter(
-                response => response.feedbackID === feedback.feedbackID
+                (response) => response.feedbackID === feedback.feedbackID
             );
             return {
                 ...feedback,
-                responses: associatedResponses
-            }
+                responses: associatedResponses,
+            };
         });
         return { success: true, data: combinedFeedback };
     } catch (error) {
         console.error(`Error retrieving feedback:`, error);
-        return { success: false, message: "An error occurred while retrieving feedback." };
+        return {
+            success: false,
+            message: "An error occurred while retrieving feedback.",
+        };
     }
 };
 export const submitFeedback = async (content: string) => {
@@ -107,9 +114,16 @@ export const submitFeedback = async (content: string) => {
             feedbackAt: new Date(),
         });
 
-        return { success: true, message: "Feedback submitted successfully.", feedbackID };
+        return {
+            success: true,
+            message: "Feedback submitted successfully.",
+            feedbackID,
+        };
     } catch (error) {
         console.error(`Error submitting feedback:`, error);
-        return { success: false, message: "An error occurred while submitting feedback." };
+        return {
+            success: false,
+            message: "An error occurred while submitting feedback.",
+        };
     }
 };

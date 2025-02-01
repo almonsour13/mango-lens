@@ -3,6 +3,7 @@ import { observable } from "@legendapp/state";
 import { syncPlugin } from "./config";
 import { getUser } from "./user-store";
 import { v4 as uuidv4 } from "uuid";
+import { loadingStore$ } from "./loading-store";
 
 const userID = getUser()?.userID;
 
@@ -10,6 +11,7 @@ export const feedbackResponse$ = observable(
     syncPlugin({
         list: async () => {
             try {
+                loadingStore$.feedbackResponse.set(true);
                 const feedbackIDs =
                     (
                         await supabase
@@ -31,7 +33,9 @@ export const feedbackResponse$ = observable(
             } catch (error) {
                 console.error(`Error fetching feedbackResponse:`, error);
                 throw error;
-            }
+            }finally {
+                            loadingStore$.feedbackResponse.set(false);
+                        }
         },
         create: async (value) => {
             try {

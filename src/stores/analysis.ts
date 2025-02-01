@@ -2,6 +2,7 @@ import { supabase } from "@/supabase/supabase";
 import { observable } from "@legendapp/state";
 import { syncPlugin } from "./config";
 import { getUser } from "./user-store";
+import { loadingStore$ } from "./loading-store";
 
 const userID = getUser()?.userID;
 
@@ -9,6 +10,7 @@ export const analysis$ = observable(
     syncPlugin({
         list: async () => {
             try {
+                loadingStore$.analysis.set(true);
                 const imageIDs =
                     (
                         await supabase
@@ -16,7 +18,7 @@ export const analysis$ = observable(
                             .select("imageID")
                             .eq("userID", userID)
                     ).data?.map((t) => t.imageID) || [];
-                    
+
                 if (!imageIDs || imageIDs.length === 0) {
                     return [];
                 }
@@ -24,13 +26,15 @@ export const analysis$ = observable(
                     .from("analysis")
                     .select("*")
                     .eq("status", 1)
-                    .in("imageID",imageIDs);
+                    .in("imageID", imageIDs);
 
                 if (error) throw error;
                 return data;
             } catch (error) {
                 console.error(`Error fetching images:`, error);
                 throw error;
+            } finally {
+                loadingStore$.analysis.set(false);
             }
         },
         create: async (value) => {

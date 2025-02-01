@@ -53,7 +53,7 @@ export default function Gallery() {
     }, [areStoresLoading]);
 
     useEffect(() => {
-        if (!areStoresLoading.get()) {
+        if (!areStoresLoading) {
             fetchImages();
         }
     }, [areStoresLoading]);
