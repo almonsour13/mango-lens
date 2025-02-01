@@ -105,7 +105,6 @@ export default function Page({
     const fetchTree = useCallback(async () => {
         setLoading(true);
         try {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
             const tree = await getTreeByID(treeID);
             if (tree) {
                 form.reset({
@@ -219,11 +218,9 @@ export default function Page({
                 </div>
             ) : (
                 <PageWrapper>
-                    <CardHeader className="px-0">
-                        <CardTitle>Edit Tree Details</CardTitle>
+                    <CardHeader className="p-0">
                         <CardDescription>
-                            Update the information for this tree in the
-                            monitoring system.
+                            Edit Tree information.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="p-0">

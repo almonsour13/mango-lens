@@ -50,9 +50,7 @@ export const useTrashes = () => {
 
     // Fetch trashes when image, tree, or analysis loading state changes
     useEffect(() => {
-        if (!imageLoading && !treeLoading && !analysisLoading) {
-            fetchTrashes();
-        }
+        fetchTrashes();
     }, [imageLoading, treeLoading, analysisLoading, fetchTrashes]);
 
     return { trashes, setTrashes, loading };

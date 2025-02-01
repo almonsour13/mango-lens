@@ -13,7 +13,6 @@ import { OnlineStatusToast } from "@/components/common/online-status-toast";
 import ResultDisplay from "@/components/common/scan/result/result-dislpay";
 import { PendingProcessProvider } from "@/context/pending-process-context";
 import { CameraProvider } from "@/context/camera-context";
-import { StoresLoadingProvider } from "@/context/loading-store-context";
 
 export default function UserLayout({
     children,
@@ -48,23 +47,21 @@ const Main = ({ children }: { children: React.ReactNode }) => {
     const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
     return (
-        <StoresLoadingProvider>
-            <div className="flex h-auto min-h-screen relative bg-background">
-                <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
-                <div className="w-full flex-1 flex flex-col overflow-hidden relative">
-                    <OnlineStatusToast />
-                    <ScanResultProvider>
-                        <PendingProcessProvider>
-                            <main className="flex-1 flex flex-col overflow-y-auto">
-                                {children}
-                                <ResultDisplay />
-                            </main>
-                        </PendingProcessProvider>
-                    </ScanResultProvider>
-                    <BottomNav />
-                    <Toaster />
-                </div>
+        <div className="flex h-auto min-h-screen relative bg-background">
+            <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+            <div className="w-full flex-1 flex flex-col overflow-hidden relative">
+                <OnlineStatusToast />
+                <ScanResultProvider>
+                    <PendingProcessProvider>
+                        <main className="flex-1 flex flex-col overflow-y-auto">
+                            {children}
+                            <ResultDisplay />
+                        </main>
+                    </PendingProcessProvider>
+                </ScanResultProvider>
+                <BottomNav />
+                <Toaster />
             </div>
-        </StoresLoadingProvider>
+        </div>
     );
 };

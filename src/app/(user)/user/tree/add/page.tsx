@@ -98,7 +98,11 @@ export default function Page() {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setLoading(true);
         try {
-            const res = await addTree(values.treeCode, values.description, values.treeImage);
+            const res = await addTree(
+                values.treeCode,
+                values.description,
+                values.treeImage
+            );
             toast({
                 title: res.success ? "Tree Added" : "Failed to Add Tree",
                 description: res.message,
@@ -129,12 +133,8 @@ export default function Page() {
                 </div>
             </div>
             <PageWrapper>
-                <CardHeader className="px-0">
-                    <CardTitle>Add Tree Details</CardTitle>
-                    <CardDescription>
-                        Add the information for this tree in the monitoring
-                        system.
-                    </CardDescription>
+                <CardHeader className="p-0">
+                    <CardDescription>Add tree information.</CardDescription>
                 </CardHeader>
                 <CardContent className="p-0">
                     <Form {...form}>

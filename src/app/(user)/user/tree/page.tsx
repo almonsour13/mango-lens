@@ -16,8 +16,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import PageWrapper from "@/components/wrapper/page-wrapper";
-import { useAuth } from "@/context/auth-context";
-import { useStoresLoading } from "@/context/loading-store-context";
+import { useAuth } from "@/context/auth-context";;
 import { useToast } from "@/hooks/use-toast";
 import { useTrees } from "@/hooks/use-trees";
 import { moveToTrash } from "@/stores/trash";

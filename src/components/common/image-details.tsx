@@ -43,41 +43,20 @@ import AnalysisCarousel from "./result-image-carousel";
 import { getImageByImageID } from "@/stores/image";
 import { moveToTrash } from "@/stores/trash";
 import AddFeedBackModel from "../modal/feedback-modal";
+import { useImageDetails } from "@/hooks/use-image-details";
 
 export default function ImageDetails({ imageID }: { imageID: string }) {
     const { toast } = useToast();
     const router = useRouter();
-    const [imageDetails, setImageDetails] =
-        useState<ImageAnalysisDetails | null>(null);
-    const { userInfo } = useAuth();
+    const {imageDetails, setImageDetails, loading} = useImageDetails(imageID)
+    
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [isMigrateModalOpen, setIsMigrateModalOpen] = useState(false);
     const [isFeedbackModel, setIsFeedbackModel] = useState(false);
 
-    useEffect(() => {
-        const fetchImageDetails = async () => {
-            try {
-                await new Promise((resolve) => setTimeout(resolve, 500));
-                const res = await getImageByImageID(imageID);
-                if (res.success) {
-                    setImageDetails(res.data);
-                }
-            } catch (error) {
-                console.error("Error fetching image details:", error);
-                toast({
-                    title: "Error",
-                    description:
-                        "Failed to load image details. Please try again.",
-                    variant: "destructive",
-                });
-            }
-        };
-        fetchImageDetails();
-    }, [imageID, userInfo?.userID, toast]);
-
     const handleConfirmDelete = async () => {
         try {
-            if (!userInfo?.userID || !imageDetails) return null;
+            if ( !imageDetails) return null;
             const res = await moveToTrash(imageDetails.imageID, 2);
             toast({
                 description: res.message,

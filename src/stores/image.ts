@@ -125,8 +125,7 @@ export const getImageByImageID = async (
                     likelihoodScore: Number(d.likelihoodScore.toFixed(1)),
                 })),
             },
-        };
-        console.log(res);
+        };;
         return res;
     } catch (error) {
         console.error("Error fetching image by imageID:", error);

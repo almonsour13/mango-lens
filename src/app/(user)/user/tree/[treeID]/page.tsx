@@ -39,6 +39,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getTreeByID } from "@/stores/tree";
 import { getImageByImageID, getImagesByTreeID } from "@/stores/image";
+import { useTreeData } from "@/hooks/use-tree-data";
 
 type images = img & { analyzedImage: string } & {
     diseases: { likelihoodScore: number; diseaseName: string }[];
@@ -49,43 +50,15 @@ export default function Page({
 }: {
     params: Promise<{ treeID: string }>;
 }) {
-    const [tree, setTree] = useState<(Tree & { treeImage?: string }) | null>(
-        null
-    );
-    const [images, setImages] = useState<images[]>([]);
-    const [loading, setLoading] = useState(true);
+    
     const pathname = usePathname();
     const unwrappedParams = React.use(params);
     const { treeID } = unwrappedParams;
-    const { userInfo } = useAuth();
+    const { tree, setTree, images, loading } = useTreeData(treeID);
 
     const [openDialog, setOpenDialog] = useState(false);
-
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
-
-    useEffect(() => {
-        const fetchTree = async () => {
-            setLoading(true);
-            try {
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-                const tree = await getTreeByID(treeID)
-                const image = await getImagesByTreeID(treeID)
-                if (tree) {
-                    setTree(tree);
-                    setImages(image.data as images[]);
-                }
-            } catch (error) {
-                console.error("Error fetching trees:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        if (treeID && userInfo) {
-            fetchTree();
-        }
-    }, [userInfo, treeID]);
-
     const filteredImages = images && images
         .filter(
             (image) =>
