@@ -262,7 +262,7 @@ const Metrics = () => {
         { name: "Detection Rate", icon: Percent },
     ];
     const { data: metrics, isLoading, error } = useQuery({
-        queryKey: ['metrics', userInfo?.userID],
+        queryKey: ['metrics'],
         queryFn: async () => {
             const metricsData = await dashboardMetrics();
             console.log("fetct",metricsData)
@@ -272,7 +272,7 @@ const Metrics = () => {
             }));
         },
         // enabled: !!userInfo?.userID, // Only run query if userID exists
-        staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+        // staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
         // cacheTime: 30 * 60 * 1000, // Cache data for 30 minutes
     });
     console.log("metrics",metrics)
@@ -350,7 +350,7 @@ const RecentAnalysis = () => {
             return res as Images[]
         },
         // enabled: !!userInfo?.userID, // Only run query if userID exists
-        staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+        // staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
         // cacheTime: 30 * 60 * 1000, // Cache data for 30 minutes
     });
     const { userInfo } = useAuth();
