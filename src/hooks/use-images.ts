@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
-import { recentAnalysis } from "@/stores/dashboard";
+import { useState, useEffect, useCallback } from "react";
 import { loadingStore$ } from "@/stores/loading-store";
+import { getImagesByUserID } from "@/stores/image";
 import { Image } from "@/types/types";
 
-type Images = Image & {
-    analyzedImage: string | null;
-    treeCode: string;
+
+type Images = Image & { analyzedImage: string } & { treeCode: string } & {
     diseases: { likelihoodScore: number; diseaseName: string }[];
 };
-const useRecentAnalysis = () => {
+
+export const useImages = () => {
+    const [images, setImages] = useState<Images[]>([]);
     const [loading, setLoading] = useState(true);
-    const [analysis, setAnalysis] = useState<Images[]>([]);
     const [treeLoading, setTreeLoading] = useState(false);
     const [imageLoading, setImageLoading] = useState(false);
     const [analysisLoading, setAnalysisLoading] = useState(false);
@@ -27,29 +27,24 @@ const useRecentAnalysis = () => {
         };
     }, []);
 
-    useEffect(() => {
-        const fetchImages = async () => {
-            setLoading(true);
-            try {
-                // await new Promise((resolve) => setTimeout(resolve, 500));
-                const res = await recentAnalysis();
-                if (res) {
-                    setAnalysis(res.data as Images[]);
-                }
-                console.log(res)
-            } catch (error) {
-                console.error("Error retrieving images:", error);
-            } finally {
+    const fetchImages = useCallback(async () => {
+        setLoading(true);
+        try {
+            const res = await getImagesByUserID();
+            if (res.success) {
+                setImages(res.data as Images[]);
                 setLoading(false);
             }
-        };
-        
+        } catch (error) {
+            console.error("Error fetching images:", error);
+        }
+    }, []);
+
+    useEffect(() => {
         if (!imageLoading && !treeLoading && !analysisLoading) {
             fetchImages();
         }
-    }, [imageLoading, treeLoading, analysisLoading]);
+    }, [imageLoading, treeLoading, analysisLoading, fetchImages]);
 
-    return { loading, analysis };
+    return { images, loading };
 };
-
-export default useRecentAnalysis;

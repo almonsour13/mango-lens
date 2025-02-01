@@ -18,6 +18,7 @@ import {
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useAuth } from "@/context/auth-context";
 import { useStoresLoading } from "@/context/loading-store-context";
+import { useImages } from "@/hooks/use-images";
 import { getImagesByUserID } from "@/stores/image";
 import { loadingStore$ } from "@/stores/loading-store";
 import { Image as img } from "@/types/types";
@@ -30,34 +31,12 @@ type images = img & { analyzedImage: string } & { treeCode: string } & {
 };
 
 export default function Gallery() {
-    const [images, setImages] = useState<images[]>([]);
-    const [loading, setLoading] = useState(true);
+    const {images, loading} = useImages();
+
+    
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const [filterTreeCode, setFilterTreeCode] = useState<string | null>(null);
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
-    const { areStoresLoading } = useStoresLoading();
-
-    const fetchImages = useCallback(async () => {
-        setLoading(true);
-        try {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            const res = await getImagesByUserID();
-            if (res.success) {
-                setImages(res.data as images[]);
-            }
-        } catch (error) {
-            console.error("Error fetching trees:", error);
-        } finally {
-            setLoading(false);
-        }
-    }, [areStoresLoading]);
-
-    useEffect(() => {
-        if (!areStoresLoading) {
-            fetchImages();
-        }
-    }, [areStoresLoading]);
-
     const uniqueTreeCodes = Array.from(
         new Set(images.map((img) => img.treeCode))
     ).sort((a, b) => a.localeCompare(b));

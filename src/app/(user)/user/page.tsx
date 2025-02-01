@@ -197,7 +197,7 @@ const Metrics = () => {
     return (
         <Card className="border-0 p-0 shadow-none">
             <div className="grid gap-2 md:gap-4 grid-cols-2 lg:grid-cols-4">
-                {loading
+                {loading 
                     ? Array.from({ length: 4 }).map((_, index) => (
                         <Skeleton  key={index} className="h-28 border w-full flex items-center justify-center p-8 animate-pulse bg-muted" />
                       ))
@@ -249,7 +249,7 @@ const RecentAnalysis = () => {
                 )}
             </div>
             <CardContent className="p-0 bg-carda border-0 rounded-md overflow-hidden">
-                {loading ? (
+                {loading && analysis.length === 0 ? (
                     <Skeleton className="flex-1 h-96" />
                 ) : analysis ? (
                     <Table className="relative border-0">
