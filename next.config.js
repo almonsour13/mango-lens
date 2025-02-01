@@ -9,9 +9,7 @@ module.exports = async (phase) => {
 
     // Your current or future configuration
 
-    const revision = crypto.randomUUID();
-    const nextConfig = {
-        reactStrictMode: true,};
+    const nextConfig = {};
 
     if (
         phase === PHASE_DEVELOPMENT_SERVER ||
@@ -21,8 +19,7 @@ module.exports = async (phase) => {
             swSrc: "src/service-worker/app-worker.ts",
             swDest: "public/sw.js",
             reloadOnOnline: true,
-            disable:false,
-            additionalPrecacheEntries: [{ url: '/~offline', revision }],
+            disable:false
         });
         return withSerwist(nextConfig);
     }
