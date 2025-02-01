@@ -124,13 +124,8 @@ export default function Page({
     };
     const pathSegments = pathname.split("/");
 
-    const handleTreeAction = (value: Tree, action: number, status?: number) => {
-        if (action == 2) {
-            setTree(value);
-        } else if (action == 3) {
-            router.back();
-        }
-        console.log(status);
+    const handleTreeAction = (value: Tree) => {
+        setTree(value);
     };
     const [showMore, setShowMore] = useState(false);
     // if (!tree) return <>loading</>;
@@ -381,7 +376,6 @@ export default function Page({
             <TreeModal
                 openDialog={openDialog}
                 setOpenDialog={setOpenDialog}
-                editingTrees={tree}
                 handleTreeAction={handleTreeAction}
             />
         </>
