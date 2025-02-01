@@ -37,19 +37,19 @@ const serwist = new Serwist({
   },
 });
 
-const urlsToCache = ["/", "/user","/user/gallery", "/user/tree","/user/tree/", "/~offline"] as const
+// const urlsToCache = ["/", "/user","/user/gallery", "/user/tree","/user/tree/", "/~offline"] as const
 
-self.addEventListener("install", (event) => {
-    event.waitUntil(
-        Promise.all(
-            urlsToCache.map((entry) => {
-                const request = serwist.handleRequest({
-                    request: new Request(entry),
-                    event,
-                })
-                return request
-            }),
-        ),
-    )
-})
+// self.addEventListener("install", (event) => {
+//     event.waitUntil(
+//         Promise.all(
+//             urlsToCache.map((entry) => {
+//                 const request = serwist.handleRequest({
+//                     request: new Request(entry),
+//                     event,
+//                 })
+//                 return request
+//             }),
+//         ),
+//     )
+// })
 serwist.addEventListeners();
