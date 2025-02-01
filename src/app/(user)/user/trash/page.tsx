@@ -14,6 +14,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useAuth } from "@/context/auth-context";
+import { useStoresLoading } from "@/context/loading-store-context";
 import { toast } from "@/hooks/use-toast";
 import { getTrashByUser, manageTrash } from "@/stores/trash";
 import { Image as img, Tree, Trash as TRS } from "@/types/types";
@@ -36,6 +37,7 @@ export default function Trash() {
     const [loading, setLoading] = useState(true);
     const [trashes, setTrashes] = useState<TrashItem[] | []>([]);
     const { userInfo } = useAuth();
+    const { areStoresLoading } = useStoresLoading();
 
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const [filterType, setFilterType] = useState<0 | 1 | 2>(0);
@@ -54,12 +56,13 @@ export default function Trash() {
         } finally {
             setLoading(false);
         }
-    }, [userInfo?.userID]);
+    }, [areStoresLoading]);
 
     useEffect(() => {
-        fetchTrashes();
-    }, [userInfo?.userID, fetchTrashes]);
-
+        if (!areStoresLoading.get()) {
+            fetchTrashes();
+        }
+    }, [areStoresLoading]);
     const filteredTrashes = trashes
         .filter((trash) => filterType === 0 || trash.type === filterType)
         .sort((a, b) => {

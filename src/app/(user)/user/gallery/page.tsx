@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useAuth } from "@/context/auth-context";
+import { useStoresLoading } from "@/context/loading-store-context";
 import { getImagesByUserID } from "@/stores/image";
 import { loadingStore$ } from "@/stores/loading-store";
 import { Image as img } from "@/types/types";
@@ -34,12 +35,7 @@ export default function Gallery() {
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const [filterTreeCode, setFilterTreeCode] = useState<string | null>(null);
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
-    const { userInfo } = useAuth();
-    const [treeLoading, setTreeLoading] = useState(false);
-    const [imageLoading, setImageLoading] = useState(false);
-
-    loadingStore$.tree.onChange(({ value }) => setTreeLoading(value));
-    loadingStore$.image.onChange(({ value }) => setImageLoading(value));
+    const { areStoresLoading } = useStoresLoading();
 
     const fetchImages = useCallback(async () => {
         setLoading(true);
@@ -51,16 +47,16 @@ export default function Gallery() {
             }
         } catch (error) {
             console.error("Error fetching trees:", error);
-        } finally{
+        } finally {
             setLoading(false);
         }
-    }, [imageLoading,treeLoading]);
+    }, [areStoresLoading]);
 
     useEffect(() => {
-        if (!imageLoading && !treeLoading) {
+        if (!areStoresLoading.get()) {
             fetchImages();
         }
-    }, [imageLoading,treeLoading]);
+    }, [areStoresLoading]);
 
     const uniqueTreeCodes = Array.from(
         new Set(images.map((img) => img.treeCode))
@@ -253,7 +249,7 @@ export default function Gallery() {
                     </div>
                 </div>
                 <CardContent className="p-0 flex-1">
-                    {loading && images.length === 0? (
+                    {loading && images.length === 0 ? (
                         <div className="flex-1 h-full w-full flex items-center justify-center">
                             loading
                         </div>

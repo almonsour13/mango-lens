@@ -13,27 +13,28 @@ import { OnlineStatusToast } from "@/components/common/online-status-toast";
 import ResultDisplay from "@/components/common/scan/result/result-dislpay";
 import { PendingProcessProvider } from "@/context/pending-process-context";
 import { CameraProvider } from "@/context/camera-context";
+import { StoresLoadingProvider } from "@/context/loading-store-context";
 
 export default function UserLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-
     const pathname = usePathname();
 
     useEffect(() => {
-        const segments = pathname.split("/")
+        const segments = pathname.split("/");
 
         if (segments.length < 3) {
-            document.title = "Home"
+            document.title = "Home";
         } else if (segments[2] === "user") {
-            document.title = "Home"
+            document.title = "Home";
         } else {
-            document.title = segments[2].charAt(0).toUpperCase() + segments[2].slice(1)
+            document.title =
+                segments[2].charAt(0).toUpperCase() + segments[2].slice(1);
         }
-    },[pathname])
-    
+    }, [pathname]);
+
     return (
         <AuthProvider>
             <CameraProvider>
@@ -47,21 +48,23 @@ const Main = ({ children }: { children: React.ReactNode }) => {
     const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
     return (
-        <div className="flex h-auto min-h-screen relative bg-background">
-            <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
-            <div className="w-full flex-1 flex flex-col overflow-hidden relative">
-                <OnlineStatusToast />
-                <ScanResultProvider>
-                    <PendingProcessProvider>
-                        <main className="flex-1 flex flex-col overflow-y-auto">
-                            {children}
-                            <ResultDisplay />
-                        </main>
-                    </PendingProcessProvider>
-                </ScanResultProvider>
-                <BottomNav />
-                <Toaster />
+        <StoresLoadingProvider>
+            <div className="flex h-auto min-h-screen relative bg-background">
+                <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+                <div className="w-full flex-1 flex flex-col overflow-hidden relative">
+                    <OnlineStatusToast />
+                    <ScanResultProvider>
+                        <PendingProcessProvider>
+                            <main className="flex-1 flex flex-col overflow-y-auto">
+                                {children}
+                                <ResultDisplay />
+                            </main>
+                        </PendingProcessProvider>
+                    </ScanResultProvider>
+                    <BottomNav />
+                    <Toaster />
+                </div>
             </div>
-        </div>
+        </StoresLoadingProvider>
     );
 };

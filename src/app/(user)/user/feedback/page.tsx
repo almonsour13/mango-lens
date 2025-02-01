@@ -1,5 +1,7 @@
 "use client";
-import AddFeedBackModel, { FeedBackModal } from "@/components/modal/feedback-modal";
+import AddFeedBackModel, {
+    FeedBackModal,
+} from "@/components/modal/feedback-modal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +16,7 @@ import {
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { MetaData } from "@/constant/metaData";
 import { useAuth } from "@/context/auth-context";
+import { useStoresLoading } from "@/context/loading-store-context";
 import { getFeedbackWithResponses } from "@/stores/feedback";
 import { addResponse } from "@/stores/feedbackResponse";
 import { Feedback as FB } from "@/types/types";
@@ -37,6 +40,7 @@ export default function Feedback() {
     const [loading, setLoading] = useState(true);
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const { userInfo } = useAuth();
+    const { areStoresLoading } = useStoresLoading();
 
     const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(
         null
@@ -61,8 +65,10 @@ export default function Feedback() {
     }, []);
 
     useEffect(() => {
-        fetchFeedback();
-    }, [userInfo?.userID, fetchFeedback]);
+        if (!areStoresLoading.get()) {
+            fetchFeedback();
+        }
+    }, [areStoresLoading]);
 
     const filteredFeedbacks = feedbacks.sort((a, b) => {
         if (sortBy === "Newest") {
@@ -116,7 +122,11 @@ export default function Feedback() {
                 <div className="flex gap-2 h-5 items-center">
                     <h1 className="text-md">Feedback</h1>
                 </div>
-                <Button variant="outline" className="w-10 md:w-auto" onClick={() =>setIsAddFeedbackModel(true)}>
+                <Button
+                    variant="outline"
+                    className="w-10 md:w-auto"
+                    onClick={() => setIsAddFeedbackModel(true)}
+                >
                     <Plus className="h-5 w-5" />
                     <span className="hidden md:block text-sm">
                         Add more feedback

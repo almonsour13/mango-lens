@@ -38,14 +38,10 @@ import { useObservable } from "@legendapp/state/react";
 import { loadingStore$ } from "@/stores/loading-store";
 import { observable, observe } from "@legendapp/state";
 import { whenReady } from "@legendapp/state";
+import { useStoresLoading } from "@/context/loading-store-context";
 
 export default function Dashboard() {
     const { userInfo, resetToken } = useAuth();
-    const [treeLoading, setTreeLoading] = useState(false);
-    const [imageLoading, setImageLoading] = useState(false);
-
-    loadingStore$.tree.onChange(({ value }) => setTreeLoading(value));
-    loadingStore$.image.onChange(({ value }) => setImageLoading(value));
     
     const handleLogout = async () => {
         const response = await fetch("/api/auth/logout", {
@@ -57,10 +53,7 @@ export default function Dashboard() {
             resetToken();
         }
     };
-    useEffect(() => {
-        console.log(treeLoading);
-        console.log(imageLoading);
-    }, [treeLoading, imageLoading]);
+    
     useEffect(() => {
         if (userInfo) {
         }
@@ -192,11 +185,7 @@ const Metrics = () => {
     const { userInfo } = useAuth();
     const [loading, setLoading] = useState(true);
     const [metrics, setMetrics] = useState<Metric[]>([]);
-    const [treeLoading, setTreeLoading] = useState(false);
-    const [imageLoading, setImageLoading] = useState(false);
-
-    loadingStore$.tree.onChange(({ value }) => setTreeLoading(value));
-    loadingStore$.image.onChange(({ value }) => setImageLoading(value));
+    const {areStoresLoading} = useStoresLoading();
 
     const icons = [
         { name: "Total Trees", icon: TreeDeciduous },
@@ -227,10 +216,10 @@ const Metrics = () => {
                 console.error("Error loading metrics:", error);
             } 
         };
-        if (!imageLoading && !treeLoading) {
+        if (!areStoresLoading.get()) {
             loadMetrics();
         }
-    }, [imageLoading,treeLoading]);
+    }, [areStoresLoading]);
 
     return (
         <Card className="border-0 p-0 shadow-none">
@@ -270,16 +259,11 @@ type Images = Img & {
 const RecentAnalysis = () => {
     const [loading, setLoading] = useState(true);
     const [analysis, setAnalysis] = useState<Images[]>([]);
-    const { userInfo } = useAuth();
     const router = useRouter();
-    const [treeLoading, setTreeLoading] = useState(false);
-    const [imageLoading, setImageLoading] = useState(false);
-
-    loadingStore$.tree.onChange(({ value }) => setTreeLoading(value));
-    loadingStore$.image.onChange(({ value }) => setImageLoading(value));
+    const {areStoresLoading} = useStoresLoading();
 
     useEffect(() => {
-        const fetchImages = async () => {
+        const fetchRecentAnalysis = async () => {
             setLoading(true);
             try {
                 await new Promise((resolve) => setTimeout(resolve, 500));
@@ -293,10 +277,10 @@ const RecentAnalysis = () => {
                 setLoading(false);
             }
         };
-        if (!imageLoading && !treeLoading) {
-            fetchImages();
+        if (!areStoresLoading.get()) {
+            fetchRecentAnalysis();
         }
-    }, [userInfo?.userID,imageLoading,treeLoading]);
+    }, [areStoresLoading]);
 
     return (
         <Card className="border-0 p-0 shadow-none flex-1">
