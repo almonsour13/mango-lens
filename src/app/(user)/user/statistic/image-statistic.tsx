@@ -77,6 +77,7 @@ export default function ImageStatistic({
     const fetchImages = useCallback(async () => {
         setLoading(true);
         if (!userInfo?.userID || !DateRange) return;
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         const data = imageStatistic(
             DateRange?.from,
             DateRange?.to,

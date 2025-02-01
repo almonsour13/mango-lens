@@ -68,6 +68,7 @@ export default function Page({
         const fetchTree = async () => {
             setLoading(true);
             try {
+                await new Promise((resolve) => setTimeout(resolve, 1000));
                 const tree = await getTreeByID(treeID)
                 const image = await getImagesByTreeID(treeID)
                 if (tree) {

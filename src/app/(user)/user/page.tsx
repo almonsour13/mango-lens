@@ -25,7 +25,6 @@ import { useAuth } from "@/context/auth-context";
 import { usePendingProcess } from "@/context/pending-process-context";
 import { dashboardMetrics, recentAnalysis } from "@/stores/dashboard";
 import { Image as Img } from "@/types/types";
-import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import {
     AlertCircle,
@@ -253,7 +252,7 @@ interface Metric {
 const Metrics = () => {
     const { userInfo } = useAuth();
     const [loading, setLoading] = useState(true);
-    // const [metrics, setMetrics] = useState<Metric[]>([]);
+    const [metrics, setMetrics] = useState<Metric[]>([]);
 
     const icons = [
         { name: "Total Trees", icon: TreeDeciduous },
@@ -261,57 +260,41 @@ const Metrics = () => {
         { name: "Disease Detected", icon: Radar },
         { name: "Detection Rate", icon: Percent },
     ];
-    const { data: metrics, isLoading, error } = useQuery({
-        queryKey: ['metrics', userInfo?.userID],
-        queryFn: async () => {
-            const metricsData = await dashboardMetrics();
-            console.log("fetct",metricsData)
-            return (metricsData as Metric[]).map((metric) => ({
-                ...metric,
-                icon: icons.find((icon) => icon.name === metric.name)?.icon || TreeDeciduous,
-            }));
-        },
-        // enabled: !!userInfo?.userID, // Only run query if userID exists
-        staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-        // cacheTime: 30 * 60 * 1000, // Cache data for 30 minutes
-    });
-    console.log("metrics",metrics)
 
-    // useEffect(() => {
-    //     const loadMetrics = async () => {
-    //         if (!userInfo?.userID) return;
+    useEffect(() => {
+        const loadMetrics = async () => {
+            if (!userInfo?.userID) return;
             
-    //         setLoading(true);
-    //         try {
-    //             const metricsData = await dashboardMetrics();
-    //             const formattedMetrics = (metricsData as Metric[]).map((metric) => ({
-    //                 ...metric,
-    //                 icon: icons.find((icon) => icon.name === metric.name)?.icon || TreeDeciduous,
-    //             }));
-    //             setMetrics(formattedMetrics);
-    //             console.log("formatted",formattedMetrics)
-    //         } catch (error) {
-    //             console.error("Error loading metrics:", error);
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     };
-    //    //if(!metrics){
-    //     loadMetrics();
-    //    // }
-    // }, [userInfo?.userID]);
-    
+            setLoading(true);
+            try {
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                const metricsData = await dashboardMetrics();
+                const formattedMetrics = (metricsData as Metric[]).map((metric) => ({
+                    ...metric,
+                    icon: icons.find((icon) => icon.name === metric.name)?.icon || TreeDeciduous,
+                }));
+                setMetrics(formattedMetrics);
+            } catch (error) {
+                console.error("Error loading metrics:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadMetrics();
+    }, [userInfo?.userID]);
+
     return (
         <Card className="border-0 p-0 shadow-none">
             <div className="grid gap-2 md:gap-4 grid-cols-2 lg:grid-cols-4">
-                {isLoading ? (
+                {loading ? (
                     Array.from({ length: 4 }).map((_, index) => (
                         <Card key={index} className="overflow-hidden">
                             <div className="h-24 w-full flex items-center justify-center p-8 animate-pulse bg-muted" />
                         </Card>
                     ))
                 ) : (
-                    metrics?.map((metric, index) => (
+                    metrics.map((metric, index) => (
                         <Card key={index} className="bg-caard shadow-none">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
@@ -364,12 +347,6 @@ const RecentAnalysis = () => {
             fetchImages();
         }
     }, [userInfo?.userID,recentAnalysis]);
-    useEffect(()=>{
-        if (performance?.navigation?.type === 1) {
-            
-            console.log("refreshing...")
-        }
-    },[])
 
     return (
         <Card className="border-0 p-0 shadow-none flex-1">

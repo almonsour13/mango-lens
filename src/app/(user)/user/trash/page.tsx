@@ -53,6 +53,7 @@ export default function Trash() {
         setLoading(true);
         try {
             if (!userInfo?.userID) return;
+            await new Promise((resolve) => setTimeout(resolve, 1000));
             const res = await getTrashByUser();
             if (res) {
                 setTrashes(res);

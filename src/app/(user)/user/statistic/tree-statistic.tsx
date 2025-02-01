@@ -56,6 +56,7 @@ export default function TreeStatistic({
     const fetchTree = useCallback(async () => {
         setLoading(true);
         if (!userInfo?.userID || !DateRange) return;
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         const ch = treeStatistic(
             DateRange?.from,
             DateRange?.to,

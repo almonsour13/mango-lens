@@ -105,6 +105,7 @@ export default function Page({
     const fetchTree = useCallback(async () => {
         setLoading(true);
         try {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
             const tree = await getTreeByID(treeID);
             if (tree) {
                 form.reset({

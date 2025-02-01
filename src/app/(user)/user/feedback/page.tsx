@@ -47,7 +47,7 @@ export default function Feedback() {
     const fetchFeedback = useCallback(async () => {
         setLoading(true);
         try {
-            if (!userInfo?.userID) return;
+            await new Promise((resolve) => setTimeout(resolve, 1000));
             const res = await getFeedbackWithResponses();
             if (res.success) {
                 setFeedbacks(res.data as Feedback[]);
