@@ -271,9 +271,6 @@ const Metrics = () => {
                 icon: icons.find((icon) => icon.name === metric.name)?.icon || TreeDeciduous,
             }));
         },
-        // enabled: !!userInfo?.userID, // Only run query if userID exists
-        // staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-        // cacheTime: 30 * 60 * 1000, // Cache data for 30 minutes
     });
     console.log("metrics",metrics)
 
@@ -343,19 +340,16 @@ type Images = Img & {
 const RecentAnalysis = () => {
     // const [loading, setLoading] = useState(true);
     // const [analysis, setAnalysis] = useState<Images[]>([]);
-    const { data: analysis, isLoading, error } = useQuery({
-        queryKey: ['metrics'],
+    const { data: recentAnalysisData, isLoading, error } = useQuery({
+        queryKey: ['recentAnalysisData'],
         queryFn: async () => {
             const res = await recentAnalysis();
             return res as Images[]
         },
-        // enabled: !!userInfo?.userID, // Only run query if userID exists
-        // staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-        // cacheTime: 30 * 60 * 1000, // Cache data for 30 minutes
     });
     const { userInfo } = useAuth();
     const router = useRouter();
-
+    console.log("recent analysis",recentAnalysisData)
     // useEffect(() => {
     //     const fetchImages = async () => {
     //         setLoading(true);
@@ -405,7 +399,7 @@ const RecentAnalysis = () => {
                                 </TableRow>
                             </TableHeader> */}
                             <TableBody className="border-0">
-                                {analysis?.slice(0, 5).map((image) => {
+                                {recentAnalysisData && recentAnalysisData.slice(0, 5).map((image) => {
                                     const isHealthy = image.diseases?.some(
                                         (disease) =>
                                             disease.diseaseName === "Healthy" &&
@@ -460,7 +454,7 @@ const RecentAnalysis = () => {
                                                 ) : (
                                                     <Badge variant="destructive">
                                                         {image.diseases
-                                                            .filter(
+                                                            ?.filter(
                                                                 (di) =>
                                                                     di.diseaseName !==
                                                                     "Healthy"
