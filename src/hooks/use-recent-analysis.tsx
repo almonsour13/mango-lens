@@ -31,7 +31,7 @@ const useRecentAnalysis = () => {
         const fetchImages = async () => {
             setLoading(true);
             try {
-                await new Promise((resolve) => setTimeout(resolve, 500));
+                // await new Promise((resolve) => setTimeout(resolve, 500));
                 const res = await recentAnalysis();
                 if (res) {
                     setAnalysis(res.data as Images[]);

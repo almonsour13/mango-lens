@@ -50,7 +50,7 @@ export const useMetrics = () => {
 
             setLoading(true);
             try {
-                await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate delay
+                // await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate delay
                 const metricsData = await dashboardMetrics();
                 const formattedMetrics = (metricsData as Metric[]).map((metric) => ({
                     ...metric,
