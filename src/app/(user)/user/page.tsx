@@ -267,7 +267,7 @@ const Metrics = () => {
             
             setLoading(true);
             try {
-                await new Promise((resolve) => setTimeout(resolve, 1000));
+                await new Promise((resolve) => setTimeout(resolve, 200));
                 const metricsData = await dashboardMetrics();
                 const formattedMetrics = (metricsData as Metric[]).map((metric) => ({
                     ...metric,
@@ -333,7 +333,7 @@ const RecentAnalysis = () => {
         const fetchImages = async () => {
             setLoading(true);
             try {
-                await new Promise((resolve) => setTimeout(resolve, 100));
+                await new Promise((resolve) => setTimeout(resolve, 200));
                 const res = await recentAnalysis();
                 if (res) {
                     setAnalysis(res);

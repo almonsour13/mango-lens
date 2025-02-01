@@ -178,7 +178,7 @@ const Overview = () => {
     const { userInfo } = useAuth();
     const fetchOverview = useCallback(async () => {
         try {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            await new Promise((resolve) => setTimeout(resolve, 200));
             const overv = overview();
             if (overv) {
                 const overviewData = [
