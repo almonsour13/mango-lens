@@ -364,6 +364,12 @@ const RecentAnalysis = () => {
             fetchImages();
         }
     }, [userInfo?.userID,recentAnalysis]);
+    useEffect(()=>{
+        if (performance?.navigation?.type === 1) {
+            
+            console.log("refreshing...")
+        }
+    },[])
 
     return (
         <Card className="border-0 p-0 shadow-none flex-1">
