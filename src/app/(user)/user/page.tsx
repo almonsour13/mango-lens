@@ -12,35 +12,23 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useAuth } from "@/context/auth-context";
-import { usePendingProcess } from "@/context/pending-process-context";
-import { dashboardMetrics, recentAnalysis } from "@/stores/dashboard";
+import { useMetrics } from "@/hooks/use-metrics";
+import useRecentAnalysis from "@/hooks/use-recent-analysis";
+import { loadingStore$ } from "@/stores/loading-store";
 import { Image as Img } from "@/types/types";
 import { format } from "date-fns";
 import {
-    AlertCircle,
     Eye,
-    ImageIcon,
-    LucideIcon,
-    Percent,
-    Radar,
-    TreeDeciduous,
+    LucideIcon
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useObservable } from "@legendapp/state/react";
-import { loadingStore$ } from "@/stores/loading-store";
-import { observable, observe } from "@legendapp/state";
-import { whenReady } from "@legendapp/state";
-import { useStoresLoading } from "@/context/loading-store-context";
-import { useMetrics } from "@/hooks/use-metrics";
-import useRecentAnalysis from "@/hooks/use-recent-analysis";
 
 export default function Dashboard() {
     const { userInfo, resetToken } = useAuth();

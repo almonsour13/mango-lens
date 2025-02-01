@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
     CardContent,
     CardDescription,
-    CardHeader,
-    CardTitle,
+    CardHeader
 } from "@/components/ui/card";
 import {
     DropdownMenu,
@@ -16,17 +15,14 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import PageWrapper from "@/components/wrapper/page-wrapper";
-import { useAuth } from "@/context/auth-context";;
+import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { useTrees } from "@/hooks/use-trees";
 import { moveToTrash } from "@/stores/trash";
-import { getTreeByUser } from "@/stores/tree";
-import { Tree } from "@/types/types";
 import { ArrowDownUp, Plus, PlusIcon, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-
+import { useState } from "react";
 
 export default function TreePage() {
     const [openDialog, setOpenDialog] = useState(false);

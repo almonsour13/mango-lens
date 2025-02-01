@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import {
     CardContent,
     CardDescription,
-    CardHeader,
-    CardTitle,
+    CardHeader
 } from "@/components/ui/card";
 import {
     DropdownMenu,
@@ -16,19 +15,10 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import PageWrapper from "@/components/wrapper/page-wrapper";
-import { useAuth } from "@/context/auth-context";
-import { useStoresLoading } from "@/context/loading-store-context";
 import { useImages } from "@/hooks/use-images";
-import { getImagesByUserID } from "@/stores/image";
-import { loadingStore$ } from "@/stores/loading-store";
-import { Image as img } from "@/types/types";
 import { ArrowDownUp, Plus, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
-
-type images = img & { analyzedImage: string } & { treeCode: string } & {
-    diseases: { likelihoodScore: number; diseaseName: string }[];
-};
+import { useState } from "react";
 
 export default function Gallery() {
     const {images, loading} = useImages();

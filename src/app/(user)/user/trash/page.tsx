@@ -1,7 +1,6 @@
 "use client";
 
 import { TrashCard } from "@/components/card/trash-card";
-import { TrashSkeletonCard } from "@/components/skeleton/skeleton-card";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import {
@@ -13,12 +12,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import PageWrapper from "@/components/wrapper/page-wrapper";
-import { useAuth } from "@/context/auth-context";
-import { useStoresLoading } from "@/context/loading-store-context";
 import { toast } from "@/hooks/use-toast";
 import { useTrashes } from "@/hooks/use-trashes";
-import { getTrashByUser, manageTrash } from "@/stores/trash";
-import { Image as img, Tree, Trash as TRS } from "@/types/types";
+import { manageTrash } from "@/stores/trash";
 import {
     ArrowDownUp,
     RefreshCw,
@@ -28,9 +24,8 @@ import {
     Trash2,
     X,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-type TrashItem = TRS & { item: Tree | img };
 
 export default function Trash() {
     const [selected, setSelected] = useState<string[]>([]);
