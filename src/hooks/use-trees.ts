@@ -34,6 +34,7 @@ export const useTrees = () => {
             const res = await getTreeByUser();
             if (res.success) {
                 setTrees(res.data as TreeWithImage[]);
+                setLoading(false);
             }
         } catch (error) {
             console.error("Error fetching trees:", error);

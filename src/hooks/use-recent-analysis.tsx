@@ -35,13 +35,11 @@ const useRecentAnalysis = () => {
                 const res = await recentAnalysis();
                 if (res) {
                     setAnalysis(res.data as Images[]);
+                    setLoading(false);
                 }
-                console.log(res)
             } catch (error) {
                 console.error("Error retrieving images:", error);
-            } finally {
-                setLoading(false);
-            }
+            } 
         };
         
         if (!imageLoading && !treeLoading && !analysisLoading) {

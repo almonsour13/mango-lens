@@ -35,6 +35,7 @@ export const useImages = () => {
                 setImages(res.data as Images[]);
                 setLoading(false);
             }
+            setLoading(false)
         } catch (error) {
             console.error("Error fetching images:", error);
         }

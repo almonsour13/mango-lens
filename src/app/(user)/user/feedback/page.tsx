@@ -2,7 +2,6 @@
 import AddFeedBackModel, {
     FeedBackModal,
 } from "@/components/modal/feedback-modal";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,17 +13,15 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import PageWrapper from "@/components/wrapper/page-wrapper";
-import { MetaData } from "@/constant/metaData";
 import { useAuth } from "@/context/auth-context";
-import { useStoresLoading } from "@/context/loading-store-context";
-import { getFeedbackWithResponses } from "@/stores/feedback";
+import { useFeedback } from "@/hooks/use-feedback";
 import { addResponse } from "@/stores/feedbackResponse";
 import { Feedback as FB } from "@/types/types";
-import { format, formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 import { ArrowDownUp, MessageSquare, Plus } from "lucide-react";
-import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { v4 } from "uuid";
+
 type Feedback = FB & {
     responses: {
         feedbackResponseID: string;
@@ -36,39 +33,14 @@ type Feedback = FB & {
     }[];
 };
 export default function Feedback() {
-    const [feedbacks, setFeedbacks] = useState<Feedback[] | []>([]);
-    const [loading, setLoading] = useState(true);
-    const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
+    const {feedbacks, setFeedbacks, loading} = useFeedback()
     const { userInfo } = useAuth();
-    const { areStoresLoading } = useStoresLoading();
-
+    const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(
         null
     );
     const [feedbackModal, setFeedbackModal] = useState(false);
     const [isAddFeedbackModel, setIsAddFeedbackModel] = useState(false);
-
-    const fetchFeedback = useCallback(async () => {
-        setLoading(true);
-        try {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            const res = await getFeedbackWithResponses();
-            if (res.success) {
-                setFeedbacks(res.data as Feedback[]);
-                console.log(res.data);
-            }
-        } catch (error) {
-            console.error("Error fetching trees:", error);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        if (!areStoresLoading.get()) {
-            fetchFeedback();
-        }
-    }, [areStoresLoading]);
 
     const filteredFeedbacks = feedbacks.sort((a, b) => {
         if (sortBy === "Newest") {
@@ -175,7 +147,7 @@ export default function Feedback() {
                     </div>
                 </div>
                 <CardContent className="p-0 flex-1">
-                    {loading ? (
+                    {loading && feedbacks.length === 0 ? (
                         <div className="flex-1 h-full w-full flex items-center justify-center">
                             loading
                         </div>
