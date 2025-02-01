@@ -11,9 +11,9 @@ interface TreeWithImage extends Tree {
 export const useTrees = () => {
     const [trees, setTrees] = useState<TreeWithImage[]>([]);
     const [loading, setLoading] = useState(true);
-    const [treeLoading, setTreeLoading] = useState(false);
-    const [imageLoading, setImageLoading] = useState(false);
-    const [analysisLoading, setAnalysisLoading] = useState(false);
+    const [treeLoading, setTreeLoading] = useState(true);
+    const [imageLoading, setImageLoading] = useState(true);
+    const [analysisLoading, setAnalysisLoading] = useState(true);
 
     useEffect(() => {
         const unsubscribeTree = loadingStore$.tree.onChange(({ value }) => setTreeLoading(value));
@@ -34,7 +34,6 @@ export const useTrees = () => {
             const res = await getTreeByUser();
             if (res.success) {
                 setTrees(res.data as TreeWithImage[]);
-                setLoading(false);
             }
         } catch (error) {
             console.error("Error fetching trees:", error);
@@ -44,10 +43,10 @@ export const useTrees = () => {
     }, [imageLoading, treeLoading, analysisLoading]);
 
     useEffect(() => {
-        if (!imageLoading && !treeLoading && !analysisLoading) {
+        // if (!imageLoading && !treeLoading && !analysisLoading) {
             fetchTrees();
-        }
-    }, [imageLoading, treeLoading, analysisLoading, fetchTrees]);
+        // }
+    }, [imageLoading, treeLoading, analysisLoading]);
 
     return { trees, setTrees, loading };
 };
