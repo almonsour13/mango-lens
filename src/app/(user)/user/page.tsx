@@ -262,7 +262,7 @@ const Metrics = () => {
         { name: "Detection Rate", icon: Percent },
     ];
     const { data: metrics, isLoading, error } = useQuery({
-        queryKey: ['metrics'],
+        queryKey: ['metrics', userInfo?.userID],
         queryFn: async () => {
             const metricsData = await dashboardMetrics();
             console.log("fetct",metricsData)
@@ -271,7 +271,9 @@ const Metrics = () => {
                 icon: icons.find((icon) => icon.name === metric.name)?.icon || TreeDeciduous,
             }));
         },
-        retry: 10,
+        // enabled: !!userInfo?.userID, // Only run query if userID exists
+        staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+        // cacheTime: 30 * 60 * 1000, // Cache data for 30 minutes
     });
     console.log("metrics",metrics)
 
@@ -339,36 +341,29 @@ type Images = Img & {
     diseases: { likelihoodScore: number; diseaseName: string }[];
 };
 const RecentAnalysis = () => {
-    // const [loading, setLoading] = useState(true);
-    // const [analysis, setAnalysis] = useState<Images[]>([]);
-    const { data: recentAnalysisData, isLoading, error } = useQuery({
-        queryKey: ['recentAnalysisData'],
-        queryFn: async () => {
-            const res = await recentAnalysis();
-            return res as Images[]
-        },
-        retry: 10,
-    });
+    const [loading, setLoading] = useState(true);
+    const [analysis, setAnalysis] = useState<Images[]>([]);
     const { userInfo } = useAuth();
     const router = useRouter();
-    console.log("recent analysis",recentAnalysisData)
-    // useEffect(() => {
-    //     const fetchImages = async () => {
-    //         setLoading(true);
-    //         try {
-    //             const res = await recentAnalysis();
-    //             if (res) {
-    //                 setAnalysis(res);
-    //             }
-    //             setLoading(false);
-    //         } catch (error) {
-    //             console.error("Error retrieving images:", error);
-    //         }
-    //     };
-    //     if (userInfo?.userID !== undefined && userInfo?.userID !== null) {
-    //         fetchImages();
-    //     }
-    // }, [userInfo?.userID,recentAnalysis]);
+
+    useEffect(() => {
+        const fetchImages = async () => {
+            setLoading(true);
+            try {
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                const res = await recentAnalysis();
+                if (res) {
+                    setAnalysis(res);
+                }
+                setLoading(false);
+            } catch (error) {
+                console.error("Error retrieving images:", error);
+            }
+        };
+        if (userInfo?.userID !== undefined && userInfo?.userID !== null) {
+            fetchImages();
+        }
+    }, [userInfo?.userID,recentAnalysis]);
 
     return (
         <Card className="border-0 p-0 shadow-none flex-1">
@@ -382,7 +377,7 @@ const RecentAnalysis = () => {
                 </Link>
             </div>
             <CardContent className="p-0 bg-carda border-0 rounded-md overflow-hidden">
-                {isLoading ? (
+                {loading ? (
                     <Skeleton className="flex-1 h-96" />
                 ) : (
                     <ScrollArea>
@@ -401,7 +396,7 @@ const RecentAnalysis = () => {
                                 </TableRow>
                             </TableHeader> */}
                             <TableBody className="border-0">
-                                {recentAnalysisData && recentAnalysisData.slice(0, 5).map((image) => {
+                                {analysis.slice(0, 5).map((image) => {
                                     const isHealthy = image.diseases?.some(
                                         (disease) =>
                                             disease.diseaseName === "Healthy" &&
@@ -456,7 +451,7 @@ const RecentAnalysis = () => {
                                                 ) : (
                                                     <Badge variant="destructive">
                                                         {image.diseases
-                                                            ?.filter(
+                                                            .filter(
                                                                 (di) =>
                                                                     di.diseaseName !==
                                                                     "Healthy"

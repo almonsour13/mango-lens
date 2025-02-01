@@ -56,6 +56,7 @@ export default function TreePage() {
         setLoading(true);
         try {
             if (!userInfo?.userID) return;
+            await new Promise((resolve) => setTimeout(resolve, 1000));
             const res = await getTreeByUser();
             if (res.success) {
                 setTrees(res.data as TreeWithImage[]);
