@@ -10,13 +10,9 @@ import React, {
 import { jwtDecode } from "jwt-decode";
 import { usePathname, useRouter } from "next/navigation";
 import { getUser, removeUser } from "@/stores/user-store";
-import { clearDatabase, initializeStore } from "@/stores/stores";
-import { checkAndInitializeDatabase } from "@/stores/indexeddb";
+import { observe } from "@legendapp/state";
+import { loadingStore$ } from "@/stores/loading-store";
 
-interface UserInfo {
-    userID: string;
-    role: number;
-}
 
 interface UserDredentials {
     userID: string;
@@ -49,7 +45,6 @@ function getTokenFromCookie(): string | null {
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [token, setToken] = useState<string | null>(null);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [decodedToken, setDecodedToken] = useState<UserInfo | null>(null);
     const pathname = usePathname();
     const router = useRouter();
     const userInfo = getUser();
@@ -73,19 +68,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     //       }
     //     }
     // }, [pathname, userInfo, token, isLoaded]);
-    
+
     useEffect(() => {
         const cookieToken = getTokenFromCookie();
         setToken(cookieToken);
         setIsLoaded(true);
     }, []);
+    
     useEffect(()=>{
-        const check = async () => {
-            await checkAndInitializeDatabase()
-        }
-        // if(userInfo){
-            check()
+        // const check = async () => {
+        //     await checkAndInitializeDatabase()
         // }
+        // // if(userInfo){
+        //     check()
+        // // }
     },[])
 
     // useEffect(() => {
@@ -122,8 +118,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // if (token && decodedToken?.userID) {
             removeUser();
             setToken(null);
-            setDecodedToken(null);
-            
+            // setDecodedToken(null);
+            // 
             // deleteAllStores();
             // clearDatabase()
         // }

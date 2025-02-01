@@ -121,7 +121,7 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
                     </button>
                     <Separator orientation="vertical" />
                     <h1 className="text-md">
-                        {imageDetails && imageDetails.treeCode+" Image"}
+                        {imageDetails && imageDetails.treeCode+" Image Details"}
                     </h1>
                 </div>
                 <DropdownMenu>
@@ -203,12 +203,12 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
                 <>
                     <PageWrapper>
                         <CardHeader className="p-0">
-                            <CardTitle>Image Details</CardTitle>
-                            {/* <CardDescription>
-                                View and manage your tree collection
-                            </CardDescription> */}
+                            {/* <CardTitle>Image Details</CardTitle> */}
+                            <CardDescription>
+                                View detailed analysis results
+                            </CardDescription>
                         </CardHeader>
-                        <CardContent className="flex flex-col  gap-4 px-0 mt-2">
+                        <CardContent className="flex flex-col  gap-2 md:gap-4 px-0">
                             <ResultImage
                                 originalImage={imageDetails.imageData}
                                 analyzedImage={imageDetails.analyzedImage || ""}
@@ -259,7 +259,6 @@ function ResultDetails({
             <div className="flex flex-row justify-between md:justify-start gap-2">
                 <div className="flex space-x-2">
                     <Trees className="h-5 w-5 text-muted-foreground" />
-                    {/* <span className="text-base font-medium">Tree Code:</span> */}
                     <Link
                         href={`/user/tree/${imageDetails.treeID}`}
                         className="text-base font-semibold hover:underline"
@@ -269,9 +268,6 @@ function ResultDetails({
                 </div>
                 <div className="flex space-x-2">
                     <Calendar className="h-5 w-5 text-muted-foreground" />
-                    {/* <span className="text-base font-medium">
-                        Date Processed:
-                    </span> */}
                     <span className="text-base font-semibold">
                         {formatDate(imageDetails.analyzedAt, "MMM dd, yyyy")}
                     </span>
@@ -279,7 +275,6 @@ function ResultDetails({
             </div>
             <div className="flex flex-col gap-2">
                 <div className="flex items-center space-x-2">
-                    {/* <CircleAlert className="h-5 w-5 text-muted-foreground" /> */}
                     <span className="text-base font-medium">
                         Assign Classification:
                     </span>

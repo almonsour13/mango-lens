@@ -40,7 +40,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
     setIsScanning,
 }) => {
     const { capturedImage } = useCameraContext();
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [treeCode, setTreeCode] = useState("");
     const { setScanResult } = useScanResult();
     const { setIsCameraOpen } = useCameraContext();
@@ -51,7 +51,6 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
     const { userInfo } = useAuth();
 
     const [openPendingModal, setOpenPendingModal] = useState(false);
-    const isOnline = useOnlineStatus();
 
     const [openTreeModal, setOpenTreeModal] = useState(false);
 
@@ -60,18 +59,18 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
     const { tfPredict } = useModel();
     useEffect(() => {
         const fetchTrees = async () => {
-            setLoading(true);
+            setIsLoading(true);
             try {
-                if(!userInfo?.userID) return;
+                if (!userInfo?.userID) return;
                 await new Promise((resolve) => setTimeout(resolve, 500));
                 const res = await getTreeByUser();
-                if(res){
+                if (res) {
                     setTrees(res.data as Tree[]);
                 }
-                setLoading(false);
             } catch (error) {
                 console.error("Error fetching trees:", error);
-                setLoading(false);
+            }finally{
+                setIsLoading(false)
             }
         };
 
@@ -86,12 +85,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
         }
     }, [treeCodeParams]);
 
-    const handleSetNewTreeCode = async (treeCode: string) => {
-        setTreeCode(treeCode);
-    };
-
     const handleScan = async () => {
-
         setIsScanning(true);
 
         try {
@@ -129,11 +123,9 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
             description: "Successfully added to the pending",
         });
     };
-    const handleTreeAction = (value: Tree, action: number, status?: number) => {
-        if (action == 1) {
-            setTrees([...trees, value]);
-        }
-        console.log(status);
+    const handleTreeAction = (value: Tree) => {
+        setTrees([...trees, value]);
+        setTreeCode(value.treeCode);
     };
 
     return (
@@ -151,16 +143,16 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
             <div className="flex-1 flex items-center w-full gap-2">
                 <Select value={treeCode} onValueChange={setTreeCode}>
                     <SelectTrigger>
-                        {loading ? (
+                        {isLoading ? (
                             <p className="p-1 px-2">Loading...</p>
-                        ) : trees.length ? (
+                        ) : trees && trees.length ? (
                             <SelectValue placeholder="Select tree code" />
                         ) : (
                             <p className="p-1 px-2">No trees available</p>
                         )}
                     </SelectTrigger>
                     <SelectContent>
-                        {loading ? (
+                        {isLoading ? (
                             <p className="p-1 px-2">loading</p>
                         ) : trees && trees.length ? (
                             <>
@@ -207,7 +199,6 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
                 openDialog={openTreeModal}
                 setOpenDialog={setOpenTreeModal}
                 handleTreeAction={handleTreeAction}
-                handleSetNewTreeCode={handleSetNewTreeCode}
             />
             <AddPendingModal
                 open={openPendingModal}

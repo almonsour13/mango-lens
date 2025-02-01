@@ -60,7 +60,7 @@ export async function dashboardMetrics() {
         },
         {
             name: "Total Images",
-            value: images.length,
+            value: i.length,
             detail: `+${thisMonthImages} this month`,
         },
         {
@@ -70,7 +70,7 @@ export async function dashboardMetrics() {
         },
         {
             name: "Detection Rate",
-            value: `${detectionRate.toFixed(1)}%`,
+            value: `${detectionRate?detectionRate.toFixed(1):0}%`,
             detail: "From all images",
         },
     ];
@@ -78,62 +78,99 @@ export async function dashboardMetrics() {
 }
 
 export async function recentAnalysis() {
-    const trees = Object.values(observable(tree$).get() || {}).filter(
-        (t) => t.status === 1
-    );
-    const images = Object.values(observable(image$).get() || {}).filter(
-        (i) => i.status === 1
-    );
-    const i = await Promise.all(
-        images
-            .filter((image) => image.userID === userID && image.status === 1)
-            .slice(0, 5)
-            .map(async (image) => {
-                return {
-                    ...image,
-                    imageData: (await convertBlobToBase64(
-                        image.imageData
-                    )) as string,
-                };
-            })
-    );
+    // const trees = Object.values(observable(tree$).get() || {}).filter(
+    //     (t) => t.status === 1
+    // );
+    // const images = Object.values(observable(image$).get() || {}).filter(
+    //     (i) => i.status === 1
+    // );
+    // const i = await Promise.all(
+    //     images
+    //         .filter((image) => image.userID === userID && image.status === 1)
+    //         .slice(0, 5)
+    //         .map(async (image) => {
+    //             return {
+    //                 ...image,
+    //                 imageData: (await convertBlobToBase64(
+    //                     image.imageData
+    //                 )) as string,
+    //             };
+    //         })
+    // );
 
-    const t = i.map((image) => {
-        const treeCode = trees.filter(
-            (t) => t.treeID === image.treeID && t.status === 1
-        )[0];
-        if (treeCode && treeCode.status === 1) {
-            return {
-                ...image,
-                treeCode: treeCode ? treeCode.treeCode : null,
-            };
+    // const t = i.map((image) => {
+    //     const treeCode = trees.filter(
+    //         (t) => t.treeID === image.treeID && t.status === 1
+    //     )[0];
+    //     if (treeCode && treeCode.status === 1) {
+    //         return {
+    //             ...image,
+    //             treeCode: treeCode ? treeCode.treeCode : null,
+    //         };
+    //     }
+    // });
+
+    // const analysis = Object.values(observable(analysis$).get() || {});
+    // const f = t.map((image) => {
+    //     const an = analysis.filter((a) => a.imageID === image.imageID)[0];
+    //     if(an){
+    //     const analyzedimage = Object.values(
+    //         observable(analyzedimage$).get() || {}
+    //     ).filter((ai) => ai.analysisID === an.analysisID)[0];
+    //     const diseases = Object.values(
+    //         observable(diseaseidentified$).get() || {}
+    //     ).filter(
+    //         (d) => d.analysisID === an.analysisID && d.likelihoodScore > 0.5
+    //     );
+    //     return {
+    //         ...image,
+    //         analyzedImage: convertBlobToBase64(analyzedimage.imageData),
+    //         diseases: diseases.map((d) => {
+    //             return {
+    //                 diseaseName: d.diseaseName,
+    //                 likelihoodScore: Number(d.likelihoodScore.toFixed(1)),
+    //             };
+    //         }),
+
+    //     };
+    // }
+    // });
+    try {
+            const trees = Object.values(tree$.get() || {});
+            const images = Object.values(image$.get() || {});
+            const analysis = Object.values(analysis$.get() || {});
+            const analyzedImages = Object.values(analyzedimage$.get() || {});
+            const identifiedDiseases = Object.values(diseaseidentified$.get() || {});
+    
+            // Filter images by userID first
+            const userImages = images.filter((image) => image.userID === userID && image.status === 1);
+    
+            if (userImages.length === 0) {
+                return { success: false, message: "No images found for this user." };
+            }
+    
+            // Map additional details for each image
+            const detailedImages = userImages.map((image) => {
+                const tree = trees.find((t) => t.treeID === image.treeID);
+                const analysisEntry = analysis.find((a) => a.imageID === image.imageID);
+                const analyzedImage = analyzedImages.find((ai) => ai.analysisID === analysisEntry?.analysisID);
+                const diseases = identifiedDiseases.filter((d) => d.analysisID === analysisEntry?.analysisID);
+                if(tree.status === 1 && image.status === 1){
+                    return {
+                        ...image,
+                        treeCode: tree?.treeCode || "Unknown",
+                        imageData: convertBlobToBase64(image.imageData) || null,
+                        analyzedImage: convertBlobToBase64(analyzedImage?.imageData) || null,
+                        diseases: diseases.map((d) => ({
+                            diseaseName: d.diseaseName,
+                            likelihoodScore: Number(d.likelihoodScore.toFixed(1)),
+                        })),
+                    };
+                }
+            });
+            return { success: true, data: detailedImages };
+        } catch (error) {
+            console.error("Error fetching images by user:", error);
+            return { success: false, message: "An error occurred while fetching images." };
         }
-    });
-
-    const analysis = Object.values(observable(analysis$).get() || {});
-    const f = t.map((image) => {
-        const an = analysis.filter((a) => a.imageID === image.imageID)[0];
-        if(an){
-        const analyzedimage = Object.values(
-            observable(analyzedimage$).get() || {}
-        ).filter((ai) => ai.analysisID === an.analysisID)[0];
-        const diseases = Object.values(
-            observable(diseaseidentified$).get() || {}
-        ).filter(
-            (d) => d.analysisID === an.analysisID && d.likelihoodScore > 0.5
-        );
-        return {
-            ...image,
-            analyzedImage: convertBlobToBase64(analyzedimage.imageData),
-            diseases: diseases.map((d) => {
-                return {
-                    diseaseName: d.diseaseName,
-                    likelihoodScore: Number(d.likelihoodScore.toFixed(1)),
-                };
-            }),
-
-        };
-    }
-    });
-    return f;
 }

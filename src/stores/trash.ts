@@ -84,8 +84,16 @@ export const manageTrash = async (trashIDs: string[], action: number) => {
 
         // Define action mapping
         const statusMap = {
-            1: { itemStatus: 1, trashStatus: 3, message: "Trash items restored successfully." },
-            2: { itemStatus: 4, trashStatus: 2, message: "Trash items deleted successfully." },
+            1: {
+                itemStatus: 1,
+                trashStatus: 3,
+                message: "Trash items restored successfully.",
+            },
+            2: {
+                itemStatus: 4,
+                trashStatus: 2,
+                message: "Trash items deleted successfully.",
+            },
         } as const;
 
         if (action !== 1 && action !== 2) {
@@ -106,6 +114,17 @@ export const manageTrash = async (trashIDs: string[], action: number) => {
                     status: itemStatus,
                     updatedAt: new Date(),
                 });
+                const images = Object.values(image$.get() || {});
+                if (images.length > 0) {
+                    images
+                        .filter((img) => img.treeID === trash.itemID)
+                        .forEach((im) => {
+                            image$[im.imageID].set({
+                                itemStatus: itemStatus,
+                                updatedAt: new Date(),
+                            });
+                        });
+                }
             } else if (trash.type === 2) {
                 image$[trash.itemID].set({
                     status: itemStatus,
@@ -121,67 +140,13 @@ export const manageTrash = async (trashIDs: string[], action: number) => {
         console.error(`Error managing trash items (action: ${action}):`, error);
         return {
             success: false,
-            message: `An error occurred while trying to ${action === 1 ? "restore" : "delete"} the trash items.`,
+            message: `An error occurred while trying to ${
+                action === 1 ? "restore" : "delete"
+            } the trash items.`,
         };
     }
 };
 
-export const deleteTrash = async (trashID: string) => {
-    try {
-        const trash = trash$[trashID].get();
-        if (!trash) {
-            throw new Error("Trash item not found.");
-        }
-
-        if (trash.type === 1) {
-            tree$[trash.itemID].set({
-                status: 4,
-                updatedAt: new Date(),
-            });
-        } else if (trash.type === 2) {
-            image$[trash.itemID].set({
-                status: 4,
-                updatedAt: new Date(),
-            });
-        }
-        trash$[trashID].set({ status: 2 });
-        return { success: true, message: "Trash item deleted successfully." };
-    } catch (error) {
-        console.error("Error deleting trash item:", error);
-        return {
-            success: false,
-            message: "An error occurred while deleting the trash item.",
-        };
-    }
-};
-export const restoreTrash = async (trashID: string) => {
-    try {
-        const trash = trash$[trashID].get();
-        if (!trash) {
-            throw new Error("Trash item not found.");
-        }
-
-        if (trash.type === 1) {
-            tree$[trash.itemID].set({
-                status: 1,
-                updatedAt: new Date(),
-            });
-        } else if (trash.type === 2) {
-            image$[trash.itemID].set({
-                status: 1,
-                updatedAt: new Date(),
-            });
-        }
-        trash$[trashID].set({ status: 3 });
-        return { success: true, message: "Trash item deleted successfully." };
-    } catch (error) {
-        console.error("Error deleting trash item:", error);
-        return {
-            success: false,
-            message: "An error occurred while deleting the trash item.",
-        };
-    }
-};
 export const getTrashByUser = async () => {
     try {
         const trash = Object.values(trash$.get() || {});
@@ -189,7 +154,9 @@ export const getTrashByUser = async () => {
         const images = Object.values(image$.get() || {});
 
         // Filter trash items for the user
-        const filteredTrash = trash.filter((t) => t.userID === userID && t.status === 1);
+        const filteredTrash = trash.filter(
+            (t) => t.userID === userID && t.status === 1
+        );
 
         const transformedTrash = filteredTrash.map((ft) => {
             if (ft.type === 1) {
@@ -234,6 +201,18 @@ export const moveToTrash = async (
                 status: 3, // Trashed status
                 updatedAt: new Date(),
             });
+
+            const images = Object.values(image$.get() || {});
+            if (images.length > 0) {
+                images
+                    .filter((img) => img.treeID === itemID && img.status === 1)
+                    .forEach((im) => {
+                        image$[im.imageID].set({
+                            status: 3,
+                            updatedAt: new Date(),
+                        });
+                    });
+            }
         } else if (type === 2) {
             image$[itemID].set({
                 status: 3, // Trashed status

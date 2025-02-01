@@ -97,13 +97,6 @@ export default function Page() {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setLoading(true);
-        if (!userInfo?.userID) return;
-        const payload = {
-            userID: userInfo?.userID,
-            treeCode: values.treeCode,
-            description: values.description,
-            // treeImage: values.treeImage,
-        };
         try {
             const res = await addTree(values.treeCode, values.description, values.treeImage);
             toast({

@@ -164,9 +164,9 @@ export default function Feedback() {
                         </div>
                     </div>
                 </div>
-                <CardContent className="p-0">
+                <CardContent className="p-0 flex-1">
                     {loading ? (
-                        <div className="flex-1 w-full flex items-center justify-center">
+                        <div className="flex-1 h-full w-full flex items-center justify-center">
                             loading
                         </div>
                     ) : filteredFeedbacks.length > 0 ? (
@@ -229,7 +229,7 @@ export default function Feedback() {
                             ))}
                         </div>
                     ) : (
-                        <div className="flex items-center justify-center">
+                        <div className="flex-1 h-full w-full flex items-center justify-center">
                             No feedbacks
                         </div>
                     )}

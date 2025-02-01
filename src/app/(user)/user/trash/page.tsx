@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { TrashCard } from "@/components/card/trash-card";
+import { TrashSkeletonCard } from "@/components/skeleton/skeleton-card";
+import { Button } from "@/components/ui/button";
 import { CardContent, CardDescription, CardHeader } from "@/components/ui/card";
-import PageWrapper from "@/components/wrapper/page-wrapper";
-import { Image as img, Tree, Trash as TRS } from "@/types/types";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -11,10 +11,14 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
+import PageWrapper from "@/components/wrapper/page-wrapper";
+import { useAuth } from "@/context/auth-context";
+import { toast } from "@/hooks/use-toast";
+import { getTrashByUser, manageTrash } from "@/stores/trash";
+import { Image as img, Tree, Trash as TRS } from "@/types/types";
 import {
     ArrowDownUp,
-    Grid,
-    List,
     RefreshCw,
     SlidersHorizontal,
     SquareDashed,
@@ -22,20 +26,7 @@ import {
     Trash2,
     X,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/auth-context";
-import { Toggle } from "@/components/ui/toggle";
-import { TrashCard } from "@/components/card/trash-card";
-import { toast } from "@/hooks/use-toast";
-import { TrashTable } from "@/components/table/trash-table";
-import { Separator } from "@/components/ui/separator";
-import { TrashSkeletonCard } from "@/components/skeleton/skeleton-card";
-import {
-    deleteTrash,
-    getTrashByUser,
-    manageTrash,
-    restoreTrash,
-} from "@/stores/trash";
+import { useCallback, useEffect, useState } from "react";
 
 type TrashItem = TRS & { item: Tree | img };
 
@@ -312,9 +303,11 @@ export default function Trash() {
                         </DropdownMenu>
                     </div>
                 </div>
-                <CardContent className="p-0">
+                <CardContent className="p-0 flex-1">
                     {loading ? (
-                        <TrashSkeletonCard />
+                        <div className="flex-1 h-full w-full flex items-center justify-center">
+                            loading
+                        </div>
                     ) : filteredTrashes && filteredTrashes.length > 0 ? (
                         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4">
                             {filteredTrashes.map((trash) => (
@@ -329,7 +322,7 @@ export default function Trash() {
                             ))}
                         </div>
                     ) : (
-                        <div className="flex items-center justify-center">
+                        <div className="flex-1 h-full w-full flex items-center justify-center">
                             No Trash
                         </div>
                     )}

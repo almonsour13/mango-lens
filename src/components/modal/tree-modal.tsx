@@ -38,6 +38,7 @@ import ConfirmationModal from "./confirmation-modal";
 import { useAuth } from "@/context/auth-context";
 
 import { toast } from "@/hooks/use-toast";
+import { addTree } from "@/stores/tree";
 
 const formSchema = z.object({
     treeCode: z
@@ -63,41 +64,15 @@ export interface Tree {
 interface TreeModalProps {
     openDialog: boolean;
     setOpenDialog: (value: boolean) => void;
-    editingTrees?:
-        | {
-              treeID: string;
-              treeCode: string;
-              description: string;
-              imagesLength: number;
-              status: number;
-              treeImage?: string;
-          }
-        | null
-        | Tree;
-    setEditingTrees?: (
-        value: {
-            treeID: string;
-            treeCode: string;
-            description: string;
-            imagesLength: number;
-            status: number;
-            treeImage?: string;
-        } | null
-    ) => void | null;
-    handleTreeAction?: (value: Tree, action: number, status?: number) => void;
-    handleSetNewTreeCode?: (value: string) => void;
+    handleTreeAction: (value: Tree) => void;
 }
 
 export default function TreeModal({
     openDialog,
-    editingTrees,
     setOpenDialog,
-    setEditingTrees,
     handleTreeAction,
-    handleSetNewTreeCode,
 }: TreeModalProps) {
-    const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -109,147 +84,44 @@ export default function TreeModal({
         },
     });
 
-    const { userInfo } = useAuth();
-
     useEffect(() => {
-        if (editingTrees) {
-            form.reset({
-                treeCode: editingTrees.treeCode,
-                status: editingTrees.status == 1 ? "Active" : "Inactive",
-                description: editingTrees.description || "",
-            });
-        } else {
-            form.reset({
-                treeCode: "",
-                status: "Active",
-                description: "",
-                treeImage: "",
-            });
-        }
-        if (!openDialog) {
-            setEditingTrees && setEditingTrees(null);
-        }
-    }, [editingTrees, openDialog, setEditingTrees, form]);
+        form.reset({
+            treeCode: "",
+            status: "Active",
+            description: "",
+            treeImage: "",
+        });
+    }, [openDialog, form]);
 
-    const handleConfirmDelete = async () => {
-        try {
-            const response = await fetch(
-                `/api/user/${userInfo?.userID}/trash`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ treeID: editingTrees?.treeID }),
-                }
-            );
-
-            const result = await response.json();
-
-            if (result.success) {
-                toast({
-                    title: `Tree Move to trash`,
-                    description: `Move to Trash action performed on tree ${editingTrees?.treeID}`,
-                });
-                setOpenDialog(false);
-                const tree = editingTrees as Tree;
-                handleTreeAction && handleTreeAction(tree, 3);
-
-                setEditingTrees && setEditingTrees(null);
-                setConfirmationModalOpen(false);
-            }
-        } catch (error) {
-            console.error("Error deleting disease:", error);
-        }
-    };
-
-    const handleDelete = () => {
-        setConfirmationModalOpen(true);
-    };
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        setLoading(true);
-        const method = editingTrees ? "PUT" : "POST";
-        const status = values.status == "Active" ? 1 : 2;
-        const payload = editingTrees
-            ? {
-                  treeID: editingTrees.treeID,
-                  treeCode: values.treeCode,
-                  description: values.description,
-                  status: status,
-              }
-            : values;
+        setIsLoading(true);
 
         try {
-            const response = await fetch(
-                `/api/user/${userInfo?.userID}/tree/`,
-                {
-                    method: method,
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(payload),
-                }
+            const res = await addTree(
+                values.treeCode,
+                values.description,
+                values.treeImage
             );
-            const data = await response.json();
-            if (response.ok) {
-                const tree = editingTrees as Tree;
-                if (editingTrees) {
-                    handleTreeAction &&
-                        handleTreeAction(
-                            {
-                                ...values,
-                                treeID: tree.treeID,
-                                userID: userInfo?.userID ?? '',
-                                addedAt: tree.addedAt,
-                                status: status,
-                            },
-                            2,
-                            status
-                        );
-                } else {
-                    handleTreeAction &&
-                        handleTreeAction(
-                            {
-                                ...data.tree,
-                            },
-                            1
-                        );
-                }
-                setOpenDialog(false);
+            toast({
+                title: res.success ? "Tree Added" : "Failed to Add Tree",
+                description: res.message,
+            });
+            if (res.success) {
+                handleTreeAction(
+                   res.data
+                );
                 form.reset();
-                setEditingTrees && setEditingTrees(null);
-                handleSetNewTreeCode && handleSetNewTreeCode(values.treeCode);
-                toast({
-                    title: editingTrees ? "Tree Updated" : "Tree Added",
-                    description: `Tree ${
-                        editingTrees ? "updated" : "added"
-                    } successfully.`,
-                });
-            } else {
-                setError(data.error);
             }
+            setOpenDialog(false);
         } catch (err) {
             console.error(err);
         } finally {
-            setLoading(false);
+            setOpenDialog(false);
+            setIsLoading(false);
             setError("");
         }
     };
 
-    // const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     const file = event.target.files?.[0];
-    //     if (file) {
-    //         const reader = new FileReader();
-    //         reader.onload = (e) => {
-    //             form.reset({
-    //                 treeCode: form.getValues().treeCode,
-    //                 status: form.getValues().status,
-    //                 description: form.getValues().description,
-    //                 treeImage: e.target?.result as string,
-    //             });
-    //         };
-    //         reader.readAsDataURL(file);
-    //     }
-    // };
-    // const {setIsCameraOpen} = useCameraContext();
     return (
         <ModalDrawer open={openDialog} onOpenChange={setOpenDialog}>
             <ScrollArea className="max-h-[calc(100vh-56px)]">
@@ -308,64 +180,12 @@ export default function TreeModal({
                                 </FormItem>
                             )}
                         />
-                        {editingTrees && (
-                            <FormField
-                                control={form.control}
-                                name="status"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Status</FormLabel>
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            defaultValue={field.value}
-                                        >
-                                            <FormControl>
-                                                <SelectTrigger
-                                                    className={`${
-                                                        field.value == "Active"
-                                                            ? "text-primary"
-                                                            : "text-destructive"
-                                                    }`}
-                                                >
-                                                    <SelectValue placeholder="Select Role" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                <SelectItem
-                                                    value="Active"
-                                                    className="text-primary"
-                                                >
-                                                    Active
-                                                </SelectItem>
-                                                <SelectItem
-                                                    value="Inactive"
-                                                    className="text-destructive"
-                                                >
-                                                    Inactive
-                                                </SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        )}
                         {error && (
-                            <p className="text-sm text-red-500" role="alert">
+                            <p className="text-sm text-destructive" role="alert">
                                 {error}
                             </p>
                         )}
                         <div className="flex justify-end gap-2 md:gap-4">
-                            {editingTrees && (
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    className="text-red-500"
-                                    onClick={handleDelete}
-                                >
-                                    Move to trash
-                                </Button>
-                            )}
                             <Button
                                 type="button"
                                 variant="outline"
@@ -373,29 +193,12 @@ export default function TreeModal({
                             >
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={loading}>
-                                {loading
-                                    ? editingTrees
-                                        ? "Updating..."
-                                        : "Adding..."
-                                    : editingTrees
-                                    ? "Update Tree"
-                                    : "Add Tree"}
+                            <Button type="submit" disabled={isLoading}>
+                                {isLoading ? "Adding..." : "Add Tree"}
                             </Button>
                         </div>
                     </form>
                 </Form>
-                {editingTrees && (
-                    <ConfirmationModal
-                        open={confirmationModalOpen}
-                        onClose={() => setConfirmationModalOpen(false)}
-                        onConfirm={handleConfirmDelete}
-                        title={`Are you sure you want to delete tree ${
-                            editingTrees?.treeCode ?? "Unknown"
-                        } ?`}
-                        content={`This action cannot be undone. The tree contains ${editingTrees.imagesLength} image(s).`}
-                    />
-                )}
             </ScrollArea>
         </ModalDrawer>
     );

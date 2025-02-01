@@ -53,7 +53,7 @@ const Main = ({ children }: { children: React.ReactNode }) => {
                 <OnlineStatusToast />
                 <ScanResultProvider>
                     <PendingProcessProvider>
-                        <main className="flex-1 overflow-y-auto">
+                        <main className="flex-1 flex flex-col overflow-y-auto">
                             {children}
                             <ResultDisplay />
                         </main>

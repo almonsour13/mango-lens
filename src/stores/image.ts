@@ -8,7 +8,7 @@ import { convertBlobToBase64, convertImageToBlob } from "@/utils/image-utils";
 import { analysis$ } from "./analysis";
 import { analyzedimage$ } from "./analyzeimage";
 import { diseaseidentified$ } from "./diseaseidentified";
-import { imag } from "@tensorflow/tfjs";
+import { loadingStore$ } from "./loading-store";
 
 const userID = getUser()?.userID;
 
@@ -16,6 +16,7 @@ export const image$ = observable(
     syncPlugin({
         list: async () => {
             try {
+                loadingStore$.image.set(true);
                 const { data, error } = await supabase
                     .from("image")
                     .select("*")
@@ -27,6 +28,8 @@ export const image$ = observable(
             } catch (error) {
                 console.error(`Error fetching images:`, error);
                 throw error;
+            } finally {
+                loadingStore$.image.set(false);
             }
         },
         create: async (value) => {
@@ -80,13 +83,17 @@ export const image$ = observable(
     })
 );
 
-export const getImageByImageID = async (imageID: string): Promise<{ success: boolean; data?: any; message?: string }> => {
+export const getImageByImageID = async (
+    imageID: string
+): Promise<{ success: boolean; data?: any; message?: string }> => {
     try {
         const trees = Object.values(tree$.get() || {});
         const images = Object.values(image$.get() || {});
         const analysis = Object.values(analysis$.get() || {});
         const analyzedImages = Object.values(analyzedimage$.get() || {});
-        const identifiedDiseases = Object.values(diseaseidentified$.get() || {});
+        const identifiedDiseases = Object.values(
+            diseaseidentified$.get() || {}
+        );
 
         // Find the image by imageID
         const image = images.find((img) => img.imageID === imageID);
@@ -98,8 +105,12 @@ export const getImageByImageID = async (imageID: string): Promise<{ success: boo
         // Get additional details for the found image
         const tree = trees.find((t) => t.treeID === image.treeID);
         const analysisEntry = analysis.find((a) => a.imageID === imageID);
-        const analyzedImage = analyzedImages.find((ai) => ai.analysisID === analysisEntry?.analysisID);
-        const diseases = identifiedDiseases.filter((d) => d.analysisID === analysisEntry?.analysisID);
+        const analyzedImage = analyzedImages.find(
+            (ai) => ai.analysisID === analysisEntry?.analysisID
+        );
+        const diseases = identifiedDiseases.filter(
+            (d) => d.analysisID === analysisEntry?.analysisID
+        );
         const res = {
             success: true,
             data: {
@@ -107,45 +118,65 @@ export const getImageByImageID = async (imageID: string): Promise<{ success: boo
                 ...analysisEntry,
                 ...tree,
                 imageData: convertBlobToBase64(image.imageData) || null,
-                analyzedImage: convertBlobToBase64(analyzedImage?.imageData) || null,
+                analyzedImage:
+                    convertBlobToBase64(analyzedImage?.imageData) || null,
                 diseases: diseases.map((d) => ({
                     diseaseName: d.diseaseName,
                     likelihoodScore: Number(d.likelihoodScore.toFixed(1)),
                 })),
             },
-        }
-        console.log(res)
+        };
+        console.log(res);
         return res;
     } catch (error) {
         console.error("Error fetching image by imageID:", error);
-        return { success: false, message: "An error occurred while fetching the image." };
+        return {
+            success: false,
+            message: "An error occurred while fetching the image.",
+        };
     }
 };
-export const getImagesByTreeID = async (treeID: string): Promise<{ success: boolean; data?: any[]; message?: string }> => {
+export const getImagesByTreeID = async (
+    treeID: string
+): Promise<{ success: boolean; data?: any[]; message?: string }> => {
     try {
         const trees = Object.values(tree$.get() || {});
         const images = Object.values(image$.get() || {});
         const analysis = Object.values(analysis$.get() || {});
         const analyzedImages = Object.values(analyzedimage$.get() || {});
-        const identifiedDiseases = Object.values(diseaseidentified$.get() || {});
+        const identifiedDiseases = Object.values(
+            diseaseidentified$.get() || {}
+        );
 
-        const treeImages = images.filter((image) => image.treeID === treeID && image.status === 1);
+        const treeImages = images.filter(
+            (image) => image.treeID === treeID && image.status === 1
+        );
 
         if (treeImages.length === 0) {
-            return { success: false, message: "No images found for this tree." };
+            return {
+                success: false,
+                message: "No images found for this tree.",
+            };
         }
 
         const detailedImages = treeImages.map((image) => {
             const tree = trees.find((t) => t.treeID === image.treeID);
-            const analysisEntry = analysis.find((a) => a.imageID === image.imageID);
-            const analyzedImage = analyzedImages.find((ai) => ai.analysisID === analysisEntry?.analysisID);
-            const diseases = identifiedDiseases.filter((d) => d.analysisID === analysisEntry?.analysisID);
+            const analysisEntry = analysis.find(
+                (a) => a.imageID === image.imageID
+            );
+            const analyzedImage = analyzedImages.find(
+                (ai) => ai.analysisID === analysisEntry?.analysisID
+            );
+            const diseases = identifiedDiseases.filter(
+                (d) => d.analysisID === analysisEntry?.analysisID
+            );
 
             return {
                 ...image,
                 treeCode: tree?.treeCode || "Unknown",
                 imageData: convertBlobToBase64(image.imageData) || null,
-                analyzedImage: convertBlobToBase64(analyzedImage?.imageData) || null,
+                analyzedImage:
+                    convertBlobToBase64(analyzedImage?.imageData) || null,
                 diseases: diseases.map((d) => ({
                     diseaseName: d.diseaseName,
                     likelihoodScore: Number(d.likelihoodScore.toFixed(1)),
@@ -156,49 +187,77 @@ export const getImagesByTreeID = async (treeID: string): Promise<{ success: bool
         return { success: true, data: detailedImages };
     } catch (error) {
         console.error("Error fetching images by treeID:", error);
-        return { success: false, message: "An error occurred while fetching images." };
+        return {
+            success: false,
+            message: "An error occurred while fetching images.",
+        };
     }
 };
-export const getImagesByUserID = async (): Promise<{ success: boolean; data?: any[]; message?: string }> => {
+export const getImagesByUserID = async (): Promise<{
+    success: boolean;
+    data?: any[];
+    message?: string;
+}> => {
     try {
         const trees = Object.values(tree$.get() || {});
         const images = Object.values(image$.get() || {});
         const analysis = Object.values(analysis$.get() || {});
         const analyzedImages = Object.values(analyzedimage$.get() || {});
-        const identifiedDiseases = Object.values(diseaseidentified$.get() || {});
+        const identifiedDiseases = Object.values(
+            diseaseidentified$.get() || {}
+        );
 
         // Filter images by userID first
-        const userImages = images.filter((image) => image.userID === userID && image.status === 1);
+        const userImages = images.filter(
+            (image) => image.userID === userID && image.status === 1
+        );
 
         if (userImages.length === 0) {
-            return { success: false, message: "No images found for this user." };
+            return {
+                success: false,
+                message: "No images found for this user.",
+            };
         }
 
         // Map additional details for each image
         const detailedImages = userImages.map((image) => {
             const tree = trees.find((t) => t.treeID === image.treeID);
-            const analysisEntry = analysis.find((a) => a.imageID === image.imageID);
-            const analyzedImage = analyzedImages.find((ai) => ai.analysisID === analysisEntry?.analysisID);
-            const diseases = identifiedDiseases.filter((d) => d.analysisID === analysisEntry?.analysisID    );
-
-            return {
-                ...image,
-                treeCode: tree?.treeCode || "Unknown",
-                imageData: convertBlobToBase64(image.imageData) || null,
-                analyzedImage: convertBlobToBase64(analyzedImage?.imageData) || null,
-                diseases: diseases.map((d) => ({
-                    diseaseName: d.diseaseName,
-                    likelihoodScore: Number(d.likelihoodScore.toFixed(1)),
-                })),
-            };
+            const analysisEntry = analysis.find(
+                (a) => a.imageID === image.imageID
+            );
+            const analyzedImage = analyzedImages.find(
+                (ai) => ai.analysisID === analysisEntry?.analysisID
+            );
+            const diseases = identifiedDiseases.filter(
+                (d) => d.analysisID === analysisEntry?.analysisID
+            );
+            if (tree.status === 1 && image.status === 1) {
+                return {
+                    ...image,
+                    treeCode: tree?.treeCode || "Unknown",
+                    imageData: convertBlobToBase64(image.imageData) || null,
+                    analyzedImage:
+                        convertBlobToBase64(analyzedImage?.imageData) || null,
+                    diseases: diseases.map((d) => ({
+                        diseaseName: d.diseaseName,
+                        likelihoodScore: Number(d.likelihoodScore.toFixed(1)),
+                    })),
+                };
+            }
         });
         return { success: true, data: detailedImages };
     } catch (error) {
         console.error("Error fetching images by user:", error);
-        return { success: false, message: "An error occurred while fetching images." };
+        return {
+            success: false,
+            message: "An error occurred while fetching images.",
+        };
     }
 };
-export const migrateImage = async (imageID: string, newTreeCode: string): Promise<{ success: boolean; message: string, data?:any }> => {
+export const migrateImage = async (
+    imageID: string,
+    newTreeCode: string
+): Promise<{ success: boolean; message: string; data?: any }> => {
     try {
         const image = image$[imageID].get();
         if (!image) {
@@ -206,10 +265,15 @@ export const migrateImage = async (imageID: string, newTreeCode: string): Promis
         }
 
         // Find the tree with the new treeCode
-        const tree = Object.values(tree$.get() || {}).find((a) => a.treeCode === newTreeCode);
-        
+        const tree = Object.values(tree$.get() || {}).find(
+            (a) => a.treeCode === newTreeCode
+        );
+
         if (!tree) {
-            return { success: false, message: "Tree with the specified code not found." };
+            return {
+                success: false,
+                message: "Tree with the specified code not found.",
+            };
         }
 
         // Update the image with the new treeID
@@ -218,10 +282,17 @@ export const migrateImage = async (imageID: string, newTreeCode: string): Promis
             treeID: tree.treeID,
         });
 
-        return { success: true, message: "Image migrated successfully.", data:image$[imageID].get() || null };
+        return {
+            success: true,
+            message: "Image migrated successfully.",
+            data: image$[imageID].get() || null,
+        };
     } catch (error) {
         console.error("Error migrating image:", error);
-        return { success: false, message: "An error occurred while migrating the image." };
+        return {
+            success: false,
+            message: "An error occurred while migrating the image.",
+        };
     }
 };
 

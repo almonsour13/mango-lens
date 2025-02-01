@@ -40,9 +40,9 @@ export default function Gallery() {
         try {
             if (!userInfo?.userID) return;
             await new Promise((resolve) => setTimeout(resolve, 500));
-            const res = await getImagesByUserID()
-            if(res.success){
-                setImages(res.data as images[])
+            const res = await getImagesByUserID();
+            if (res.success) {
+                setImages(res.data as images[]);
             }
         } catch (error) {
             console.error("Error fetching trees:", error);
@@ -245,9 +245,9 @@ export default function Gallery() {
                         </div>
                     </div>
                 </div>
-                <CardContent className="p-0">
+                <CardContent className="p-0 flex-1">
                     {loading ? (
-                        <div className="flex-1 w-full flex items-center justify-center">
+                        <div className="flex-1 h-full w-full flex items-center justify-center">
                             loading
                         </div>
                     ) : filteredImages.length > 0 ? (
@@ -260,7 +260,7 @@ export default function Gallery() {
                             ))}
                         </div>
                     ) : (
-                        <div className="flex items-center justify-center">
+                        <div className="flex-1 h-full w-full flex items-center justify-center">
                             No Images
                         </div>
                     )}

@@ -285,9 +285,9 @@ export default function TreePage() {
                         </div>
                     </div>
                 </div>
-                <CardContent className="p-0">
+                <CardContent className="p-0 flex-1">
                     {loading && trees.length === 0 ? (
-                        <div className="flex-1 w-full flex items-center justify-center">
+                        <div className="flex-1 h-full w-full flex items-center justify-center">
                             loading
                         </div>
                     ) : trees && trees.length > 0 ? (
@@ -301,7 +301,7 @@ export default function TreePage() {
                             ))}
                         </div>
                     ) : (
-                        <div className="flex items-center justify-center">
+                        <div className="flex-1 h-full w-full flex items-center justify-center">
                             No Trees
                         </div>
                     )}

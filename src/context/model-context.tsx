@@ -11,16 +11,8 @@ import { gradClassActivationMap } from "@/utils/model/grad-cam";
 import { generateHeatmapOverlay } from "@/utils/model/gerenerate-overlay";
 import { useToast } from "@/hooks/use-toast";
 import { ScanResult, TfJsDisease } from "@/types/types";
-const classes = [
-    "Anthracnose",
-    "Bacterial Canker",
-    "Cutting Weevil",
-    "Die Back",
-    "Gall Midge",
-    "Healthy",
-    "Powdery Mildew",
-    "Sooty Mould",
-];
+import { classes } from "@/constant/classes";
+
 
 interface PredictionResult {
     className: string;

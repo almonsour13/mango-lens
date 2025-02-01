@@ -7,6 +7,7 @@ import { checkTreeCode } from "@/utils/tree-utils";
 import { convertBlobToBase64, convertImageToBlob } from "@/utils/image-utils";
 import { image$ } from "./image";
 import { treeimage$ } from "./treeimage";
+import { loadingStore$ } from "./loading-store";
 
 const userID = getUser()?.userID;
 
@@ -14,6 +15,7 @@ export const tree$ = observable(
     syncPlugin({
         list: async () => {
             try {
+                loadingStore$.tree.set(true);
                 const { data, error } = await supabase
                     .from("tree")
                     .select("*")
@@ -25,6 +27,8 @@ export const tree$ = observable(
             } catch (error) {
                 console.error(`Error fetching predictions:`, error);
                 throw error;
+            } finally {
+                loadingStore$.tree.set(false);
             }
         },
         create: async (value) => {
@@ -83,46 +87,70 @@ export const getTreeByUser = async (): Promise<{
     data?: any[];
     message?: string;
 }> => {
-    if(!userID) return { success: false, message: "User not found." };
+    if (!userID) return { success: false, message: "User not found." };
+
     try {
         const trees = Object.values(tree$.get() || {});
         const images = Object.values(image$.get() || {});
-        const userTrees = trees.filter(
-            (tree) => tree.status === 1
-        );
         const treesimage = Object.values(treeimage$.get() || {});
+
+        const userTrees = trees.filter((tree) => tree.status === 1);
+
         if (userTrees.length === 0) {
             return { success: false, message: "No trees found for this user." };
         }
 
-        const treeWithImage = userTrees.map((tree) => {
-            const relatedImages = images.filter(
-                (image) => image.treeID === tree.treeID && image.status === 1
-            );
+        // Process trees with their images
+        const treeWithImage = await Promise.all(
+            userTrees.map(async (tree) => {
+                // Get related images for this tree
+                const relatedImages = images.filter(
+                    (image) =>
+                        image.treeID === tree.treeID && image.status === 1
+                );
 
-            const recentImage = relatedImages.sort(
-                (a, b) =>
-                    new Date(b.uploadedAt).getTime() -
-                    new Date(a.uploadedAt).getTime()
-            )[0];
-            const treeimage = treesimage.filter(
-                (treeimage) =>
-                    treeimage.treeID === tree.treeID && treeimage.status === 1
-            )[0];
-            const treeImageBase64 = treeimage
-                ? convertBlobToBase64(treeimage.imageData)
-                : null;
-            const recentImageBase64 = recentImage
-                ? convertBlobToBase64(recentImage.imageData)
-                : null;
+                // Get the most recent image
+                const recentImage = relatedImages.sort(
+                    (a, b) =>
+                        new Date(b.uploadedAt).getTime() -
+                        new Date(a.uploadedAt).getTime()
+                )[0];
 
-            return {
-                ...tree,
-                treeImage: treeImageBase64,
-                recentImage: recentImageBase64,
-                imagesLength: relatedImages.length,
-            };
-        });
+                // Get tree image
+                const treeimage = treesimage.find(
+                    (treeimage) =>
+                        treeimage.treeID === tree.treeID &&
+                        treeimage.status === 1
+                );
+
+                // Convert images to base64 if they exist
+                let treeImageBase64 = null;
+                let recentImageBase64 = null;
+
+                try {
+                    if (treeimage?.imageData) {
+                        treeImageBase64 = await convertBlobToBase64(
+                            treeimage.imageData
+                        );
+                    }
+
+                    if (recentImage?.imageData) {
+                        recentImageBase64 = await convertBlobToBase64(
+                            recentImage.imageData
+                        );
+                    }
+                } catch (error) {
+                    console.error("Error converting image to base64:", error);
+                }
+
+                return {
+                    ...tree,
+                    treeImage: treeImageBase64,
+                    recentImage: recentImageBase64,
+                    imagesLength: relatedImages.length,
+                };
+            })
+        );
 
         return { success: true, data: treeWithImage };
     } catch (error) {
@@ -143,7 +171,7 @@ export const getTreeByID = async (treeID: string) => {
     const treeimage = treesimage.filter(
         (treeimage) =>
             treeimage.treeID === tree.treeID && treeimage.status === 1
-    )[0]; 
+    )[0];
     const relatedImages = images.filter(
         (image) => image.treeID === tree.treeID && image.status === 1
     );
@@ -211,21 +239,22 @@ export const addTree = async (
     treeCode: string,
     description: string,
     treeImage?: string
-): Promise<{ success: boolean; message: string }> => {
+): Promise<{ success: boolean; message: string; data?: any }> => {
     try {
         const treeID = uuidv4();
 
         if (await checkTreeCode(treeCode)) {
             return { success: false, message: "Tree code already exists." };
         }
-        tree$[treeID].set({
+        const treeData = {
             treeID,
             userID,
             treeCode,
             description,
             status: 1,
             addedAt: new Date(),
-        });
+        };
+        tree$[treeID].set(treeData);
         if (treeImage) {
             const treeImageID = uuidv4();
 
@@ -244,7 +273,11 @@ export const addTree = async (
             });
         }
 
-        return { success: true, message: "Tree added successfully." };
+        return {
+            success: true,
+            message: "Tree added successfully.",
+            data: treeData,
+        };
     } catch (error) {
         console.error("Error adding tree:", error);
         return {

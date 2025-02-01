@@ -28,11 +28,6 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import {
-    deleteUserCredentials,
-    getUserCredentials,
-    storeUserCredentials,
-} from "@/utils/indexedDB/store/user-info-store";
 import { getUser, removeUser, setUser } from "@/stores/user-store";
 // import { clearDatabase} from "@/stores/stores";
 
@@ -71,6 +66,7 @@ export default function LoginForm() {
                     removeUser()
                 }
                 setUser(user)
+                
                 // clearDatabase()
                 // await initializeStore()
                 router.push(redirect);

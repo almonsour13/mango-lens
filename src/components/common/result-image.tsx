@@ -11,22 +11,11 @@ export default function ResultImage({
     originalImage,
     analyzedImage,
 }: ResultImageProps) {
-    const [currentImage, setCurrentImage] = useState<"original" | "analyzed">(
-        "original"
-    );
-
-    const toggleImage = () => {
-        setCurrentImage((prev) =>
-            prev === "original" ? "analyzed" : "original"
-        );
-    };
-
     return (
         <div className="hidden md:flex gap-4">
-            <ResultImageCard originalImage={originalImage} label="Original" />
+            <ResultImageCard imageData={originalImage} label="Original" />
             <ResultImageCard
-                originalImage={originalImage}
-                analyzedImage={analyzedImage}
+            imageData={analyzedImage}
                 label="Analyzed Image"
             />
         </div>
