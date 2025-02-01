@@ -335,7 +335,7 @@ export default function Page({
                                 ))}
                             </div>
                         ) : (
-                            <div className="flex items-center justify-center p-6 text-muted-foreground">
+                            <div className="flex items-center justify-center p-4 text-muted-foreground">
                                 No images available for this tree.
                             </div>
                         )}

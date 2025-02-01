@@ -19,7 +19,11 @@ const serwist = new Serwist({
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,
-  disableDevLogs:true,
+  disableDevLogs: true,
+  precacheOptions: {
+      cleanupOutdatedCaches: true,
+      ignoreURLParametersMatching: [/.*/],
+  },
   runtimeCaching:defaultCache,
   fallbacks: {
     entries: [
@@ -33,4 +37,19 @@ const serwist = new Serwist({
   },
 });
 
+const urlsToCache = ["/", "/user","/user/gallery", "/user/tree","/user/tree/", "/~offline"] as const
+
+self.addEventListener("install", (event) => {
+    event.waitUntil(
+        Promise.all(
+            urlsToCache.map((entry) => {
+                const request = serwist.handleRequest({
+                    request: new Request(entry),
+                    event,
+                })
+                return request
+            }),
+        ),
+    )
+})
 serwist.addEventListeners();

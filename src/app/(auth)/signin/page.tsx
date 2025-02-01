@@ -82,7 +82,6 @@ export default function LoginForm() {
             setLoading(false);
         }
     };
-
     return (
         <div className="w-full h-screen flex flex-col-reverse md:flex-row">
             <div className="flex-1 flex items-center justify-center">
