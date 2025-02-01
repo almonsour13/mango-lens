@@ -40,7 +40,7 @@ export default function Gallery() {
     const fetchImages = useCallback(async () => {
         setLoading(true);
         try {
-            await new Promise((resolve) => setTimeout(resolve, 500));
+            await new Promise((resolve) => setTimeout(resolve, 1000));
             const res = await getImagesByUserID();
             if (res.success) {
                 setImages(res.data as images[]);

@@ -200,7 +200,7 @@ const Metrics = () => {
 
             setLoading(true);
             try {
-                await new Promise((resolve) => setTimeout(resolve, 500));
+                await new Promise((resolve) => setTimeout(resolve, 1000));
                 const metricsData = await dashboardMetrics();
                 const formattedMetrics = (metricsData as Metric[]).map(
                     (metric) => ({
@@ -259,11 +259,16 @@ type Images = Img & {
 const RecentAnalysis = () => {
     const [loading, setLoading] = useState(true);
     const [analysis, setAnalysis] = useState<Images[]>([]);
+    const { userInfo } = useAuth();
     const router = useRouter();
-    const {areStoresLoading} = useStoresLoading();
+    const [treeLoading, setTreeLoading] = useState(false);
+    const [imageLoading, setImageLoading] = useState(false);
+
+    loadingStore$.tree.onChange(({ value }) => setTreeLoading(value));
+    loadingStore$.image.onChange(({ value }) => setImageLoading(value));
 
     useEffect(() => {
-        const fetchRecentAnalysis = async () => {
+        const fetchImages = async () => {
             setLoading(true);
             try {
                 await new Promise((resolve) => setTimeout(resolve, 500));
@@ -277,10 +282,10 @@ const RecentAnalysis = () => {
                 setLoading(false);
             }
         };
-        if (!areStoresLoading.get()) {
-            fetchRecentAnalysis();
+        if (!imageLoading && !treeLoading) {
+            fetchImages();
         }
-    }, [areStoresLoading]);
+    }, [userInfo?.userID,imageLoading,treeLoading]);
 
     return (
         <Card className="border-0 p-0 shadow-none flex-1">
