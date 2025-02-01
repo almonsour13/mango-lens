@@ -230,7 +230,7 @@ const Metrics = () => {
         if (!imageLoading && !treeLoading) {
             loadMetrics();
         }
-    }, [userInfo?.userID,imageLoading,treeLoading]);
+    }, [imageLoading,treeLoading]);
 
     return (
         <Card className="border-0 p-0 shadow-none">

@@ -58,7 +58,7 @@ export default function Feedback() {
         } finally {
             setLoading(false);
         }
-    }, [userInfo?.userID]);
+    }, []);
 
     useEffect(() => {
         fetchFeedback();

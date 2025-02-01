@@ -18,6 +18,7 @@ import {
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
+import { loadingStore$ } from "@/stores/loading-store";
 import { moveToTrash } from "@/stores/trash";
 import { getTreeByUser } from "@/stores/tree";
 import { Tree } from "@/types/types";
@@ -38,13 +39,11 @@ export default function TreePage() {
     const pathname = usePathname();
     const { userInfo } = useAuth();
     const [loading, setLoading] = useState(true);
-    const [editingTrees, setEditingTrees] = useState<{
-        treeID: string;
-        treeCode: string;
-        description: string;
-        imagesLength?: number;
-        status: number;
-    } | null>(null);
+    const [treeLoading, setTreeLoading] = useState(false);
+    const [imageLoading, setImageLoading] = useState(false);
+
+    loadingStore$.tree.onChange(({ value }) => setTreeLoading(value));
+    loadingStore$.image.onChange(({ value }) => setImageLoading(value));
 
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
@@ -69,10 +68,10 @@ export default function TreePage() {
     }, [userInfo?.userID]);
 
     useEffect(() => {
-        if (userInfo?.userID) {
+        if (!imageLoading && !treeLoading) {
             fetchTrees();
         }
-    }, [userInfo?.userID, fetchTrees]);
+    }, [imageLoading, treeLoading]);
 
     const filteredTree = trees
         .filter((tree) => filterStatus == 0 || tree.status == filterStatus)
@@ -119,58 +118,12 @@ export default function TreePage() {
                 setConfirmationModalOpen(true);
                 break;
             case "Edit":
-                const filterTrees = trees.filter(
-                    (tree) => tree.treeID == treeID
-                );
-                setEditingTrees({
-                    treeID: filterTrees[0].treeID,
-                    treeCode: filterTrees[0].treeCode,
-                    description: filterTrees[0].description,
-                    imagesLength: filterTrees[0].imagesLength,
-                    status: filterTrees[0].status,
-                });
-                setOpenDialog(true);
-                console.log(`Editing tree ${treeID} ${openDialog}`);
                 break;
             default:
                 toast({
                     title: `${action} Tree`,
                     description: `${action} action performed on tree ${treeID}`,
                 });
-        }
-    };
-
-    const handleTreeAction = (value: Tree, action: number, status?: number) => {
-        console.log(value);
-        console.log(action);
-        console.log(status);
-        if (action == 1) {
-            // add
-            setTrees([
-                { ...value, recentImage: null, imagesLength: 0 },
-                ...trees,
-            ] as TreeWithImage[]);
-        } else if (action == 2) {
-            //update
-            setTrees(
-                trees.map((tree) =>
-                    tree.treeID === value?.treeID
-                        ? {
-                              ...tree,
-                              treeCode: value.treeCode,
-                              description: value.description,
-                              status: status,
-                          }
-                        : tree
-                ) as TreeWithImage[]
-            );
-        } else if (action == 3) {
-            //delete
-            let updatedTrees = [...trees];
-            updatedTrees = updatedTrees.filter(
-                (tree) => tree.treeID !== value?.treeID
-            );
-            setTrees(updatedTrees);
         }
     };
 

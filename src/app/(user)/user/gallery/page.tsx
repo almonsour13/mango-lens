@@ -18,6 +18,7 @@ import {
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useAuth } from "@/context/auth-context";
 import { getImagesByUserID } from "@/stores/image";
+import { loadingStore$ } from "@/stores/loading-store";
 import { Image as img } from "@/types/types";
 import { ArrowDownUp, Plus, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
@@ -34,11 +35,15 @@ export default function Gallery() {
     const [filterTreeCode, setFilterTreeCode] = useState<string | null>(null);
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
     const { userInfo } = useAuth();
+    const [treeLoading, setTreeLoading] = useState(false);
+    const [imageLoading, setImageLoading] = useState(false);
+
+    loadingStore$.tree.onChange(({ value }) => setTreeLoading(value));
+    loadingStore$.image.onChange(({ value }) => setImageLoading(value));
 
     const fetchImages = useCallback(async () => {
         setLoading(true);
         try {
-            if (!userInfo?.userID) return;
             await new Promise((resolve) => setTimeout(resolve, 500));
             const res = await getImagesByUserID();
             if (res.success) {
@@ -46,14 +51,16 @@ export default function Gallery() {
             }
         } catch (error) {
             console.error("Error fetching trees:", error);
-        } finally {
+        } finally{
             setLoading(false);
         }
-    }, [userInfo?.userID]);
+    }, [imageLoading,treeLoading]);
 
     useEffect(() => {
-        fetchImages();
-    }, [userInfo?.userID, fetchImages]);
+        if (!imageLoading && !treeLoading) {
+            fetchImages();
+        }
+    }, [imageLoading,treeLoading]);
 
     const uniqueTreeCodes = Array.from(
         new Set(images.map((img) => img.treeCode))
@@ -246,7 +253,7 @@ export default function Gallery() {
                     </div>
                 </div>
                 <CardContent className="p-0 flex-1">
-                    {loading ? (
+                    {loading && images.length === 0? (
                         <div className="flex-1 h-full w-full flex items-center justify-center">
                             loading
                         </div>
