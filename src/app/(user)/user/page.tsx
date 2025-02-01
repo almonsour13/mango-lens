@@ -40,6 +40,7 @@ import { observable, observe } from "@legendapp/state";
 import { whenReady } from "@legendapp/state";
 import { useStoresLoading } from "@/context/loading-store-context";
 import { useMetrics } from "@/hooks/use-metrics";
+import useRecentAnalysis from "@/hooks/use-recent-analysis";
 
 export default function Dashboard() {
     const { userInfo, resetToken } = useAuth();
@@ -229,31 +230,9 @@ type Images = Img & {
     diseases: { likelihoodScore: number; diseaseName: string }[];
 };
 const RecentAnalysis = () => {
-    const [loading, setLoading] = useState(true);
-    const [analysis, setAnalysis] = useState<Images[]>([]);
-    const { userInfo } = useAuth();
+    const { loading, analysis } = useRecentAnalysis();
     const router = useRouter();
-        const { areStoresLoading } = useStoresLoading();
 
-    useEffect(() => {
-        const fetchImages = async () => {
-            setLoading(true);
-            try {
-                await new Promise((resolve) => setTimeout(resolve, 500));
-                const res = await recentAnalysis();
-                if (res) {
-                    setAnalysis(res.data as Images[]);
-                }
-            } catch (error) {
-                console.error("Error retrieving images:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        if (!areStoresLoading) {
-            fetchImages();
-        }
-    }, [areStoresLoading]);
 
     return (
         <Card className="border-0 p-0 shadow-none flex-1">
