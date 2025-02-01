@@ -40,6 +40,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 // import { getPendingTotalCount } from "@/utils/indexedDB/store/pending-store";
+import { useQuery } from '@tanstack/react-query';
 
 export default function Dashboard() {
     const { userInfo, resetToken } = useAuth();
@@ -249,55 +250,51 @@ interface Metric {
     icon: LucideIcon;
 }
 
+const icons = [
+    { name: "Total Trees", icon: TreeDeciduous },
+    { name: "Total Images", icon: ImageIcon },
+    { name: "Disease Detected", icon: Radar },
+    { name: "Detection Rate", icon: Percent },
+];
+
 const Metrics = () => {
     const { userInfo } = useAuth();
-    const [loading, setLoading] = useState(true);
-    const [metrics, setMetrics] = useState<Metric[]>([]);
 
-    // Define icons configuration outside component to prevent recreating on each render
-    const icons = [
-        { name: "Total Trees", icon: TreeDeciduous },
-        { name: "Total Images", icon: ImageIcon },
-        { name: "Disease Detected", icon: Radar },
-        { name: "Detection Rate", icon: Percent },
-    ];
+    const { data: metrics, isLoading, error } = useQuery({
+        queryKey: ['metrics', userInfo?.userID],
+        queryFn: async () => {
+            const metricsData = await dashboardMetrics();
+            return (metricsData as Metric[]).map((metric) => ({
+                ...metric,
+                icon: icons.find((icon) => icon.name === metric.name)?.icon || TreeDeciduous,
+            }));
+        },
+        enabled: !!userInfo?.userID, // Only run query if userID exists
+        staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+        // cacheTime: 30 * 60 * 1000, // Cache data for 30 minutes
+    });
 
-    useEffect(() => {
-        const fetchMetrics = async () => {
-            if (!userInfo?.userID) return;
-            
-            setLoading(true);
-            try {
-                const res = await dashboardMetrics();
-                const metricsData = res as Metric[];
-                
-                const updatedMetrics = metricsData.map((metric) => ({
-                    ...metric,
-                    icon: icons.find((icon) => icon.name === metric.name)?.icon || TreeDeciduous,
-                }));
-                
-                setMetrics(updatedMetrics);
-            } catch (error) {
-                console.error("Error retrieving metrics:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchMetrics();
-    }, [userInfo?.userID]); // Only dependency is userID
+    if (error) {
+        return (
+            <Card className="border-0 p-4 shadow-none">
+                <div className="text-red-500">
+                    Error loading metrics. Please try again later.
+                </div>
+            </Card>
+        );
+    }
 
     return (
         <Card className="border-0 p-0 shadow-none">
             <div className="grid gap-2 md:gap-4 grid-cols-2 lg:grid-cols-4">
-                {loading ? (
+                {isLoading ? (
                     Array.from({ length: 4 }).map((_, index) => (
                         <Card key={index} className="overflow-hidden">
                             <div className="h-24 w-full flex items-center justify-center p-8 animate-pulse bg-muted" />
                         </Card>
                     ))
                 ) : (
-                    metrics.map((metric, index) => (
+                    metrics?.map((metric, index) => (
                         <Card key={index} className="bg-caard shadow-none">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
@@ -320,6 +317,7 @@ const Metrics = () => {
         </Card>
     );
 };
+
 type Images = Img & {
     analyzedImage: string | null;
     treeCode: string;

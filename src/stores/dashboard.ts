@@ -113,6 +113,7 @@ export async function recentAnalysis() {
     const analysis = Object.values(observable(analysis$).get() || {});
     const f = t.map((image) => {
         const an = analysis.filter((a) => a.imageID === image.imageID)[0];
+        if(an){
         const analyzedimage = Object.values(
             observable(analyzedimage$).get() || {}
         ).filter((ai) => ai.analysisID === an.analysisID)[0];
@@ -130,7 +131,9 @@ export async function recentAnalysis() {
                     likelihoodScore: Number(d.likelihoodScore.toFixed(1)),
                 };
             }),
+
         };
+    }
     });
     return f;
 }

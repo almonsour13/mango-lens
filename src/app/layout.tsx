@@ -7,6 +7,15 @@ import { AuthProvider } from "@/context/auth-context";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { MetaData } from "@/constant/metaData";
 import { ModelProvider } from "@/context/model-context";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
+import { ReactQueryProvider } from "@/context/ReactQueryProvider";
+const queryClient = new QueryClient()
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -54,6 +63,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+			<ReactQueryProvider>
           <AuthProvider>
             {/* <CameraProvider>
               <CaptureImageProvider> */}
@@ -63,6 +73,7 @@ export default function RootLayout({
               {/* </CaptureImageProvider>
             </CameraProvider> */}
           </AuthProvider>
+          </ReactQueryProvider>
         </ThemeProvider>
       </body>
     </html>

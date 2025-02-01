@@ -52,7 +52,6 @@ export const initializeStore = async () => {
 
         for (const { store, name } of stores) {
             const existingData = store.get()
-            console.log(existingData)
         }
         console.log('All stores initialized successfully');
     } catch (error) {

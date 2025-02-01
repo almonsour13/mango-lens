@@ -82,11 +82,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(()=>{
         const check = async () => {
             await checkAndInitializeDatabase()
+            console.log("checking....")
         }
-        // if(userInfo){
+        if(userInfo !== null){
             check()
-        // }
-    },[])
+        }
+        initializeStore()
+    },[userInfo])
 
     // useEffect(() => {
     //     const fetchUserInfo = async () => {
