@@ -76,8 +76,8 @@ export async function recentAnalysis() {
     const trees = Object.values(observable(tree$).get() || {}).filter(t => t.status === 1);
     const images = Object.values(observable(image$).get() || {}).filter(i => i.status === 1);
     const i = await Promise.all(images
-        .filter((image) => image.userID === userID)
-        .map(async (image) => {
+        .filter((image) => image.userID === userID && image.status === 1)
+        .slice(0,5).map(async (image) => {
             return {
                 ...image,
                 imageData: await convertBlobToBase64(image.imageData) as string,
@@ -85,11 +85,10 @@ export async function recentAnalysis() {
         }));
 
     const t = i.map((image) => {
-        const treeCode = trees.filter((t) => t.treeID === image.treeID)[0]
-            .treeCode;
+        const treeCode = trees.filter((t) => t.treeID === image.treeID && t.status === 1)[0];
         return {
             ...image,
-            treeCode,
+            treeCode:treeCode?treeCode.treeCode:null
         };
     });
 

@@ -255,12 +255,23 @@ const Metrics = () => {
     const [metrics, setMetrics] = useState<Metric[]>([]);
 
     useEffect(() => {
+        const fetch = async () => {
+            const res = await dashboardMetrics();
+            const metricsData = res as Metric[];
+            console.log("without depencies")
+            console.log(metricsData)
+        }
+        fetch();
+    },[])
+    useEffect(() => {
         const fetchMetrics = async () => {
             setLoading(true);
             if (!userInfo?.userID) return;
             try {
                 const res = await dashboardMetrics();
                 const metricsData = res as Metric[];
+                console.log("with depencies")
+                console.log(metricsData)
                 const icons = [
                     { name: "Total Trees", icon: TreeDeciduous },
                     { name: "Total Images", icon: ImageIcon },
@@ -286,7 +297,7 @@ const Metrics = () => {
                 setLoading(false);
             }
         };
-        if (userInfo?.userID !== undefined && userInfo?.userID !== null) {
+        if (userInfo?.userID) {
             fetchMetrics();
         }
     }, [userInfo?.userID]);
@@ -330,7 +341,7 @@ const Metrics = () => {
 
 type Images = Img & {
     analyzedImage: string | null;
-    treeCode?: string;
+    treeCode: string;
     diseases: { likelihoodScore: number; diseaseName: string }[];
 };
 const RecentAnalysis = () => {
@@ -355,7 +366,7 @@ const RecentAnalysis = () => {
         if (userInfo?.userID !== undefined && userInfo?.userID !== null) {
             fetchImages();
         }
-    }, [userInfo?.userID]);
+    }, [userInfo?.userID,recentAnalysis]);
 
     return (
         <Card className="border-0 p-0 shadow-none flex-1">
