@@ -131,6 +131,7 @@ export default function Page({
                 </div>
             ) : (
                 <PageWrapper className="gap-4">
+                    {tree !== null && tree && (
                     <div className="flex justify-between flex-col items-start gap-4">
                         <div className="flex w-full flex-row items-start justify-start gap-4">
                             <Avatar className="h-28 md:h-32 w-28 md:w-32 aspect-square bg-primary/10">
@@ -232,6 +233,7 @@ export default function Page({
                             )}
                         </div>
                     </div>
+                    )}
                     <div className="flex justify-between items-center">
                         <div className="flex gap-2 md:gap-4">
                             <DropdownMenu>
@@ -320,12 +322,6 @@ export default function Page({
                         </div>
                         <div className=""></div>
                     </div>
-                    {/* <CardHeader>
-                    <CardTitle>Image Gallery</CardTitle>
-                    <CardDescription>
-                        Browse and manage images for Tree {treeCode}
-                    </CardDescription>
-                </CardHeader> */}
                     <CardContent className="p-0">
                         {loading ? (
                             <TreeImageSkeletonCard />
