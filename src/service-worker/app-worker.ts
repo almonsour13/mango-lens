@@ -1,6 +1,5 @@
 import { defaultCache } from "@serwist/next/worker";
-import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
-import { Serwist } from "serwist";
+import { type PrecacheEntry, Serwist, CacheFirst, ExpirationPlugin, CacheableResponsePlugin, RangeRequestsPlugin, SerwistGlobalConfig } from "serwist";
 
 // This declares the value of `injectionPoint` to TypeScript.
 // `injectionPoint` is the string that will be replaced by the
@@ -16,15 +15,36 @@ declare const self: ServiceWorkerGlobalScope;
 
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
-  skipWaiting: true,
-  clientsClaim: true,
-  navigationPreload: true,
+  // skipWaiting: true,
+  // clientsClaim: true,
   disableDevLogs: true,
   precacheOptions: {
       cleanupOutdatedCaches: true,
       ignoreURLParametersMatching: [/.*/],
   },
-  runtimeCaching:defaultCache,
+  navigationPreload: false,
+  runtimeCaching: [
+    {
+      matcher({ request }) {
+        return request.destination === "video";
+      },
+      handler: new CacheFirst({
+        cacheName: "static-video-assets",
+        plugins: [
+          new ExpirationPlugin({
+            maxEntries: 16,
+            maxAgeSeconds: 30 * 24 * 60 * 60, // ~30 days
+            maxAgeFrom: "last-used",
+          }),
+          new CacheableResponsePlugin({
+            statuses: [200],
+          }),
+          new RangeRequestsPlugin(),
+        ],
+      }),
+    },
+    ...defaultCache,
+  ],
   fallbacks: {
     entries: [
       {
