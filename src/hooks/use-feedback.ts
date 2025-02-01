@@ -17,11 +17,17 @@ export const useFeedback = () => {
     const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
     const [loading, setLoading] = useState(true);
     const [feedbackLoading, setFeedbackLoading] = useState(false);
-    const [feedbackResponseLoading, setFeedbackResponseLoading] = useState(false);
+    const [feedbackResponseLoading, setFeedbackResponseLoading] =
+        useState(false);
 
     useEffect(() => {
-        const unsubscribeFeedback = loadingStore$.feedback.onChange(({ value }) => setFeedbackLoading(value));
-        const unsubscribeFeedbackResponse = loadingStore$.feedbackResponse.onChange(({ value }) => setFeedbackResponseLoading(value));
+        const unsubscribeFeedback = loadingStore$.feedback.onChange(
+            ({ value }) => setFeedbackLoading(value)
+        );
+        const unsubscribeFeedbackResponse =
+            loadingStore$.feedbackResponse.onChange(({ value }) =>
+                setFeedbackResponseLoading(value)
+            );
 
         return () => {
             unsubscribeFeedback();
@@ -30,23 +36,21 @@ export const useFeedback = () => {
     }, []);
 
     const fetchFeedback = useCallback(async () => {
+        setLoading(true);
         try {
             const res = await getFeedbackWithResponses();
-            setLoading(true); // Set loading *after* API call starts processing
-
             if (res.success) {
                 setFeedbacks(res.data as Feedback[]);
-                setLoading(false);
             }
         } catch (error) {
             console.error("Error fetching feedback:", error);
-        } 
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
     useEffect(() => {
-        if (!feedbackLoading && !feedbackResponseLoading) {
-            fetchFeedback();
-        }
+        fetchFeedback();
     }, [feedbackLoading, feedbackResponseLoading, fetchFeedback]);
 
     return { feedbacks, setFeedbacks, loading };

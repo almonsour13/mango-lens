@@ -1,19 +1,19 @@
 import { useState, useEffect, useCallback } from "react";
 import { loadingStore$ } from "@/stores/loading-store";
-import { getImagesByUserID } from "@/stores/image";
-import { Image } from "@/types/types";
+import { getTrashByUser } from "@/stores/trash";
+import { Image, Tree, Trash } from "@/types/types";
 
-type Images = Image & { analyzedImage: string } & { treeCode: string } & {
-    diseases: { likelihoodScore: number; diseaseName: string }[];
-};
 
-export const useImages = () => {
-    const [images, setImages] = useState<Images[]>([]);
+type Trashes = Trash & { item: Tree | Image };
+
+export const useTrashes = () => {
+    const [trashes, setTrashes] = useState<Trashes[] | []>([]);
     const [loading, setLoading] = useState(true);
     const [treeLoading, setTreeLoading] = useState(false);
     const [imageLoading, setImageLoading] = useState(false);
     const [analysisLoading, setAnalysisLoading] = useState(false);
 
+    // Subscribe to loading states from loadingStore$
     useEffect(() => {
         const unsubscribeTree = loadingStore$.tree.onChange(({ value }) =>
             setTreeLoading(value)
@@ -32,23 +32,28 @@ export const useImages = () => {
         };
     }, []);
 
-    const fetchImages = useCallback(async () => {
+    // Fetch trashes
+    const fetchTrashes = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await getImagesByUserID();
-            if (res.success) {
-                setImages(res.data as Images[]);
+            await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulating delay
+            const res = await getTrashByUser();
+            if (res) {
+                setTrashes(res);
             }
         } catch (error) {
-            console.error("Error fetching images:", error);
+            console.error("Error fetching trashes:", error);
         } finally {
             setLoading(false);
         }
     }, []);
 
+    // Fetch trashes when image, tree, or analysis loading state changes
     useEffect(() => {
-        fetchImages();
-    }, [imageLoading, treeLoading, analysisLoading]);
+        if (!imageLoading && !treeLoading && !analysisLoading) {
+            fetchTrashes();
+        }
+    }, [imageLoading, treeLoading, analysisLoading, fetchTrashes]);
 
-    return { images, loading };
+    return { trashes, setTrashes, loading };
 };
