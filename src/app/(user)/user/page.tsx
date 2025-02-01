@@ -333,7 +333,7 @@ const RecentAnalysis = () => {
         const fetchImages = async () => {
             setLoading(true);
             try {
-                await new Promise((resolve) => setTimeout(resolve, 1000));
+                await new Promise((resolve) => setTimeout(resolve, 100));
                 const res = await recentAnalysis();
                 if (res) {
                     setAnalysis(res);

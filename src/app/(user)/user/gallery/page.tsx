@@ -39,7 +39,7 @@ export default function Gallery() {
         setLoading(true);
         try {
             if (!userInfo?.userID) return;
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            await new Promise((resolve) => setTimeout(resolve, 200));
             const res = await getImagesByUserID()
             if(res.success){
                 setImages(res.data as images[])
