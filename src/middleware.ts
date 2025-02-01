@@ -33,7 +33,7 @@ export async function middleware(request: NextRequest) {
         );
     }
     const pathname = request.nextUrl.pathname;
-    // console.log(pathname)
+    console.log(pathname)
     const token = request.cookies.get("token")?.value;
     const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
 
@@ -129,7 +129,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
-        '/((?!api|_next/static|_next/image|favicon.ico).*)',
+        // '/((?!api|_next/static|_next/image|favicon.ico).*)',
         // "/((?!api/auth|_next|static|sw\\.js|manifest\\.json|icon-[0-9]+|images).*)",
         "/",
     ],
