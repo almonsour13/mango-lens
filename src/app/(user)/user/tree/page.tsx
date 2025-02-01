@@ -19,6 +19,7 @@ import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useAuth } from "@/context/auth-context";
 import { useStoresLoading } from "@/context/loading-store-context";
 import { useToast } from "@/hooks/use-toast";
+import { useTrees } from "@/hooks/use-trees";
 import { moveToTrash } from "@/stores/trash";
 import { getTreeByUser } from "@/stores/tree";
 import { Tree } from "@/types/types";
@@ -27,47 +28,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-interface TreeWithImage extends Tree {
-    treeImage: string;
-    recentImage: string | null;
-    imagesLength: number;
-}
 
 export default function TreePage() {
-    const [trees, setTrees] = useState<TreeWithImage[]>([]);
     const [openDialog, setOpenDialog] = useState(false);
     const pathname = usePathname();
     const { userInfo } = useAuth();
-    const [loading, setLoading] = useState(true);
-    const { areStoresLoading } = useStoresLoading();
-
+    const {trees,setTrees, loading} = useTrees()
+    
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
 
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [selectedTreeID, setSelectedTreeID] = useState("");
-
-    const fetchTrees = useCallback(async () => {
-        setLoading(true);
-        try {
-            if (!userInfo?.userID) return;
-            await new Promise((resolve) => setTimeout(resolve, 500));
-            const res = await getTreeByUser();
-            if (res.success) {
-                setTrees(res.data as TreeWithImage[]);
-            }
-        } catch (error) {
-            console.error("Error fetching trees:", error);
-        } finally {
-            setLoading(false);
-        }
-    }, [areStoresLoading]);
-
-    useEffect(() => {
-        if (!areStoresLoading) {
-            fetchTrees();
-        }
-    }, [areStoresLoading]);
 
     const filteredTree = trees
         .filter((tree) => filterStatus == 0 || tree.status == filterStatus)
@@ -120,40 +92,6 @@ export default function TreePage() {
                     title: `${action} Tree`,
                     description: `${action} action performed on tree ${treeID}`,
                 });
-        }
-    };
-
-    const handleTreeAction = (value: Tree, action: number, status?: number) => {
-        console.log(value);
-        console.log(action);
-        console.log(status);
-        if (action == 1) {
-            // add
-            setTrees([
-                { ...value, recentImage: null, imagesLength: 0 },
-                ...trees,
-            ] as TreeWithImage[]);
-        } else if (action == 2) {
-            //update
-            setTrees(
-                trees.map((tree) =>
-                    tree.treeID === value?.treeID
-                        ? {
-                              ...tree,
-                              treeCode: value.treeCode,
-                              description: value.description,
-                              status: status,
-                          }
-                        : tree
-                ) as TreeWithImage[]
-            );
-        } else if (action == 3) {
-            //delete
-            let updatedTrees = [...trees];
-            updatedTrees = updatedTrees.filter(
-                (tree) => tree.treeID !== value?.treeID
-            );
-            setTrees(updatedTrees);
         }
     };
 
@@ -291,13 +229,6 @@ export default function TreePage() {
                 </CardContent>
             </PageWrapper>
             <AddButton setOpenDialog={setOpenDialog} />
-            {/* <TreeModal
-                openDialog={openDialog}
-                setOpenDialog={setOpenDialog}
-                editingTrees={editingTrees}
-                setEditingTrees={setEditingTrees}
-                handleTreeAction={handleTreeAction}
-            /> */}
             <ConfirmationModal
                 open={confirmationModalOpen}
                 onClose={() => setConfirmationModalOpen(false)}
