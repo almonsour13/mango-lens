@@ -271,6 +271,7 @@ const Metrics = () => {
                 icon: icons.find((icon) => icon.name === metric.name)?.icon || TreeDeciduous,
             }));
         },
+        retry: 10,
     });
     console.log("metrics",metrics)
 
@@ -346,6 +347,7 @@ const RecentAnalysis = () => {
             const res = await recentAnalysis();
             return res as Images[]
         },
+        retry: 10,
     });
     const { userInfo } = useAuth();
     const router = useRouter();
