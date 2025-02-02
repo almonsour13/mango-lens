@@ -72,7 +72,7 @@ export const useMetrics = () => {;
         if (!imageLoading && !treeLoading && !analysisLoading) {
             loadMetrics();
         }
-    }, [icons,imageLoading, treeLoading, analysisLoading]);
+    }, [imageLoading, treeLoading, analysisLoading]);
 
     return { loading, metrics };
 };

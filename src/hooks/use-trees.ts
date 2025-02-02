@@ -40,11 +40,11 @@ export const useTrees = () => {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [imageLoading, treeLoading, analysisLoading]);
 
     useEffect(() => {
         fetchTrees();
-    }, [fetchTrees,imageLoading, treeLoading, analysisLoading]);
+    }, [imageLoading, treeLoading, analysisLoading]);
 
     return { trees, setTrees, loading };
 };
