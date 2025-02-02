@@ -64,15 +64,16 @@ export async function overview(): Promise<Overview> {
 
     return overview;
 }
-function generateMonthlyRange(from: string, to: string) {
+export function generateMonthlyRange(from: string, to: string) {
     const startDate = new Date(from);
     const endDate = new Date(to);
-    const months: { year: number; month: number }[] = [];
+    const months: { year: number; month: number; day?:number }[] = [];
 
     while (startDate <= endDate) {
         months.push({
             year: startDate.getFullYear(),
             month: startDate.getMonth() + 1,
+            day: startDate.getMonth() + 1,
         });
         startDate.setMonth(startDate.getMonth() + 1); // Increment month
     }

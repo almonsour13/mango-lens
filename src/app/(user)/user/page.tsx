@@ -85,7 +85,7 @@ export default function Dashboard() {
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
-                                    <Link href="/user/settings/profile">
+                                    <Link href="/user/settings">
                                         <DropdownMenuItem>
                                             Profile
                                             <DropdownMenuShortcut>

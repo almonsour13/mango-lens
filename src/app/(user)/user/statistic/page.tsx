@@ -27,10 +27,13 @@ import { format } from "date-fns";
 import { overview } from "@/stores/statistic";
 import { useStatisticOverview } from "@/hooks/use-statistic";
 import { Skeleton } from "@/components/ui/skeleton";
+import { exportData } from "@/utils/export-data";
+import { toast } from "@/hooks/use-toast";
 
 export default function Statistic() {
     const [openDownloadModal, setOpenDownloadModal] = useState(false);
     const [dateRange, setDateRange] = useState("3");
+    const [dowloading, setDownloading] = useState(false);
     const [formattedDateRange, setFormattedDateRange] = useState<{
         from: string;
         to: string;
@@ -72,6 +75,19 @@ export default function Statistic() {
         }
     }, [customDate]);
 
+    const handleDownload = async () => {
+        try {
+            setDownloading(true)
+            const res = await exportData(formattedDateRange)
+            if(res){
+                toast({
+                    description:"Data Downloaded Succesfully"
+                })
+            }
+        } catch (error) {
+            setDownloading(false)
+        }
+    }
     return (
         <>
             <div className="h-14 w-full px-4 flex items-center justify-between border-b">
@@ -147,7 +163,7 @@ export default function Statistic() {
                             </DropdownMenuCheckboxItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <Button className="w-10 md:w-auto">
+                    <Button className="w-10 md:w-auto" onClick={handleDownload}>
                         <Download className="" />
                         <span className="hidden md:block">Dowload Data</span>
                     </Button>

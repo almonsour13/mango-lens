@@ -39,10 +39,20 @@ export default function ResultDetails({
                                             %
                                         </span>
                                     </div>
-                                    <Progress
-                                        value={disease.likelihoodScore * 100}
-                                        className="h-2"
+                                <div className="bg-muted h-2 w-full overflow-hidden rounded">
+                                    <div
+                                        className={`${
+                                            disease.diseaseName === "Healthy"
+                                                ? "bg-primary"
+                                                : "bg-destructive"
+                                        } h-2`}
+                                        style={{
+                                            width: `${
+                                                disease.likelihoodScore * 1
+                                            }%`,
+                                        }}
                                     />
+                                </div>
                                 </div>
                                 // <Card
                                 //     key={index}

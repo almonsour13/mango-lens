@@ -48,21 +48,21 @@ import { useImageDetails } from "@/hooks/use-image-details";
 export default function ImageDetails({ imageID }: { imageID: string }) {
     const { toast } = useToast();
     const router = useRouter();
-    const {imageDetails, setImageDetails, loading} = useImageDetails(imageID)
-    
+    const { imageDetails, setImageDetails, loading } = useImageDetails(imageID);
+
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [isMigrateModalOpen, setIsMigrateModalOpen] = useState(false);
     const [isFeedbackModel, setIsFeedbackModel] = useState(false);
 
     const handleConfirmDelete = async () => {
         try {
-            if ( !imageDetails) return null;
+            if (!imageDetails) return null;
             const res = await moveToTrash(imageDetails.imageID, 2);
             toast({
                 description: res.message,
-            })
+            });
             if (res.success) {
-                    router.back();
+                router.back();
             }
         } catch (error) {
             console.error("Error deleting disease:", error);
@@ -99,8 +99,8 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
                         <ArrowLeft className="h-5 w-5" />
                     </button>
                     <Separator orientation="vertical" />
-                    <h1 className="text-md">
-                        {imageDetails && imageDetails.treeCode+" Image Details"}
+                    <h1 className="text-md font-medium">
+                        {imageDetails?.treeCode+" - Image Details" || 'Loading...'}
                     </h1>
                 </div>
                 <DropdownMenu>
@@ -268,10 +268,24 @@ function ResultDetails({
                                         {disease.likelihoodScore.toFixed(1)}%
                                     </span>
                                 </div>
-                                <Progress
+                                {/* <Progress
                                     value={disease.likelihoodScore * 100}
-                                    className="h-2"
-                                />
+                                    className="h-2 bg-destructive"
+                                /> */}
+                                <div className="bg-muted h-2 w-full overflow-hidden rounded">
+                                    <div
+                                        className={`${
+                                            disease.diseaseName === "Healthy"
+                                                ? "bg-primary"
+                                                : "bg-destructive"
+                                        } h-2`}
+                                        style={{
+                                            width: `${
+                                                disease.likelihoodScore * 1
+                                            }%`,
+                                        }}
+                                    />
+                                </div>
                             </div>
                         );
                     })}

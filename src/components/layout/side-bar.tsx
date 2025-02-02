@@ -62,9 +62,9 @@ const Sidebar = ({ isOpen, toggleSidebar }: Sidebar) => {
                             height={48}
                             className="w-6 h-6"
                         />
-                        <h2 className="text-2xl font-bold text-foreground">
+                        {/* <h2 className="text-xl font-bold text-foreground">
                             {MetaData.title}
-                        </h2>
+                        </h2> */}
                     </div>
                     <button
                         onClick={toggleSidebar}
