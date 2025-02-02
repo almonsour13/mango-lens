@@ -10,10 +10,11 @@ interface Metric {
     icon: React.ElementType;
 }
 
-export const useMetrics = () => {
-    const [loading, setLoading] = useState(true);
+export const useMetrics = () => {;
     const [metrics, setMetrics] = useState<Metric[]>([]);
+    const [loading, setLoading] = useState(true)
     const [treeLoading, setTreeLoading] = useState(false);
+    const [userLoading, setUserLoading] = useState(false);
     const [imageLoading, setImageLoading] = useState(false);
     const [analysisLoading, setAnalysisLoading] = useState(false);
 
@@ -27,6 +28,9 @@ export const useMetrics = () => {
 
     // Listen for changes in loading states
     useEffect(() => {
+        const unsubscribeUser = loadingStore$.tree.onChange(({ value }) =>
+            setUserLoading(value)
+        );
         const unsubscribeTree = loadingStore$.tree.onChange(({ value }) =>
             setTreeLoading(value)
         );

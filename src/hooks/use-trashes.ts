@@ -36,7 +36,6 @@ export const useTrashes = () => {
     const fetchTrashes = useCallback(async () => {
         setLoading(true);
         try {
-            await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulating delay
             const res = await getTrashByUser();
             if (res) {
                 setTrashes(res);

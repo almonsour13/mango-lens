@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { sign, verify } from "jsonwebtoken";
+import { sign, TokenExpiredError, verify } from "jsonwebtoken";
 import { hash } from "bcrypt";
 // import { query } from "@/lib/db/db";
 import { supabase } from "@/supabase/supabase";
 import { v4 as uuidv4 } from "uuid";
+import { emailExists } from "@/lib/auth/auth";
 
 export async function POST(request: Request) {
     try {
@@ -22,6 +23,18 @@ export async function POST(request: Request) {
                 { status: 400 }
             );
         }
+        const exists = await emailExists(email);
+
+        if (exists) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Account already exists with this email.",
+                    redirect: "/signin",
+                },
+                { status: 400 }
+            );
+        }
 
         let decodedToken;
         try {
@@ -32,6 +45,13 @@ export async function POST(request: Request) {
                 verificationCode: string;
             };
         } catch (error) {
+            // Handle expired token case
+            if (error instanceof TokenExpiredError) {
+                return NextResponse.json(
+                    { success: false, message: "Token expired." },
+                    { status: 400 }
+                );
+            }
             console.log(error);
             return NextResponse.json(
                 { success: false, message: "Invalid token." },
@@ -40,7 +60,7 @@ export async function POST(request: Request) {
         }
 
         const { fName, lName, password, verificationCode } = decodedToken;
-
+        console.log(decodedToken);
         if (code !== verificationCode) {
             return NextResponse.json(
                 { success: false, message: "Invalid verification code." },
@@ -49,9 +69,9 @@ export async function POST(request: Request) {
         }
 
         const hashedPassword = await hash(password, 10);
-        
+
         const newUserId = uuidv4();
-        const {  error } = await supabase.from("user").insert([
+        const { error } = await supabase.from("user").insert([
             {
                 userID: newUserId,
                 fName: fName,
@@ -61,10 +81,12 @@ export async function POST(request: Request) {
                 role: 2,
             },
         ]);
-        console.log(error)
-        if(error) {
+        if (error) {
             return NextResponse.json(
-                { success: false, message: "An error occurred during verification." },
+                {
+                    success: false,
+                    message: "An error occurred during verification.",
+                },
                 { status: 500 }
             );
         }

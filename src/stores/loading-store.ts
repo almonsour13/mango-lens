@@ -1,6 +1,7 @@
 import { observable } from "@legendapp/state";
 
 export const loadingStore$ = observable({
+    user:false,
     tree:false,
     treeimage:false,
     image:false,

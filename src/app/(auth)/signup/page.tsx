@@ -86,8 +86,7 @@ export default function SignupForm() {
             
             const data = await response.json();
             if (response.ok) {
-                router.push(data.url)
-                console.log(data.url)
+                router.replace(data.url)
             } else {
                 setError(
                     data.error || "An unexpected error occurred. Please try again.",

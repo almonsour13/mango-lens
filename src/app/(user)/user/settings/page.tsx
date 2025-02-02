@@ -31,7 +31,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCameraContext } from "@/context/camera-context";
-import { updateUserCredentials } from "@/utils/indexedDB/store/user-info-store";
+import { getUser, updateUserInfo } from "@/stores/user-store";
 
 const formSchema = z.object({
     profileImage: z.string().optional(),
@@ -48,8 +48,8 @@ export default function ProfileSettings() {
     const {capturedImage, setCapturedImage, setIsCameraOpen} = useCameraContext();
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-
-    const { userInfo } = useAuth();
+    
+    const userInfo = getUser();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -72,15 +72,6 @@ export default function ProfileSettings() {
 
     useEffect(() => {
         const fetchUser = async () => {
-            // const response = await fetch(`/api/user/${userInfo?.userID}`);
-            // const data = await response.json();
-            // if (response.ok) {
-            //     form.reset({
-            //         fName: data.user.fName,
-            //         lName: data.user.lName,
-            //         profileImage: data.profileImage,
-            //     });
-            // }
             form.reset({
                 fName: userInfo?.fName || "",
                 lName: userInfo?.lName || "",
@@ -104,32 +95,11 @@ export default function ProfileSettings() {
                     values.profileImage) ||
                 "",
         };
+        
 
         try {
-            const response = await fetch(`/api/user/${userInfo?.userID}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payLoad),
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                setLoading(false);
-                if (userInfo?.userID && data.user) {
-                    const userData = {
-                        fName: data.user.fName,
-                        lName: data.user.lName,
-                        email: data.user.email,
-                        profileImage:
-                        data.user.imageData ,
-                    };
-                    // await updateUserCredentials(userInfo?.userID, userData);
-                    setCapturedImage("");
-                }
-            } else {
-                setError(data.error);
-                setLoading(false);
-            }
+            await updateUserInfo(values.fName, values.lName)
+            setLoading(false)
         } catch (error) {
             setError(
                 error instanceof Error ? error.message : "An error occurred"

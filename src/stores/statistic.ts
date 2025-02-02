@@ -15,80 +15,51 @@ interface Overview {
     diseasedLeaves: number;
 }
 const threshold = 30;
-const userID = getUser()?.userID
+const userID = getUser()?.userID;
 
-export function overview(): Overview {
-    const tree = Object.values(tree$.get() || {}).filter(
+export async function overview(): Promise<Overview> {
+    const trees = Object.values(tree$.get() || {}).filter(
         (t) => t.userID === userID && t.status === 1
     );
-    const image = Object.values(image$.get() || {}).filter(
-        (t) => t.userID === userID  && t.status === 1
+    const images = Object.values(image$.get() || {}).filter(
+        (t) => t.userID === userID && t.status === 1
     );
+
     const analysis = Object.values(observable(analysis$).get() || {});
     const diseaseidentified = Object.values(
         observable(diseaseidentified$).get() || {}
     );
-    const treeStatus = tree.map((t) => {
-        const im = image
-            .filter((i) => t.treeID === i.treeID)
-            .map((im) => {
-                const an = analysis
-                    .filter((ans) => ans.imageID === im.imageID)
-                    .map((ia) => {
-                        const score = diseaseidentified
-                            .filter(
-                                (di) =>
-                                    di.analysisID === ia.analysisID &&
-                                    di.diseaseName !== "Healthy"
-                            )
-                            .reduce(
-                                (acc, disease) => acc + disease.likelihoodScore,
-                                0
-                            );
-                        return parseFloat(score.toFixed(1));
-                    });
-                return { ...im, diseaseScore: an[0] || 0 };
-            });
-        return { ...t, images: im };
+
+    const diseasedImages = images.map((img) => {
+        const an = analysis.filter((a) => a.imageID === img.imageID)[0];
+        const di = diseaseidentified.filter(
+            (d) => d.analysisID === an.analysisID
+        );
+        const checkHealthyClass = di.filter((d) => d.diseaseName === "Healthy")
+        .reduce((acc, disease) => acc + disease.likelihoodScore, 0);;
+        const checkDiseasedClass = di
+            .filter((d) => d.diseaseName !== "Healthy")
+            .reduce((acc, disease) => acc + disease.likelihoodScore, 0);
+        return{
+            ...img,
+            isHealthy:checkHealthyClass > checkDiseasedClass
+        }
     });
 
-    const healthyTrees = treeStatus.filter((t) =>
-        t.images.every((img:any) => img.diseaseScore < threshold)
-    ).length;
-    const diseasedTrees = treeStatus.filter((t) =>
-        t.images.some((img:any) => img.diseaseScore >= threshold)
-    ).length;
-
-    const imageStatus = image.map((img) => {
-        const an = analysis
-            .filter((ans) => ans.imageID === img.imageID)
-            .map((ia) => {
-                const score = diseaseidentified
-                    .filter(
-                        (di) =>
-                            di.analysisID === ia.analysisID &&
-                            di.diseaseName !== "Healthy"
-                            && di.status === 1
-                    )
-                    .reduce((acc, disease) => acc + disease.likelihoodScore, 0);
-                return parseFloat(score.toFixed(1));
-            });
-        return { diseaseScore: an[0] || 0 };
-    });
-    const healthyLeaves = imageStatus.filter(
-        (img) => img.diseaseScore < threshold
-    ).length;
-    const diseasedLeaves = imageStatus.filter(
-        (img) => img.diseaseScore >= threshold
-    ).length;
+    const diseaseTree = trees.map( t => {
+        const img = diseasedImages.filter( i => i.treeID === t.treeID)
+        return{
+            isHealthy:img.filter(i => i.isHealthy === true).length > 0
+        }
+    })
 
     const overview = {
-        totalTrees: tree.length,
-        healthyTrees,
-        diseasedTrees,
-        totalImages: image.length,
-        healthyLeaves,
-        diseasedLeaves,
+        totalTrees: trees.length,
+        healthyTrees:diseaseTree.filter(dt => dt.isHealthy === true).length,
+        diseasedTrees:diseaseTree.filter(dt => dt.isHealthy === false).length,
+        totalImages: images.length,
+        healthyLeaves:diseasedImages.filter(di => di.isHealthy === true).length,
+        diseasedLeaves:diseasedImages.filter(di => di.isHealthy === false).length,
     };
 
     return overview;
@@ -108,9 +79,9 @@ function generateMonthlyRange(from: string, to: string) {
 
     return months;
 }
-export function treeStatistic(from: string, to: string, userID: string) {
+export function treeStatistic(from: string, to: string) {
     const tree = Object.values(observable(tree$).get() || {}).filter(
-        (t) => t.userID === userID 
+        (t) => t.userID === userID
     );
     const monthlyRange = generateMonthlyRange(from, to);
     const mergedData = monthlyRange.map((month) => {
@@ -122,57 +93,47 @@ export function treeStatistic(from: string, to: string, userID: string) {
         return {
             year: month.year,
             month: month.month,
-            treeCount: match ? match.length : 0, 
+            treeCount: match ? match.length : 0,
         };
     });
     return mergedData;
 }
-export function imageStatistic(from: string, to: string, userID: string) {
-    const image = Object.values(observable(image$).get() || {}).filter(
-        (t) => t.userID === userID
+export function imageStatistic(from: string, to: string) {
+    const images = Object.values(image$.get() || {}).filter(
+        (t) => t.userID === userID && t.status === 1
     );
 
     const monthlyRange = generateMonthlyRange(from, to);
     const analysis = Object.values(observable(analysis$).get() || {});
-    const diseaseidentified = Object.values(
-        diseaseidentified$.get() || {}
-    );
+    const diseaseidentified = Object.values(diseaseidentified$.get() || {});
     const mergedData = monthlyRange.map((month) => {
-        const match = image.filter(
+        const match = images.filter(
             (i) =>
                 new Date(i.uploadedAt).getFullYear() === month.year &&
                 new Date(i.uploadedAt).getMonth() + 1 === month.month
         );
 
-        const im = match.map((img) => {
-            const an = analysis
-                .filter((ans) => ans.imageID === img.imageID)
-                .map((ia) => {
-                    const score = diseaseidentified
-                        .filter(
-                            (di:any) =>
-                                di.analysisID === ia.analysisID &&
-                                di.diseaseName !== "Healthy"
-                        )
-                        .reduce(
-                            (acc:number, disease:any) => acc + disease.likelihoodScore,
-                            0
-                        );
-                    return parseFloat(score.toFixed(1));
-                });
-            return { diseaseScore: an[0] || 0 };
+        const diseasedImages = match.map((img) => {
+            const an = analysis.filter((a) => a.imageID === img.imageID)[0];
+            const di = diseaseidentified.filter(
+                (d) => d.analysisID === an.analysisID
+            );
+            const checkHealthyClass = di.filter((d) => d.diseaseName === "Healthy")
+            .reduce((acc, disease) => acc + disease.likelihoodScore, 0);;
+            const checkDiseasedClass = di
+                .filter((d) => d.diseaseName !== "Healthy")
+            return{
+                
+            ...img,
+            isHealthy:checkHealthyClass > checkDiseasedClass
+            }
         });
-        const healthyLeaves = im.filter(
-            (img) => img.diseaseScore < threshold
-        ).length;
-        const diseasedLeaves = im.filter(
-            (img) => img.diseaseScore >= threshold
-        ).length;
-        return{
+
+        return {
             ...month,
-            healthyCount: healthyLeaves,
-            diseasedCount: diseasedLeaves
-        }
+            healthyCount:diseasedImages.filter(di => di.isHealthy === true).length,
+            diseasedCount:diseasedImages.filter(di => di.isHealthy === false).length,
+        };
     });
-    return mergedData
+    return mergedData;
 }

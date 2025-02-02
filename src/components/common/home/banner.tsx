@@ -7,7 +7,7 @@ import { MetaData } from "@/constant/metaData";
 
 export default function Banner(){
     return(
-        <div className="overlay-4 relative">
+        <div className="relative">
             <div
                 className="absolute inset-0 h-full w-full bg-gradient-radial from-transparent via-background/80 to-background "
             />

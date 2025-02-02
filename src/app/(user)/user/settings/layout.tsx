@@ -21,11 +21,6 @@ export default function UserSettingsLayout({ children }: SettingsLayoutProps) {
         // { name: "General", href: "/user/settings", icon: Settings },
         { name: "Profile", href: "/user/settings", icon: User },
         { name: "Account", href: "/user/settings/account", icon: Shield },
-        {
-            name: "Notification",
-            href: "/user/settings/notification",
-            icon: Bell,
-        },
     ];
 
     return (

@@ -153,19 +153,19 @@ export function FeedBackModal({
                         <CardContent className="p-2">
                             <div className="flex justify-between items-center">
                                 <span className="text-sm text-muted-foreground">
-                                    {format(feedback.feedbackAt, "PPpp")}
+                                    You
                                 </span>
                                 {getStatusBadge(feedback.status)}
                             </div>
                             <p className="text-sm">{feedback.content}</p>
-                            {/* <div className="flex justify-end">
+                            <div className="flex justify-end">
                                 <span className="text-xs text-muted-foreground">
                                     {format(
                                         feedback.feedbackAt,
                                         "d MMM, y hh:mm a"
                                     )}
                                 </span>
-                            </div> */}
+                            </div>
                         </CardContent>
                     </Card>
 

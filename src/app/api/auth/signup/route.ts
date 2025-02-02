@@ -34,7 +34,10 @@ export async function POST(req: Request) {
                 password:password,
                 verificationCode:code
             },
-            process.env.JWT_SECRET_KEY
+            process.env.JWT_SECRET_KEY,
+            {
+                expiresIn: '1h' // Token will expire in 1 hour, you can customize this duration
+            }
         );
          await sendVerificationEmail(email, code);
 

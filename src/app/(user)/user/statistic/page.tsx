@@ -25,6 +25,8 @@ import { useAuth } from "@/context/auth-context";
 import { CustomDateRange } from "./date-range-picker";
 import { format } from "date-fns";
 import { overview } from "@/stores/statistic";
+import { useStatisticOverview } from "@/hooks/use-statistic";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Statistic() {
     const [openDownloadModal, setOpenDownloadModal] = useState(false);
@@ -173,83 +175,38 @@ interface OverviewProps {
     description?: string;
 }
 const Overview = () => {
-    const [overviewData, setOverviewData] = useState<OverviewProps[] | []>([]);
-
-    const { userInfo } = useAuth();
-    const fetchOverview = useCallback(async () => {
-        try {
-            await new Promise((resolve) => setTimeout(resolve, 200));
-            const overv = overview();
-            if (overv) {
-                const overviewData = [
-                    {
-                        label: "Total Trees",
-                        value: overv.totalTrees,
-                        icon: TreeDeciduous,
-                        description: "+5 this month",
-                    },
-                    {
-                        label: "Healthy Trees",
-                        value: overv.healthyTrees,
-                        icon: TreeDeciduous,
-                        description: "80% of total trees",
-                    },
-                    {
-                        label: "Diseased Trees",
-                        value: overv.diseasedTrees,
-                        icon: TreeDeciduous,
-                        description: "20% of total trees",
-                    },
-                    {
-                        label: "Total Images",
-                        value: overv.totalImages,
-                        icon: ImageIcon,
-                        description: "+5 this month",
-                    },
-                    {
-                        label: "Healthy Leaves",
-                        value: overv.healthyLeaves,
-                        icon: Leaf,
-                        description: "65% of total leaves",
-                    },
-                    {
-                        label: "Diseased Leaves",
-                        value: overv.healthyLeaves,
-                        icon: AlertTriangle,
-                        description: "35% of total leaves",
-                    },
-                ];
-                setOverviewData(overviewData);
-            }
-        } catch (error) {
-            console.error("Failed to fetch overview data:", error);
-        }
-    }, [userInfo?.userID]);
-
-    useEffect(() => {
-        if (userInfo?.userID) {
-            fetchOverview();
-        }
-    }, [userInfo?.userID, fetchOverview]);
+    const { overviewData, loading } = useStatisticOverview();
     return (
         <div className="w-full flex flex-col gap-2">
             <h2 className="text-lg font-semibold">Overview</h2>
-            <div className="flex flex-col md:flex-row gap-2 rounded-lg">
-                {overviewData && (
-                    <>
-                        <div className="flex-1 grid grid-cols-3 gap-2 p-0 rounded-lg">
-                            {overviewData.slice(0, 3).map((overview, index) => (
-                                <StatCard key={index} {...overview} />
-                            ))}
-                        </div>
-                        <div className="flex-1 grid grid-cols-3 gap-2 p-0 rounded-lg">
-                            {overviewData.slice(3, 6).map((overview, index) => (
-                                <StatCard key={index} {...overview} />
-                            ))}
-                        </div>
-                    </>
-                )}
-            </div>
+            {loading ? (
+                <div className="flex-1 grid grid-cols-3 md:grid-cols-6 gap-2  rounded-lg">
+                    {Array.from({ length: 6}).map((_, index) => (
+                        <Skeleton className="h-20 border" />
+                    ))}
+                </div>
+            ) : (
+                <div className="flex flex-col md:flex-row gap-2 rounded-lg">
+                    {overviewData && (
+                        <>
+                            <div className="flex-1 grid grid-cols-3 gap-2 p-0 rounded-lg">
+                                {overviewData
+                                    .slice(0, 3)
+                                    .map((overview, index) => (
+                                        <StatCard key={index} {...overview} />
+                                    ))}
+                            </div>
+                            <div className="flex-1 grid grid-cols-3 gap-2 p-0 rounded-lg">
+                                {overviewData
+                                    .slice(3, 6)
+                                    .map((overview, index) => (
+                                        <StatCard key={index} {...overview} />
+                                    ))}
+                            </div>
+                        </>
+                    )}
+                </div>
+            )}
         </div>
     );
 };
@@ -260,17 +217,10 @@ interface statCardProps {
     description?: string;
 }
 const StatCard = ({ label, value, icon: Icon, description }: statCardProps) => (
-    <Card className="shadow-none bg-card">
-        {/* <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{label}</CardTitle>
-        </CardHeader> */}
+    <Card className="shadow-none bg-cara">
         <CardContent className="flex flex-col justify-center items-center p-4">
             <div className="text-2xl font-bold">{value}</div>
             <p className="text-xs text-muted-foreground text-center">{label}</p>
-            {/* <Icon className="h-4 w-4 text-muted-foreground" /> */}
-            {/* {description && (
-                <p className="text-xs text-muted-foreground">{description}</p>
-            )} */}
         </CardContent>
     </Card>
 );

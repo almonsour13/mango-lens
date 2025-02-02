@@ -22,18 +22,20 @@ function VerifyForm() {
     const search = useSearchParams();
     const router = useRouter();
     const email = search.get("email");
-    const token = search.get("token");
+    const tokenParams = search.get("token");
+    const [token, setToken] = useState("");
     const [value, setValue] = useState("");
     const [error, setError] = useState("");
     const [isVerifying, setIsVerifying] = useState(false);
     const [isResending, setIsResending] = useState(false);
+    const [resendSuccess, setResendSuccess] = useState(false);
 
     const verifyEmail = useCallback(async () => {
-        if (!email || !value || isVerifying) return;
+        if (!email || !value || isVerifying || !token) return;
 
         setError("");
         setIsVerifying(true);
-
+        setResendSuccess(false);
         try {
             const res = await fetch(`/api/auth/verify`, {
                 method: "POST",
@@ -51,16 +53,19 @@ function VerifyForm() {
                 setUser(user);
                 router.push(redirect);
             } else {
-                throw new Error(
-                    data.error || data.message || "Verification failed"
-                );
+                setError(data.message);
+                if (data.redirect) {
+                    router.push(data.redirect);
+                }
             }
         } catch (err) {
-            setError((err as Error).message);
+            setError(
+                "An error occurred during verification. Please try again."
+            );
             setValue("");
         } finally {
             setIsVerifying(false);
-            setValue('')
+            setValue("");
         }
     }, [value, email, router, isVerifying, token]);
 
@@ -74,40 +79,47 @@ function VerifyForm() {
         if (isResending || !email) return;
 
         setIsResending(true);
+        setResendSuccess(false);
         setError("");
 
         try {
-            const res = await fetch(`/api/auth/resend-code`, {
+            const res = await fetch(`/api/auth/verify/resend-code`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email }),
+                body: JSON.stringify({ email, token }),
             });
 
-            if (!res.ok) {
-                const data = await res.json();
-                throw new Error(
-                    data.error || data.message || "Failed to resend code"
-                );
+            const data = await res.json();
+            if (res.ok) {
+                setToken(data.token);
+                router.replace(data.url);
+                setResendSuccess(true);
+            } else {
+                setError(data.message);
+                if (data.redirect) {
+                  router.replace(data.redirect) // Changed from push to replace
+                }
             }
-
-            // Show success message (you might want to add a state for this)
-            console.log("Verification code resent successfully");
         } catch (err) {
-            setError((err as Error).message);
+            setError(
+                "An error occurred while resending the code. Please try again."
+            );
         } finally {
             setIsResending(false);
         }
     };
 
-    if (!email || !token) {
-        return <div>Invalid verification link. Please request a new one.</div>;
-    }
+    useEffect(() => {
+        if (tokenParams) {
+            setToken(tokenParams);
+        }
+    }, [tokenParams]);
 
     return (
         <Card className="w-full max-w-md mx-auto border-0 shadow-none bg-transparent">
             <CardHeader>
                 <CardTitle className="text-2xl text-center text-primary">
-                    Verify Your Email
+                    Email Verification
                 </CardTitle>
                 <CardDescription className="text-center">
                     Please enter the 6-digit verification code sent to {email}
@@ -138,18 +150,23 @@ function VerifyForm() {
                 )}
                 {isVerifying && (
                     <p className="text-sm text-blue-500" aria-live="polite">
-                        Verifying...
+                        Verifying your email...
+                    </p>
+                )}
+                {resendSuccess && (
+                    <p className="text-sm text-green-500" role="status">
+                        A new verification code has been sent to your email.
                     </p>
                 )}
                 <div className="text-sm text-muted-foreground text-center">
-                    {"Didn't"} receive the code?{" "}
+                    Haven't received the code?{" "}
                     <Button
                         variant="link"
                         className="p-0 h-auto"
                         onClick={handleResend}
                         disabled={isResending}
                     >
-                        {isResending ? "Resending..." : "Resend"}
+                        {isResending ? "Sending..." : "Resend code"}
                     </Button>
                 </div>
             </CardContent>
@@ -161,7 +178,7 @@ export default function Verify() {
     return (
         <div className="w-full flex h-screen flex-row-reverse">
             <div className="flex-1 flex items-center justify-center">
-                <Suspense fallback={<div>Loading...</div>}>
+                <Suspense fallback={<div>Loading verification form...</div>}>
                     <VerifyForm />
                 </Suspense>
             </div>

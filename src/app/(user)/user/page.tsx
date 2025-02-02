@@ -18,6 +18,7 @@ import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useAuth } from "@/context/auth-context";
 import { useMetrics } from "@/hooks/use-metrics";
 import useRecentAnalysis from "@/hooks/use-recent-analysis";
+import { removeOldDatabase } from "@/stores/indexeddb";
 import { loadingStore$ } from "@/stores/loading-store";
 import { Image as Img } from "@/types/types";
 import { format } from "date-fns";
@@ -32,11 +33,6 @@ import { useEffect, useState } from "react";
 
 export default function Dashboard() {
     const { userInfo, resetToken } = useAuth();
-    const [treeLoading, setTreeLoading] = useState(false);
-    const [imageLoading, setImageLoading] = useState(false);
-
-    loadingStore$.tree.onChange(({ value }) => setTreeLoading(value));
-    loadingStore$.image.onChange(({ value }) => setImageLoading(value));
     
     const handleLogout = async () => {
         const response = await fetch("/api/auth/logout", {
@@ -46,16 +42,9 @@ export default function Dashboard() {
         if (response.ok) {
             window.location.href = "/signin";
             resetToken();
+            removeOldDatabase();
         }
     };
-    useEffect(() => {
-        console.log(treeLoading);
-        console.log(imageLoading);
-    }, [treeLoading, imageLoading]);
-    useEffect(() => {
-        if (userInfo) {
-        }
-    }, [userInfo]);
 
     return (
         <>
