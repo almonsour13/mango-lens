@@ -158,7 +158,7 @@ export const useTreeStatistic = (DateRange: DateRange | null) => {
         } finally {
             setLoading(false);
         }
-    }, [DateRange, imageLoading, treeLoading, analysisLoading]);
+    }, []);
 
     useEffect(() => {
         fetchTree();
@@ -222,7 +222,7 @@ export const useImageStatistic = (DateRange: DateRange | null) => {
             );
             setChartData(formattedData);
         }
-    }, [DateRange, imageLoading, treeLoading, analysisLoading]);
+    }, []);
 
     useEffect(() => {
         fetchImages();

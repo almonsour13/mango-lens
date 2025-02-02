@@ -182,7 +182,7 @@ const Overview = () => {
             {loading ? (
                 <div className="flex-1 grid grid-cols-3 md:grid-cols-6 gap-2  rounded-lg">
                     {Array.from({ length: 6}).map((_, index) => (
-                        <Skeleton className="h-20 border" />
+                        <Skeleton key={index} className="h-20 border" />
                     ))}
                 </div>
             ) : (

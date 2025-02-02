@@ -159,7 +159,7 @@ function VerifyForm() {
                     </p>
                 )}
                 <div className="text-sm text-muted-foreground text-center">
-                    Haven't received the code?{" "}
+                    {"Haven't"} received the code?{" "}
                     <Button
                         variant="link"
                         className="p-0 h-auto"
