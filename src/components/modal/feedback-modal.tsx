@@ -13,7 +13,7 @@ import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { Dispatch, SetStateAction, useState } from "react";
 import { submitFeedback } from "@/stores/feedback";
-import { Feedback as FB } from "@/types/types";
+import { Feedback as FB, User } from "@/types/types";
 
 import { toast } from "@/hooks/use-toast";
 import { Card, CardContent } from "../ui/card";
@@ -26,25 +26,22 @@ import { v4 } from "uuid";
 import { ScrollArea } from "../ui/scroll-area";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
+import { GetFeedbackStatusBadge } from "@/helper/get-badge";
 interface AddPendingModalProps {
     open: boolean;
     onClose: (value: boolean) => void;
+    onSubmitFeedback:(content: string) => void;
 }
 
 export default function AddFeedBackModel({
     open,
     onClose,
+    onSubmitFeedback,
 }: AddPendingModalProps) {
     const [feedback, setFeedback] = useState("");
     const onSubmit = async () => {
-        const res = await submitFeedback(feedback);
-
-        if (res.success) {
-            onClose(false);
-        }
-        toast({
-            description: res.message,
-        });
+        onSubmitFeedback(feedback)
+        setFeedback("")
     };
     return (
         <ModalDrawer open={open} onOpenChange={onClose}>
@@ -91,6 +88,7 @@ export default function AddFeedBackModel({
     );
 }
 type Feedback = FB & {
+    user?: User;
     responses: {
         feedbackResponseID: string;
         feedbackID: string;
@@ -126,19 +124,6 @@ export function FeedBackModal({
         setReply("");
     };
 
-    const getStatusBadge = (status: number) => {
-        switch (status) {
-            case 1:
-                return <Badge variant="destructive">Pending</Badge>;
-            case 2:
-                return <Badge variant="secondary">Review</Badge>;
-            case 3:
-                return <Badge variant="default">Resolved</Badge>;
-            default:
-                return null;
-        }
-    };
-
     return (
         <ModalDrawer open={open} onOpenChange={onClose}>
             <DialogHeader>
@@ -153,9 +138,9 @@ export function FeedBackModal({
                         <CardContent className="p-2">
                             <div className="flex justify-between items-center">
                                 <span className="text-sm text-muted-foreground">
-                                    You
+                                    {userInfo?.userID === feedback.userID?"You":feedback.user?.fName+" "+feedback.user?.lName}
                                 </span>
-                                {getStatusBadge(feedback.status)}
+                                {GetFeedbackStatusBadge(feedback.status)}
                             </div>
                             <p className="text-sm">{feedback.content}</p>
                             <div className="flex justify-end">
@@ -187,10 +172,9 @@ export function FeedBackModal({
                                         <CardContent className="p-2">
                                             <div className="flex justify-between items-center">
                                                 <h4 className="font-medium text-sm">
-                                                    {userInfo?.userID !==
-                                                    response.userID
-                                                        ? MetaData.title
-                                                        : "You"}
+                                                    {response.userID === feedback.userID
+                                                        ?feedback.user ?feedback.user?.fName+" "+feedback.user?.lName:"You"
+                                                        :"Mango Lens"}
                                                 </h4>
                                             </div>
                                             <p className="text-sm">

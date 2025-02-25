@@ -79,6 +79,7 @@ export default function Statistic() {
         try {
             setDownloading(true)
             const res = await exportData(formattedDateRange)
+            await new Promise(resolve => setTimeout(resolve, 1000));
             if(res){
                 toast({
                     description:"Data Downloaded Succesfully"

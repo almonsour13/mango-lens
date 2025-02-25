@@ -1,303 +1,437 @@
-'use client'
+"use client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import PageWrapper from "@/components/wrapper/page-wrapper";
+import { useAuth } from "@/context/auth-context";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Image from 'next/image'
-import { ArrowLeft, Calendar, Edit, Leaf, MoreHorizontal, PlusCircle, Thermometer, Droplets, Wind } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { useToast } from '@/hooks/use-toast'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import PageWrapper from '@/components/wrapper/page-wrapper'
+import { usePathname, useRouter } from "next/navigation";
+import {
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-interface LeafImage {
-  id: number
-  url: string
-  name: string
-  uploadDate: string
-  diseaseStatus: 'Healthy' | 'Mild' | 'Moderate' | 'Severe'
-}
+import { Tree, Image as img } from "@/types/types";
+import { formatDate } from "date-fns";
+import {
+    ArrowDownUp,
+    ArrowLeft,
+    Calendar,
+    Eye,
+    MoreVertical,
+    SlidersHorizontal,
+    TreeDeciduous,
+} from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { TreeImageSkeletonCard } from "@/components/skeleton/skeleton-card";
+import { TreeImageCard } from "@/components/card/tree-image-card";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import TableSkeleton from "@/components/skeleton/table-skeleton";
+import { GetImageHeathStatusBadge, GetImageStatusBadge } from "@/helper/get-badge";
+import Image from "next/image";
+import Link from "next/link";
 
-interface MangoTree {
-  id: number
-  name: string
-  age: number
-  location: string
-  healthStatus: 'Healthy' | 'Mild Concern' | 'Moderate Concern' | 'Severe Concern'
-  lastInspection: string
-  leafImages: LeafImage[]
-}
+type Images = img & { analyzedImage: string } & {
+    diseases: { likelihoodScore: number; diseaseName: string }[];
+};
 
-interface HealthData {
-  date: string
-  leafHealth: number
-  soilMoisture: number
-  temperature: number
-}
+export default function Page({
+    params,
+}: {
+    params: Promise<{ treeID: string }>;
+}) {
+    const unwrappedParams = React.use(params);
+    const { treeID } = unwrappedParams;
+    const { userInfo } = useAuth();
+    const [loading, setLoading] = useState(false);
+    const [tree, setTree] = useState<(Tree & { treeImage?: string }) | null>(
+        null
+    );
+    const [showMore, setShowMore] = useState(false);
 
-const healthData: HealthData[] = [
-  { date: '2023-01', leafHealth: 95, soilMoisture: 60, temperature: 25 },
-  { date: '2023-02', leafHealth: 92, soilMoisture: 58, temperature: 26 },
-  { date: '2023-03', leafHealth: 88, soilMoisture: 55, temperature: 27 },
-  { date: '2023-04', leafHealth: 85, soilMoisture: 52, temperature: 28 },
-  { date: '2023-05', leafHealth: 80, soilMoisture: 50, temperature: 29 },
-  { date: '2023-06', leafHealth: 78, soilMoisture: 48, temperature: 30 },
-]
+    useEffect(() => {
+        const fetchTreeByID = async () => {
+            try {
+                setLoading(true);
+                const res = await fetch(
+                    `/api/admin/${userInfo?.userID}/tree/${treeID}`
+                );
+                const data = await res.json();
+                if (res.ok) {
+                    setTree(data.data);
+                } else {
+                }
+            } catch (error) {
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchTreeByID();
+    }, [treeID]);
 
-export default function MangoTreeDetailsPage() {
-  const router = useRouter()
-  const { toast } = useToast()
-  const [uploadDialogOpen, setUploadDialogOpen] = useState(false)
-  const [uploadFile, setUploadFile] = useState<File | null>(null)
-  const [viewImageDialogOpen, setViewImageDialogOpen] = useState(false)
-  const [selectedImage, setSelectedImage] = useState<LeafImage | null>(null)
-  const [selectedMetric, setSelectedMetric] = useState<'leafHealth' | 'soilMoisture' | 'temperature'>('leafHealth')
+    const [images, setImages] = useState<Images[] | []>([]);
+    const [imageLoading, setImageLoading] = useState(false);
+    const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
+    const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
 
-  // Mock data for demonstration
-  const mangoTree: MangoTree = {
-    id: 1,
-    name: "Mango Tree #1",
-    age: 5,
-    location: "Orchard Section A, Row 3",
-    healthStatus: "Mild Concern",
-    lastInspection: "2023-06-15",
-    leafImages: Array(12).fill(null).map((_, index) => ({
-      id: index + 1,
-      url: "/placeholder.svg",
-      name: `Leaf Sample ${index + 1}`,
-      uploadDate: "2023-06-15",
-      diseaseStatus: ['Healthy', 'Mild', 'Moderate', 'Severe'][Math.floor(Math.random() * 4)] as 'Healthy' | 'Mild' | 'Moderate' | 'Severe'
-    }))
-  }
+    useEffect(() => {
+        const fetchImagesByTreeID = async () => {
+            try {
+                setImageLoading(true);
+                const res = await fetch(
+                    `/api/admin/${userInfo?.userID}/tree/${treeID}/images`
+                );
+                const data = await res.json();
+                if (res.ok) {
+                    setImages(data.data);
+                    console.log(data.data);
+                } else {
+                }
+            } catch (error) {
+            } finally {
+                setImageLoading(false);
+            }
+        };
+        fetchImagesByTreeID();
+    }, [treeID]);
 
-  const handleUpload = async () => {
-    if (!uploadFile) return
-    // Implement upload logic here
-    toast({
-      title: "Success",
-      description: "Leaf image uploaded successfully.",
-    })
-    setUploadDialogOpen(false)
-  }
+    const filteredImages =
+        images &&
+        images
+            .filter(
+                (image) =>
+                    filterStatus === 0 ||
+                    (filterStatus === 1 &&
+                        image.diseases.some(
+                            (disease) =>
+                                disease.diseaseName === "Healthy" &&
+                                disease.likelihoodScore > 50
+                        )) ||
+                    (filterStatus === 2 &&
+                        image.diseases.some(
+                            (disease) =>
+                                disease.diseaseName !== "Healthy" &&
+                                disease.likelihoodScore > 50
+                        ))
+            )
+            .sort((a, b) => {
+                if (sortBy === "Newest") {
+                    return (
+                        new Date(b.uploadedAt).getTime() -
+                        new Date(a.uploadedAt).getTime()
+                    );
+                } else {
+                    return (
+                        new Date(a.uploadedAt).getTime() -
+                        new Date(b.uploadedAt).getTime()
+                    );
+                }
+            });
 
-  const handleEdit = () => {
-    // Implement edit logic here
-    toast({
-      title: "Edit Mango Tree",
-      description: "Redirecting to edit page...",
-    })
-  }
+    const router = useRouter();
 
-  const handleViewImage = (image: LeafImage) => {
-    setSelectedImage(image)
-    setViewImageDialogOpen(true)
-  }
+    const handleBack = () => {
+        router.back();
+    };
 
-  const getHealthStatusColor = (status: string) => {
-    switch (status) {
-      case 'Healthy': return 'bg-green-500'
-      case 'Mild Concern': return 'bg-yellow-500'
-      case 'Moderate Concern': return 'bg-orange-500'
-      case 'Severe Concern': return 'bg-red-500'
-      default: return 'bg-gray-500'
-    }
-  }
-
-  return (
-    <PageWrapper>
-    <div className="container mx-auto">
-      <div className="mb-6">
-        <Button variant="outline" size="sm" onClick={() => router.push('/mango-trees')}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Mango Trees
-        </Button>
-      </div>
-      <Card className="mb-8">
-        <CardHeader className="border-b">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-3xl font-bold">{mangoTree.name}</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                <span className="font-medium">Age:</span> {mangoTree.age} years | 
-                <span className="font-medium ml-2">Location:</span> {mangoTree.location}
-              </p>
+    return (
+        <>
+            <div className="h-14 w-full px-4 flex items-center justify-between border-b">
+                <div className="flex gap-2 h-5 items-center">
+                    <button onClick={handleBack}>
+                        <ArrowLeft className="h-5 w-5" />
+                    </button>
+                    <Separator orientation="vertical" />
+                    <h1 className="text-md">{tree?.treeCode || ""}</h1>
+                </div>
+                <div className="flex items-center gap-2"></div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Badge variant="outline" className={`px-2 py-1 ${getHealthStatusColor(mangoTree.healthStatus)}`}>
-                {mangoTree.healthStatus}
-              </Badge>
-              <Button variant="outline" size="sm" onClick={handleEdit}>
-                <Edit className="h-4 w-4 mr-2" />
-                Edit Tree Details
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Tree Information</h3>
-              <div className="space-y-2">
-                <div className="flex items-center">
-                  <Calendar className="h-5 w-5 mr-2 text-muted-foreground" />
-                  <span className="text-sm">Last Inspection: {mangoTree.lastInspection}</span>
-                </div>
-                <div className="flex items-center">
-                  <Leaf className="h-5 w-5 mr-2 text-muted-foreground" />
-                  <span className="text-sm">Leaf Health: Good</span>
-                </div>
-                <div className="flex items-center">
-                  <Thermometer className="h-5 w-5 mr-2 text-muted-foreground" />
-                  <span className="text-sm">Average Temperature: 28°C</span>
-                </div>
-                <div className="flex items-center">
-                  <Droplets className="h-5 w-5 mr-2 text-muted-foreground" />
-                  <span className="text-sm">Soil Moisture: Adequate</span>
-                </div>
-                <div className="flex items-center">
-                  <Wind className="h-5 w-5 mr-2 text-muted-foreground" />
-                  <span className="text-sm">Wind Exposure: Moderate</span>
-                </div>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Health Trends</h3>
-              <div className="flex items-center space-x-2 mb-4">
-                <Select value={selectedMetric} onValueChange={(value: 'leafHealth' | 'soilMoisture' | 'temperature') => setSelectedMetric(value)}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select metric" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="leafHealth">Leaf Health</SelectItem>
-                    <SelectItem value="soilMoisture">Soil Moisture</SelectItem>
-                    <SelectItem value="temperature">Temperature</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={healthData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey={selectedMetric} stroke="#8884d8" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Leaf Samples</h2>
-        <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-          <DialogTrigger asChild>
-            <Button size="sm">
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Add New Leaf Sample
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Upload New Leaf Sample</DialogTitle>
-              <DialogDescription>
-                Select a leaf image to upload for analysis.
-              </DialogDescription>
-            </DialogHeader>
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
-            />
-            <DialogFooter>
-              <Button onClick={handleUpload} disabled={!uploadFile}>
-                Upload
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
-      
-      <Card>
-        <CardContent className="p-0">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 p-4">
-            {mangoTree.leafImages.map((image) => (
-              <div key={image.id} className="relative overflow-hidden rounded-lg aspect-square bg-muted">
-                <Image
-                  src={image.url}
-                  alt={image.name}
-                  layout="fill"
-                  objectFit="cover"
-                  className="transition-transform hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/40 to-transparent opacity-0 hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-0 left-0 right-0 p-2">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-semibold text-xs text-white">{image.name}</h3>
-                        <p className="text-xs text-white/80">{image.uploadDate}</p>
-                        <Badge variant="outline" className={`mt-1 text-xs ${getHealthStatusColor(image.diseaseStatus)}`}>
-                          {image.diseaseStatus}
-                        </Badge>
-                      </div>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onSelect={() => handleViewImage(image)}>View</DropdownMenuItem>
-                          <DropdownMenuItem>Analyze</DropdownMenuItem>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+            <PageWrapper>
+                {tree !== null && tree && (
+                    <div className="flex justify-between flex-col items-start gap-4">
+                        <div className="flex w-full flex-row items-start justify-start gap-4">
+                            <Avatar className="h-28 md:h-32 w-28 md:w-32 aspect-square bg-primary/10">
+                                <AvatarImage
+                                    src={tree?.treeImage}
+                                    alt="Profile picture"
+                                />
+                                <AvatarFallback className="bg-primary/10">
+                                    <TreeDeciduous className="h-16 w-16 text-primary" />
+                                </AvatarFallback>
+                            </Avatar>
+                            <div className="w-full flex-1 flex justify-between text-left space-y-2">
+                                <div className="space-y-2">
+                                    <h2 className="text-xl font-bold mt-4">
+                                        {tree?.treeCode}
+                                    </h2>
+                                    <div className="flex flex-wrap justify-start gap-2">
+                                        <Badge
+                                            variant={
+                                                tree?.status === 1
+                                                    ? "default"
+                                                    : "secondary"
+                                            }
+                                        >
+                                            {tree?.status === 1
+                                                ? "Active"
+                                                : "Inactive"}
+                                        </Badge>
+                                        <div className="flex items-center">
+                                            <Calendar className="w-4 h-4 mr-1" />
+                                            <p className="text-xs">
+                                                {tree?.treeCode &&
+                                                    formatDate(
+                                                        tree?.addedAt,
+                                                        "MMM dd, yyyy"
+                                                    )}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="text-sm text-wrap">
+                            {tree?.description && (
+                                <>
+                                    {tree.description.length > 200 ? (
+                                        <>
+                                            {!showMore ? (
+                                                <>
+                                                    {tree.description.slice(
+                                                        0,
+                                                        200
+                                                    )}
+                                                    ...{" "}
+                                                    <Button
+                                                        variant="link"
+                                                        className="p-0 h-auto"
+                                                        onClick={() =>
+                                                            setShowMore(true)
+                                                        }
+                                                    >
+                                                        View More
+                                                    </Button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {tree.description}{" "}
+                                                    <Button
+                                                        variant="link"
+                                                        className="p-0 h-auto"
+                                                        onClick={() =>
+                                                            setShowMore(false)
+                                                        }
+                                                    >
+                                                        View Less
+                                                    </Button>
+                                                </>
+                                            )}
+                                        </>
+                                    ) : (
+                                        tree.description
+                                    )}
+                                </>
+                            )}
+                        </div>
                     </div>
-                  </div>
+                )}
+                <div className="flex justify-between items-center">
+                    <div className="flex gap-2 md:gap-4">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    className="w-10 md:w-auto gap-1"
+                                >
+                                    <ArrowDownUp className="h-3.5 w-3.5" />
+                                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                                        {sortBy}
+                                    </span>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Sort by: </DropdownMenuLabel>
+                                <DropdownMenuCheckboxItem
+                                    checked={sortBy == "Newest"}
+                                    onCheckedChange={() => {
+                                        setSortBy("Newest");
+                                    }}
+                                >
+                                    Newest to oldest
+                                </DropdownMenuCheckboxItem>
+                                <DropdownMenuCheckboxItem
+                                    checked={sortBy == "Oldest"}
+                                    onCheckedChange={() => {
+                                        setSortBy("Oldest");
+                                    }}
+                                >
+                                    Oldest to newest
+                                </DropdownMenuCheckboxItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    className={`w-10 md:w-auto gap-1 ${
+                                        filterStatus != 0 && "border-primary"
+                                    }`}
+                                >
+                                    <SlidersHorizontal className="h-3.5 w-3.5" />
+                                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                                        {filterStatus == 1
+                                            ? "Healthy"
+                                            : filterStatus == 2
+                                            ? "Diseases"
+                                            : "Filter"}
+                                    </span>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start">
+                                <DropdownMenuLabel>
+                                    Filter by:{" "}
+                                </DropdownMenuLabel>
+                                <DropdownMenuCheckboxItem
+                                    checked={filterStatus == 0}
+                                    onCheckedChange={() => setFilterStatus(0)}
+                                >
+                                    All
+                                </DropdownMenuCheckboxItem>
+                                <DropdownMenuCheckboxItem
+                                    checked={filterStatus == 1}
+                                    onCheckedChange={() => setFilterStatus(1)}
+                                >
+                                    Healthy
+                                </DropdownMenuCheckboxItem>
+                                <DropdownMenuCheckboxItem
+                                    checked={filterStatus == 2}
+                                    onCheckedChange={() => setFilterStatus(2)}
+                                >
+                                    Diseases
+                                </DropdownMenuCheckboxItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                    <div className=""></div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-      
-      <Dialog open={viewImageDialogOpen} onOpenChange={setViewImageDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>{selectedImage?.name}</DialogTitle>
-            <DialogDescription>
-              Uploaded on {selectedImage?.uploadDate}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="relative aspect-square w-full">
-            {selectedImage && (
-              <Image
-                src={selectedImage.url}
-                alt={selectedImage.name}
-                layout="fill"
-                objectFit="contain"
-              />
-            )}
-          </div>
-          <div className="mt-4">
-            <Badge variant="outline" className={`${getHealthStatusColor(selectedImage?.diseaseStatus || '')}`}>
-              {selectedImage?.diseaseStatus}
-            </Badge>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setViewImageDialogOpen(false)}>
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
-    </PageWrapper>
-  )
+                <Card className="overflow-hidden">
+                    <CardContent className="p-0">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="">
+                                        Image
+                                    </TableHead>
+                                    <TableHead className="hidden md:table-cell text-center">
+                                        Tree Status
+                                    </TableHead>
+                                    <TableHead className="table-cell text-center">
+                                        Health Status
+                                    </TableHead>
+                                    <TableHead className="hidden md:table-cell text-center">
+                                        Analyzed At
+                                    </TableHead>
+                                    <TableHead className="text-right md:text-center">
+                                        Actions
+                                    </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {imageLoading ? (
+                                    <TableSkeleton />
+                                ) : filteredImages.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell
+                                            colSpan={6}
+                                            className="text-center"
+                                        >
+                                            No images
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    filteredImages.map((img) => (
+                                        <TableRow className="group">
+                                            <TableCell className="text-center">
+                                                <Image
+                                                    src={img.imageData}
+                                                    alt={img.imageID}
+                                                    className="h-12 w-12 group-hover:hidden rounded"
+                                                    width={100}
+                                                    height={100}
+                                                    objectFit="cover"
+                                                />
+                                                <Image
+                                                    src={img.analyzedImage}
+                                                    alt={img.imageID}
+                                                    className="h-12 w-12 hidden group-hover:block rounded"
+                                                    width={100}
+                                                    height={100}
+                                                    objectFit="cover"
+                                                />
+                                            </TableCell>
+                                            <TableCell className="hidden md:table-cell text-center">
+                                                {GetImageStatusBadge(
+                                                    img.status
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="text-center">
+                                                {GetImageHeathStatusBadge(
+                                                    img.diseases
+                                                )}
+                                            </TableCell>
+
+                                            <TableCell className="hidden md:table-cell text-center">
+                                                { formatDate(
+                                                        img.uploadedAt,
+                                                        "MMM dd, yyyy k:m"
+                                                    )}
+                                            </TableCell>
+                                            <TableCell className="text-center">
+                                                <ActionMenu imageID={img.imageID}/>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            </PageWrapper>
+        </>
+    );
 }
+interface ActionMenuProps {
+    imageID: string;
+}
+const ActionMenu = ({imageID}:ActionMenuProps) => {
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-10">
+                    <MoreVertical />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <Link href={`/admin/images/${imageID}`}>
+                    <DropdownMenuItem>
+                        <Eye className="mr-2 h-4 w-4" />
+                        View
+                    </DropdownMenuItem>
+                </Link>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+};

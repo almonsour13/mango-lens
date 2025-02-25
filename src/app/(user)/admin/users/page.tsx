@@ -1,13 +1,13 @@
 "use client";
 
 import UserModal from "@/components/modal/user-modal";
+import TableSkeleton from "@/components/skeleton/table-skeleton";
 import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
-    CardTitle,
 } from "@/components/ui/card";
 import {
     DropdownMenu,
@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/table";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useAuth } from "@/context/auth-context";
+import { getUserStatus } from "@/helper/get-badge";
 import { toast } from "@/hooks/use-toast";
 import { User } from "@/types/types";
 import { format } from "date-fns";
@@ -67,7 +68,7 @@ export default function Users() {
     const fetchUsers = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch("/api/users");
+            const response = await fetch(`/api/admin/${userInfo?.userID}/user`);
             if (!response.ok) {
                 throw new Error("Failed to fetch users");
             }
@@ -91,38 +92,33 @@ export default function Users() {
             setOpenDialog(true);
         }
     };
-    const filteredUsers = users
-        .filter((user) => {
-            const nameMatch = (user.fName + " " + user.lName)
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase());
-            const emailMatch = user.email
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase());
-            const statusMatch =
-                filterStatus === 0 || user.status === filterStatus;
-            return (nameMatch || emailMatch) && statusMatch;
-        })
-        .sort((a, b) => {
-            if (sortBy === "Newest") {
-                return (
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-                );
-            } else {
-                return (
-                    new Date(a.createdAt).getTime() -
-                    new Date(b.createdAt).getTime()
-                );
-            }
-        });
-
-    // const indexOfLastItem = currentPage * itemsPerPage;
-    // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    // const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
-    // const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
-
-    // const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+    const filteredUsers =
+        users &&
+        users
+            .filter((user) => {
+                const nameMatch = (user.fName + " " + user.lName)
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase());
+                const emailMatch = user.email
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase());
+                const statusMatch =
+                    filterStatus === 0 || user.status === filterStatus;
+                return (nameMatch || emailMatch) && statusMatch;
+            })
+            .sort((a, b) => {
+                if (sortBy === "Newest") {
+                    return (
+                        new Date(b.createdAt).getTime() -
+                        new Date(a.createdAt).getTime()
+                    );
+                } else {
+                    return (
+                        new Date(a.createdAt).getTime() -
+                        new Date(b.createdAt).getTime()
+                    );
+                }
+            });
 
     const handleChangeStatus = (status: string, userID: string) => {
         setUsers(
@@ -144,7 +140,7 @@ export default function Users() {
         <>
             <div className="h-14 w-full px-4 flex items-center justify-between border-b">
                 <div className="flex gap-2 h-5 items-center">
-                    <h1 className="text-md">User</h1>
+                    <h1 className="text-md">Users</h1>
                 </div>
                 <div className="flex items-center gap-2">
                     <Button
@@ -160,9 +156,8 @@ export default function Users() {
             </div>
             <PageWrapper>
                 <CardHeader className="p-0">
-                    <CardTitle>User Management</CardTitle>
                     <CardDescription>
-                        Manage your users and view their account details.
+                        Manage users and view their account details.
                     </CardDescription>
                 </CardHeader>
                 <div className="flex items-center justify-between gap-2">
@@ -271,13 +266,13 @@ export default function Users() {
                                         Email
                                     </TableHead>
                                     <TableHead>Role</TableHead>
-                                    <TableHead className="hidden md:table-cell text-center">
+                                    <TableHead className="hidden md:table-cell">
                                         Status
                                     </TableHead>
                                     <TableHead className="hidden md:table-cell">
                                         Created At
                                     </TableHead>
-                                    <TableHead className="text-right md:text-center">
+                                    <TableHead className="text-center">
                                         Actions
                                     </TableHead>
                                 </TableRow>
@@ -286,6 +281,7 @@ export default function Users() {
                                 {isLoading ? (
                                     <TableSkeleton />
                                 ) : (
+                                    filteredUsers &&
                                     filteredUsers.map((user) => (
                                         <TableRow key={user.userID}>
                                             {/* <TableCell>{indexOfFirstItem + index + 1}</TableCell> */}
@@ -304,44 +300,8 @@ export default function Users() {
                                                     ? "Admin"
                                                     : "User"}
                                             </TableCell>
-                                            <TableCell className="hidden md:flex justify-center">
-                                                <Select
-                                                    value={
-                                                        user.status == 1
-                                                            ? "Active"
-                                                            : "Inactive"
-                                                    }
-                                                    onValueChange={(value) =>
-                                                        handleChangeStatus(
-                                                            value,
-                                                            user.userID
-                                                        )
-                                                    }
-                                                >
-                                                    <SelectTrigger
-                                                        className={`h-10 w-24 ${
-                                                            user.status === 1
-                                                                ? " text-green-500"
-                                                                : " text-yellow-500"
-                                                        }`}
-                                                    >
-                                                        <SelectValue placeholder="Select tree code" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem
-                                                            className="text-green-500"
-                                                            value="Active"
-                                                        >
-                                                            Active
-                                                        </SelectItem>
-                                                        <SelectItem
-                                                            className="text-yellow-500"
-                                                            value="Inactive"
-                                                        >
-                                                            Inactive
-                                                        </SelectItem>
-                                                    </SelectContent>
-                                                </Select>
+                                            <TableCell className="hidden md:table-cell">
+                                                {getUserStatus(user.status)}
                                             </TableCell>
                                             <TableCell className="hidden md:table-cell">
                                                 {format(
@@ -391,7 +351,6 @@ function ActionMenu({ userID, handleAction }: ActionMenuProps) {
             <DropdownMenuContent align="end">
                 <Link href={`/admin/users/${userID}`}>
                     <DropdownMenuItem
-                        onClick={() => router.push(`/admin/users/${userID}`)}
                     >
                         <Eye className="mr-2 h-4 w-4" />
                         View
@@ -405,36 +364,3 @@ function ActionMenu({ userID, handleAction }: ActionMenuProps) {
         </DropdownMenu>
     );
 }
-const TableSkeleton = () => {
-    return (
-        <>
-            {Array(5)
-                .fill(0)
-                .map((_, index) => (
-                    <TableRow key={index}>
-                        <TableCell>
-                            <Skeleton className="h-4 w-4" />
-                        </TableCell>
-                        <TableCell>
-                            <Skeleton className="h-4 w-[100px]" />
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                            <Skeleton className="h-4 w-[150px]" />
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                            <Skeleton className="h-4 w-[60px]" />
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                            <Skeleton className="h-6 w-16 rounded-full" />
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                            <Skeleton className="h-4 w-[100px]" />
-                        </TableCell>
-                        <TableCell className="text-right md:text-center">
-                            <Skeleton className="h-8 w-8 rounded-full inline-block" />
-                        </TableCell>
-                    </TableRow>
-                ))}
-        </>
-    );
-};

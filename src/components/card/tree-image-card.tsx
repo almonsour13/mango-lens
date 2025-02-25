@@ -7,20 +7,21 @@ import { usePathname } from "next/navigation";
 import { Image as img } from "@/types/types";
 import { formatDistanceToNow } from "date-fns";
 import { Badge } from "../ui/badge";
+import { useAuth } from "@/context/auth-context";
 
 type images = img & { analyzedImage: string } & { treeCode?: string } & {
     diseases: { likelihoodScore: number; diseaseName: string }[];
 };
 
 export const TreeImageCard = ({ image }: { image: images }) => {
+    const {userInfo} = useAuth();
     const pathname = usePathname();
     const isHealthy = image.diseases?.some(
         (disease) =>
-            disease.diseaseName === "Healthy" &&
-            disease.likelihoodScore > 30
+            disease.diseaseName === "Healthy" && disease.likelihoodScore > 30
     );
     return (
-        <Link key={image.imageID} href={`/user/gallery/${image.imageID}`}>
+        <Link key={image.imageID} href={`${userInfo?.role === 1?"/admin/images":"/user/gallery"}/${image.imageID}`}>
             <Card className="overflow-hidden group border shadow-none">
                 <div className="relative overflow-hidden rounded aspect-square">
                     {image.analyzedImage && (
@@ -54,44 +55,38 @@ export const TreeImageCard = ({ image }: { image: images }) => {
                                 <p className="text-xs text-white/70">
                                     {formatDistanceToNow(
                                         new Date(image.uploadedAt),
-                                        { addSuffix: true },
+                                        { addSuffix: true }
                                     )}
                                 </p>
                             </div>
                         </div>
                     </div>
                     <div className="absolute left-2 top-2 z-30 flex gap-1 items-center">
-                    {isHealthy ? (
-                                                    <Badge
-                                                        variant="default"
-                                                        className="whitespace-nowrap"
-                                                    >
-                                                        {image.diseases?.find(
-                                                            (disease) =>
-                                                                disease.diseaseName ===
-                                                                "Healthy"
-                                                        )?.likelihoodScore || 0}
-                                                        % Healthy
-                                                    </Badge>
-                                                ) : (
-                                                    <Badge variant="destructive">
-                                                        {image.diseases
-                                                            .filter(
-                                                                (di) =>
-                                                                    di.diseaseName !==
-                                                                    "Healthy"
-                                                            )
-                                                            .reduce(
-                                                                (
-                                                                    acc,
-                                                                    disease
-                                                                ) =>
-                                                                    acc +
-                                                                    disease.likelihoodScore,
-                                                                0
-                                                            ).toFixed(1) + "% Diseased"}
-                                                    </Badge>
-                                                )}
+                        {isHealthy ? (
+                            <Badge
+                                variant="default"
+                                className="whitespace-nowrap"
+                            >
+                                {image.diseases?.find(
+                                    (disease) =>
+                                        disease.diseaseName === "Healthy"
+                                )?.likelihoodScore || 0}
+                                % Healthy
+                            </Badge>
+                        ) : (
+                            <Badge variant="destructive">
+                                {image.diseases
+                                    .filter(
+                                        (di) => di.diseaseName !== "Healthy"
+                                    )
+                                    .reduce(
+                                        (acc, disease) =>
+                                            acc + disease.likelihoodScore,
+                                        0
+                                    )
+                                    .toFixed(1) + "% Diseased"}
+                            </Badge>
+                        )}
                     </div>
                 </div>
             </Card>

@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value
   const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
 
-  console.log("🚀 Middleware processing:", pathname)
+  // console.log("🚀 Middleware processing:", pathname)
 
   if (
     pathname === "/" ||

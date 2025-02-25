@@ -1,26 +1,49 @@
+import { supabase } from "@/supabase/supabase";
 import { NextRequest, NextResponse } from "next/server";
-import { query } from "@/lib/db/db";
-import { Tree, User } from "@/types/types";
 
 export async function GET(
     req: Request,
     { params }: { params: Promise<{ userID: number }> }
 ) {
-    const { userID } = await params; // No need to await params here.
-    console.log(userID);
     try {
-        const trees = (await query(
-            `SELECT 
-                t.*, 
-                u.*, 
-                (SELECT COUNT(*) FROM image i WHERE i.treeID = t.treeID) AS imagesLength
-            FROM tree t
-            LEFT JOIN user u ON t.userID = u.userID
-            ORDER BY t.addedAt DESC`
-        )) as (Tree & { imagesLength: number; user: User })[]; // Type the result properly
+        const { userID } = await params;
 
-        console.log(trees);
-        return NextResponse.json({ success: true, trees });
+        // Fetch trees added by the user
+        const { data: trees, error: treeError } = await supabase
+            .from("tree")
+            .select("*")
+            .order("addedAt", { ascending: false });
+
+        if (treeError) return NextResponse.json({ success: false, treeError });
+
+        // Fetch users (assuming 'user' is a separate table)
+        const { data: users, error: userError } = await supabase
+            .from("user")
+            .select("*");
+
+        if (userError) return NextResponse.json({ success: false, userError });
+
+        // Fetch images count for each tree
+        const { data: imagesCount, error: imageError } = await supabase
+            .from("image")
+            .select("treeID, count:treeID", { count: "exact" });
+
+        if (imageError)
+            return NextResponse.json({ success: false, imageError });
+        const finalTrees = trees.map((t) => {
+            const user = users.filter((u) => u.userID === t.userID)[0];
+            return {
+                ...t,
+                userID: user ? user.userID : "",
+                fName: user ? user.fName : "",
+                lName: user ? user.lName : "",
+                imagesLength:
+                    imagesCount.filter((imag) => imag.treeID === t.treeID)
+                        .length || 0,
+            };
+        });
+
+        return NextResponse.json({ success: true, trees: finalTrees });
     } catch (error) {
         console.error("Error retrieving trees:", error);
         return NextResponse.json(

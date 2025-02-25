@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["relationJoins"] 
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  userID    String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  fName     String    @db.VarChar(50)
+  lName     String    @db.VarChar(50)
+  email     String    @unique @db.VarChar(100)
+  password  String    @db.VarChar(255)
+  role      Int       @db.SmallInt
+  status    Int?      @default(1) @db.SmallInt
+  createdAt DateTime? @default(dbgenerated("(now() AT TIME ZONE 'utc'::text)")) @db.Timestamptz(6)
+}
+
+model tree {
+  treeID      String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userID      String    @db.Uuid 
+  treeCode    String    @db.VarChar(50)
+  description String?
+  status      Int       @default(1) @db.SmallInt
+  addedAt     DateTime? @db.Timestamptz(6)
+  id          String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  updatedAt   DateTime? @db.Timestamptz(6)
+}
+
+model image {
+  imageID    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userID     String?   @db.Uuid
+  treeID     String?   @db.Uuid
+  imageData  String?
+  status     Int?      @db.SmallInt
+  uploadedAt DateTime? @db.Timestamptz(6)
+  id         String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  updatedAt  DateTime? @db.Timestamptz(6)
+}
+
+model analysis {
+  id         String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  analysisID String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  imageID    String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  status     Int?      @db.SmallInt
+  analyzedAt DateTime? @db.Timestamptz(6)
+}
+
+model analyzedimage {
+  analyzedimageID String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  analysisID      String? @db.Uuid
+  imageData       String?
+  id              String? @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}
+
+model diseaseidentified {
+  diseaseidentifiedID String  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  analysisID          String  @db.Uuid
+  diseaseID           String? @db.Uuid
+  likelihoodScore     Float
+  diseaseName         String? @db.VarChar
+  id                  String? @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}
+
+model disease {
+  diseaseID   String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  diseaseName String    @db.VarChar(255)
+  description String?
+  status      Int       @default(1) @db.SmallInt
+  addedAt     DateTime? @default(dbgenerated("(now() AT TIME ZONE 'utc'::text)")) @db.Timestamptz(6)
+  id          String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}
+
+model feedback {
+  feedbackID String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userID     String    @db.Uuid
+  content    String?
+  status     Int?      @default(1) @db.SmallInt
+  feedbackAt DateTime? @db.Timestamptz(6)
+  id         String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}
+
+model feedbackResponse {
+  feedbackResponseID String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  feedbackID         String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userID             String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  content            String?
+  status             Int?      @default(1) @db.SmallInt
+  feedbackResponseAt DateTime? @default(dbgenerated("(now() AT TIME ZONE 'utc'::text)")) @db.Timestamptz(6)
+  id                 String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}
+
+model log {
+  logID     String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userID    String    @db.Uuid
+  activity  String
+  type      Int?      @db.SmallInt
+  status    Int?      @default(1) @db.SmallInt
+  createdAt DateTime? @db.Timestamptz(6)
+}
+
+model trash {
+  trashID   String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userID    String    @db.Uuid
+  itemID    String?   @db.Uuid
+  type      Int?      @db.SmallInt
+  status    Int?      @default(1) @db.SmallInt
+  deletedAt DateTime? @db.Timestamptz(6)
+  id        String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}
+
+model treeimage {
+  treeImageID String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  treeID      String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  imageData   String?
+  status      Int?      @db.SmallInt
+  addedAt     DateTime? @db.Timestamptz(6)
+  id          String?   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}
+
+model userprofileimage {
+  userprofileimageID String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userid             String?   @db.Uuid
+  imageData          Bytes?
+  status             Int?      @default(1) @db.SmallInt
+  addedAt            DateTime? @db.Timestamptz(6)
+}

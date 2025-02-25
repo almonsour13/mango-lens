@@ -42,8 +42,10 @@ import ResultImage from "./result-image";
 import AnalysisCarousel from "./result-image-carousel";
 import { getImageByImageID } from "@/stores/image";
 import { moveToTrash } from "@/stores/trash";
-import AddFeedBackModel from "../modal/feedback-modal";
 import { useImageDetails } from "@/hooks/use-image-details";
+import AddFeedBackModel from "../modal/feedback-modal";
+import { v4 } from "uuid";
+import { submitFeedback } from "@/stores/feedback";
 
 export default function ImageDetails({ imageID }: { imageID: string }) {
     const { toast } = useToast();
@@ -53,6 +55,8 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [isMigrateModalOpen, setIsMigrateModalOpen] = useState(false);
     const [isFeedbackModel, setIsFeedbackModel] = useState(false);
+    
+    const { userInfo } = useAuth();
 
     const handleConfirmDelete = async () => {
         try {
@@ -90,6 +94,24 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
                 : null
         );
     };
+
+    const onSubmitFeedback = async (content: string) => {
+        if(!userInfo?.userID) return
+        const newFeedback = {
+            feedbackID: v4(),
+            content,
+            userID: userInfo.userID,
+            status: 1,
+            feedbackAt: new Date(),
+            responses:[]
+        }
+        
+        const res = await submitFeedback(newFeedback);
+
+        toast({
+            description:res.message
+        })
+    }
 
     return (
         <>
@@ -205,6 +227,7 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
                     <AddFeedBackModel
                         open={isFeedbackModel}
                         onClose={() => setIsFeedbackModel(false)}
+                        onSubmitFeedback={onSubmitFeedback}
                     />
                     <ConfirmationModal
                         open={confirmationModalOpen}

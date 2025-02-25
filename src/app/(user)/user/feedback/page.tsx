@@ -15,6 +15,8 @@ import {
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useAuth } from "@/context/auth-context";
 import { useFeedback } from "@/hooks/use-feedback";
+import { toast } from "@/hooks/use-toast";
+import { submitFeedback } from "@/stores/feedback";
 import { addResponse } from "@/stores/feedbackResponse";
 import { Feedback as FB } from "@/types/types";
 import { format } from "date-fns";
@@ -72,7 +74,7 @@ export default function Feedback() {
             status: 1,
             feedbackResponseAt: new Date(),
         };
-
+        
         setSelectedFeedback((prev) => ({
             ...prev!,
             responses: [...prev!.responses, newRes],
@@ -87,6 +89,26 @@ export default function Feedback() {
         );
         await addResponse(newRes);
     };
+
+    const onSubmitFeedback = async (content: string) => {
+        if(!userInfo?.userID) return
+        const newFeedback = {
+            feedbackID: v4(),
+            content,
+            userID: userInfo.userID,
+            status: 1,
+            feedbackAt: new Date(),
+        }
+        setFeedbacks((prev) => [...prev, {...newFeedback, 
+            responses:[]}])
+        
+        const res = await submitFeedback(newFeedback)
+
+        toast({
+            description:res.message
+        });
+        setIsAddFeedbackModel(false)
+    }
 
     return (
         <>
@@ -220,6 +242,7 @@ export default function Feedback() {
 
             <AddFeedBackModel
                 open={isAddFeedbackModel}
+                onSubmitFeedback={onSubmitFeedback}
                 onClose={() => setIsAddFeedbackModel(false)}
             />
             <FeedBackModal

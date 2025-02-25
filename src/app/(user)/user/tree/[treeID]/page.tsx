@@ -10,7 +10,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import PageWrapper from "@/components/wrapper/page-wrapper";
-import { Image as img, Tree } from "@/types/types";
+import { Image, Tree } from "@/types/types";
 
 import { TreeImageCard } from "@/components/card/tree-image-card";
 import TreeModal from "@/components/modal/tree-modal";
@@ -41,9 +41,6 @@ import { getTreeByID } from "@/stores/tree";
 import { getImageByImageID, getImagesByTreeID } from "@/stores/image";
 import { useTreeData } from "@/hooks/use-tree-data";
 
-type images = img & { analyzedImage: string } & {
-    diseases: { likelihoodScore: number; diseaseName: string }[];
-};
 
 export default function Page({
     params,
@@ -101,7 +98,7 @@ export default function Page({
         setTree(value);
     };
     const [showMore, setShowMore] = useState(false);
-    // if (!tree) return <>loading</>;
+
     return (
         <>
             <div className="h-14 w-full px-4 flex items-center justify-between border-b">

@@ -1,16 +1,41 @@
 "use client";
-
-import { useCallback, useEffect, useState } from "react";
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
-    CardTitle,
 } from "@/components/ui/card";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
 import PageWrapper from "@/components/wrapper/page-wrapper";
+import { toast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
+import { Image as img } from "@/types/types";
 import { useAuth } from "@/context/auth-context";
-import { Tree, User } from "@/types/types";
+import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
+import {
+    ArrowDownUp,
+    Eye,
+    MoreVertical,
+    RefreshCcw,
+    Save,
+    SlidersHorizontal,
+    Trash2,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import TableSkeleton from "@/components/skeleton/table-skeleton";
+import {
+    GetImageHeathStatusBadge,
+    GetImageStatusBadge,
+} from "@/helper/get-badge";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -20,99 +45,74 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import {
-    File,
-    ArrowDownUp,
-    MoreVertical,
-    Search,
-    SlidersHorizontal,
-    Eye,
-} from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { format } from "date-fns";
-import Link from "next/link";
-import TableSkeleton from "@/components/skeleton/table-skeleton";
-import { GetTreeStatusBadge } from "@/helper/get-badge";
 
-type Trees = Tree & User & { imagesLength: number };
+type Images = img & {
+    analyzedImage: string;
+    treeID: string;
+    treeCode: string;
+    userID: string;
+    userName: string;
+    diseases: { likelihoodScore: number; diseaseName: string }[];
+};
 
-export default function Page() {
-    const [trees, setTrees] = useState<Trees[] | []>([]);
-    const [error, setError] = useState("");
+export default function Images() {
+    const [images, setImages] = useState<Images[] | []>([]);
     const [loading, setLoading] = useState(false);
-
-    const { userInfo } = useAuth();
-    const [searchTerm, setSearchTerm] = useState("");
+    const [error, setError] = useState("");
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2 | 3 | 4>(0);
     const [filterUser, setFilterUser] = useState<string | null>(null);
+    const { userInfo } = useAuth();
 
-    const fetchTrees = useCallback(async () => {
-        setLoading(true);
-        console.log(error, loading);
+    const fetchImages = async () => {
         try {
-            const response = await fetch(`/api/admin/${userInfo?.userID}/tree`);
+            setLoading(true);
 
-            const data = await response.json();
-            if (response.ok) {
-                const { trees } = data;
-                setTrees(trees);
+            const res = await fetch(`/api/admin/${userInfo?.userID}/images`);
+            const data = await res.json();
+            if (res.ok) {
+                setImages(data.data);
             } else {
-                setError(data.error);
+                toast({
+                    description: `${data.error}`,
+                });
             }
         } catch (error) {
-            setError(error as string);
+            toast({
+                description: `${error}`,
+            });
         } finally {
             setLoading(false);
         }
-    }, []);
-
+    };
     useEffect(() => {
-        fetchTrees();
+        fetchImages();
     }, []);
 
-    const uniqueTreeUser = trees && Array.from(
-        new Set(trees.map((tree) => tree.fName + " " + tree.lName))
+    const uniqueTreeUser = images && Array.from(
+        new Set(images.map((image) => image.userName + " " + image.userName))
     ).sort();
 
-    const filteredTrees = trees && trees
-        .filter((tree) => {
-            const matchesSearch =
-                tree.treeCode
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase()) ||
-                `${tree.fName} ${tree.lName}`
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase());
-
+    const filteredImages =
+        images &&
+        images
+        .filter((tree) => { 
             const matchesStatus = 
                 filterStatus === 0 || tree.status === filterStatus;
 
-            const matchesUser =
-                filterUser === null ||
-                `${tree.fName} ${tree.lName}` === filterUser;
 
-            return matchesSearch && matchesStatus && matchesUser;
+            return matchesStatus;
         })
         .sort((a, b) => {
             if (sortBy === "Newest") {
                 return (
-                    new Date(b.addedAt).getTime() -
-                    new Date(a.addedAt).getTime()
+                    new Date(b.uploadedAt).getTime() -
+                    new Date(a.uploadedAt).getTime()
                 );
             } else {
                 return (
-                    new Date(a.addedAt).getTime() -
-                    new Date(b.addedAt).getTime()
+                    new Date(a.uploadedAt).getTime() -
+                    new Date(b.uploadedAt).getTime()
                 );
             }
         });
@@ -121,28 +121,52 @@ export default function Page() {
         <>
             <div className="h-14 w-full px-4 flex items-center justify-between border-b">
                 <div className="flex gap-2 h-5 items-center">
-                    <h1 className="text-md">Tree</h1>
+                    <h1 className="text-md">Images</h1>
                 </div>
-                <div className="flex items-center gap-2"></div>
             </div>
             <PageWrapper>
                 <CardHeader className="p-0">
                     <CardDescription>
-                        A comprehensive list of user trees.
+                        Manage users images and view image details.
                     </CardDescription>
                 </CardHeader>
-                {/* <TreeAnalytics trees={trees} /> */}
+
                 <div className="flex items-center justify-between gap-2">
-                    <div className="relative h-10 flex items-center">
-                        <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Search disease..."
-                            className="pl-9"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
+                    {/* <div className="relative h-10 flex items-center"></div> */}
                     <div className="flex items-center space-x-2">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    className="gap-1 w-10 md:w-auto"
+                                >
+                                    <ArrowDownUp className="h-3.5 w-3.5" />
+                                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                                        {sortBy}
+                                    </span>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start">
+                                <DropdownMenuLabel>Sort by: </DropdownMenuLabel>
+                                <DropdownMenuCheckboxItem
+                                    checked={sortBy == "Newest"}
+                                    onCheckedChange={() => {
+                                        setSortBy("Newest");
+                                    }}
+                                >
+                                    Newest to oldest
+                                </DropdownMenuCheckboxItem>
+                                <DropdownMenuCheckboxItem
+                                    checked={sortBy == "Oldest"}
+                                    onCheckedChange={() => {
+                                        setSortBy("Oldest");
+                                    }}
+                                >
+                                    Oldest to newest
+                                </DropdownMenuCheckboxItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button
@@ -233,64 +257,28 @@ export default function Page() {
                                 </DropdownMenuCheckboxItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    className="gap-1 w-10 md:w-auto"
-                                >
-                                    <ArrowDownUp className="h-3.5 w-3.5" />
-                                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                        {sortBy}
-                                    </span>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start">
-                                <DropdownMenuLabel>Sort by: </DropdownMenuLabel>
-                                <DropdownMenuCheckboxItem
-                                    checked={sortBy == "Newest"}
-                                    onCheckedChange={() => {
-                                        setSortBy("Newest");
-                                    }}
-                                >
-                                    Newest to oldest
-                                </DropdownMenuCheckboxItem>
-                                <DropdownMenuCheckboxItem
-                                    checked={sortBy == "Oldest"}
-                                    onCheckedChange={() => {
-                                        setSortBy("Oldest");
-                                    }}
-                                >
-                                    Oldest to newest
-                                </DropdownMenuCheckboxItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                        <Button
-                            variant="outline"
-                            className="w-10 md:w-auto gap-1"
-                        >
-                            <File className="h-3.5 w-3.5" />
-                            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                Export
-                            </span>
-                        </Button>
                     </div>
                 </div>
-                <Card className="overflow-hidden shadow-none">
+                <Card className="overflow-hidden">
                     <CardContent className="p-0">
                         <Table>
-                            <TableHeader className="bg-card">
+                            <TableHeader>
                                 <TableRow>
-                                    <TableHead>Tree Code</TableHead>
-                                    <TableHead className="hidden md:table-cell">
-                                        Images
+                                    <TableHead className="text-center">
+                                        Image
                                     </TableHead>
-                                    <TableHead className="hidden md:table-cell">
-                                        Status
+                                    <TableHead className="hidden md:table-cell text-center">
+                                        Tree Code
                                     </TableHead>
-                                    <TableHead>User</TableHead>
-                                    <TableHead className="hidden md:table-cell">
-                                        Added Date
+                                    <TableHead className="hidden md:table-cell text-center">
+                                        Tree Status
+                                    </TableHead>
+                                    <TableHead className="table-cell text-center">
+                                        Health Status
+                                    </TableHead>
+
+                                    <TableHead className="hidden md:table-cell text-center">
+                                        User
                                     </TableHead>
                                     <TableHead className="text-center">
                                         Actions
@@ -300,53 +288,67 @@ export default function Page() {
                             <TableBody>
                                 {loading ? (
                                     <TableSkeleton />
-                                ) : filteredTrees.length === 0 ? (
+                                ) : filteredImages && filteredImages.length === 0 ? (
                                     <TableRow>
                                         <TableCell
                                             colSpan={6}
                                             className="text-center"
                                         >
-                                            No Trees
+                                            No images
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    filteredTrees.map((tree) => (
-                                        <TableRow key={tree.treeID}>
-                                            <TableCell>
+                                    filteredImages &&
+                                    filteredImages.map((img) => (
+                                        <TableRow className="group">
+                                            <TableCell className="">
+                                                <Image
+                                                    src={img.imageData}
+                                                    alt={img.imageID}
+                                                    className="h-12 w-12 group-hover:hidden rounded"
+                                                    width={100}
+                                                    height={100}
+                                                    objectFit="cover"
+                                                />
+                                                <Image
+                                                    src={img.analyzedImage}
+                                                    alt={img.imageID}
+                                                    className="h-12 w-12 hidden group-hover:block rounded"
+                                                    width={100}
+                                                    height={100}
+                                                    objectFit="cover"
+                                                />
+                                            </TableCell>
+                                            <TableCell className="hidden md:table-cell text-center">
                                                 <Link
-                                                    href={`/admin/tree/${tree.treeID}`}
+                                                    href={`/admin/trees/${img.treeID}`}
                                                     className="hover:underline"
                                                 >
-                                                    {tree.treeCode}
+                                                    {img.treeCode}
                                                 </Link>
                                             </TableCell>
-                                            <TableCell className="hidden md:table-cell">
-                                                {tree.imagesLength}
-                                            </TableCell>
-                                            <TableCell className="hidden md:table-cell">
-                                                {GetTreeStatusBadge(
-                                                    tree.status
-                                                )}
-                                            </TableCell>
-                                            <TableCell>
-                                                <Link
-                                                    href={`/admin/user/${tree.userID}`}
-                                                    className="hover:underline"
-                                                >
-                                                    {tree.fName +
-                                                        " " +
-                                                        tree.lName}
-                                                </Link>
-                                            </TableCell>
-                                            <TableCell className="hidden md:table-cell">
-                                                {format(
-                                                    tree.addedAt,
-                                                    "MMM dd, yyyy p"
+                                            <TableCell className="hidden md:table-cell text-center">
+                                                {GetImageStatusBadge(
+                                                    img.status
                                                 )}
                                             </TableCell>
                                             <TableCell className="text-center">
+                                                {GetImageHeathStatusBadge(
+                                                    img.diseases
+                                                )}
+                                            </TableCell>
+
+                                            <TableCell className="hidden md:table-cell text-center">
+                                                <Link
+                                                    href={`/admin/users/${img.userID}`}
+                                                    className="hover:underline"
+                                                >
+                                                    {img.userName}
+                                                </Link>
+                                            </TableCell>
+                                            <TableCell className="text-center">
                                                 <ActionMenu
-                                                    treeID={tree.treeID}
+                                                    imageID={img.imageID}
                                                 />
                                             </TableCell>
                                         </TableRow>
@@ -360,10 +362,11 @@ export default function Page() {
         </>
     );
 }
+
 interface ActionMenuProps {
-    treeID: string;
+    imageID: string;
 }
-const ActionMenu = ({ treeID }: ActionMenuProps) => {
+const ActionMenu = ({ imageID }: ActionMenuProps) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -372,7 +375,7 @@ const ActionMenu = ({ treeID }: ActionMenuProps) => {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                <Link href={`/admin/trees/${treeID}`}>
+                <Link href={`/admin/images/${imageID}`}>
                     <DropdownMenuItem>
                         <Eye className="mr-2 h-4 w-4" />
                         View
@@ -382,38 +385,3 @@ const ActionMenu = ({ treeID }: ActionMenuProps) => {
         </DropdownMenu>
     );
 };
-
-// interface TreeAnalyticsProps {
-//     trees: Trees[];
-// }
-
-// export function TreeAnalytics({ trees }: TreeAnalyticsProps) {
-//     const totalTrees = trees.length;
-//     const activeTrees = trees.filter((tree) => tree.status === 1).length;
-//     const inactiveTrees = trees.filter((tree) => tree.status === 2).length;
-
-//     const treeMetrics = [
-//         { name: "Total Trees", value: totalTrees },
-//         { name: "Active Trees", value: activeTrees },
-//         { name: "Inactive Trees", value: inactiveTrees },
-//         // { name: "Average Images", value: inactiveTrees },
-//     ];
-//     return (
-//         <div className="grid gap-2 md:gap-4 grid-cols-2 lg:grid-cols-4">
-//             {treeMetrics.map((metrics, index) => (
-//                 <Card key={index} className="bg-card shadow-none">
-//                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-//                         <CardTitle className="text-sm font-medium">
-//                             {metrics.name}
-//                         </CardTitle>
-//                     </CardHeader>
-//                     <CardContent>
-//                         <div className="text-2xl font-bold">
-//                             {metrics.value}
-//                         </div>
-//                     </CardContent>
-//                 </Card>
-//             ))}
-//         </div>
-//     );
-// }

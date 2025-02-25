@@ -5,6 +5,7 @@ import { getUser } from "./user-store";
 import { v4 as uuidv4 } from "uuid";
 import { feedbackResponse$ } from "./feedbackResponse";
 import { loadingStore$ } from "./loading-store";
+import { Feedback } from "@/types/types";
 
 const userID = getUser()?.userID;
 
@@ -98,21 +99,15 @@ export const getFeedbackWithResponses = async () => {
         };
     }
 };
-export const submitFeedback = async (content: string) => {
+export const submitFeedback = async (feedback: Feedback) => {
     try {
-        if (!content.trim()) {
+        if (!feedback) {
             return { success: false, message: "Feedback cannot be empty." };
         }
 
         const feedbackID = uuidv4();
 
-        feedback$[feedbackID].set({
-            feedbackID,
-            content,
-            userID,
-            status: 1,
-            feedbackAt: new Date(),
-        });
+        feedback$[feedback.feedbackID].set(feedback);
 
         return {
             success: true,

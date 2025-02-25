@@ -48,12 +48,13 @@ import Link from "next/link";
 import { Disease } from "@/types/types";
 import { useAuth } from "@/context/auth-context";
 import { format } from "date-fns";
+import TableSkeleton from "@/components/skeleton/table-skeleton";
 
 export default function DiseasesPage() {
     const [openDialog, setOpenDialog] = useState(false);
     const [editingDisease, setEditingDisease] = useState<Disease | null>(null);
     const [diseases, setDiseases] = useState<Disease[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
     const { toast } = useToast();
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [selectedDiseaseID, setSelectedDiseaseID] = useState(0);
@@ -64,7 +65,7 @@ export default function DiseasesPage() {
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
 
     const fetchDiseases = useCallback(async () => {
-        setIsLoading(true);
+        setLoading(true);
         try {
             const response = await fetch(
                 `/api/admin/${userInfo?.userID}/disease`
@@ -84,39 +85,41 @@ export default function DiseasesPage() {
             });
             setDiseases([]);
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
-    },[userInfo?.userID, toast]);
+    }, [userInfo?.userID, toast]);
 
     useEffect(() => {
         fetchDiseases();
     }, [fetchDiseases]);
 
-    const filteredDiseases = diseases
-        .filter((disease) => {
-            const nameMatch = disease.diseaseName
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase());
-            const emailMatch = disease.description
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase());
-            const statusMatch =
-                filterStatus === 0 || disease.status === filterStatus;
-            return (nameMatch || emailMatch) && statusMatch;
-        })
-        .sort((a, b) => {
-            if (sortBy === "Newest") {
-                return (
-                    new Date(b.addedAt).getTime() -
-                    new Date(a.addedAt).getTime()
-                );
-            } else {
-                return (
-                    new Date(a.addedAt).getTime() -
-                    new Date(b.addedAt).getTime()
-                );
-            }
-        });
+    const filteredDiseases =
+        diseases &&
+        diseases
+            .filter((disease) => {
+                const nameMatch = disease.diseaseName
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase());
+                const emailMatch = disease.description
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase());
+                const statusMatch =
+                    filterStatus === 0 || disease.status === filterStatus;
+                return (nameMatch || emailMatch) && statusMatch;
+            })
+            .sort((a, b) => {
+                if (sortBy === "Newest") {
+                    return (
+                        new Date(b.addedAt).getTime() -
+                        new Date(a.addedAt).getTime()
+                    );
+                } else {
+                    return (
+                        new Date(a.addedAt).getTime() -
+                        new Date(b.addedAt).getTime()
+                    );
+                }
+            });
 
     const handleAction = async (action: string, diseaseID: number) => {
         if (action === "Edit") {
@@ -133,25 +136,29 @@ export default function DiseasesPage() {
 
     const handleConfirmDelete = async () => {
         try {
-            const response = await fetch("/api/diseases", {
+            const res = await fetch(`/api/admin/${userInfo?.userID}/disease`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ diseaseID: selectedDiseaseID }),
             });
 
-            const result = await response.json();
+            const result = await res.json();
 
             if (result.success) {
                 toast({
-                    title: `Delete Disease`,
-                    description: `Delete action performed on disease ${selectedDiseaseID}`,
+                    description: `Disease Deleted Successfully`,
                 });
                 fetchDiseases();
+                setOpenDialog(false);
+                setEditingDisease(null);
+            } else {
+                toast({
+                    description: `Error Deleting Disease`,
+                });
             }
         } catch (error) {
             console.error("Error deleting disease:", error);
         }
-        setSelectedDiseaseID(0);
         setConfirmationModalOpen(false);
     };
     return (
@@ -172,9 +179,8 @@ export default function DiseasesPage() {
             </div>
             <PageWrapper>
                 <CardHeader className="p-0">
-                    <CardTitle>Mango Diseases</CardTitle>
                     <CardDescription>
-                        A comprehensive list of mango diseases in our database.
+                        List of mango diseases
                     </CardDescription>
                 </CardHeader>
                 <div className="flex items-center justify-between gap-2">
@@ -292,9 +298,10 @@ export default function DiseasesPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {isLoading ? (
-                                    <TableSkeleton />
-                                ) : filteredDiseases.length > 0 ? (
+                                {loading ? (
+                                    <TableSkeleton/>
+                                ) : filteredDiseases &&
+                                  filteredDiseases.length > 0 ? (
                                     filteredDiseases.map((disease) => (
                                         <TableRow key={disease.diseaseID}>
                                             <TableCell>
@@ -396,23 +403,3 @@ function ActionMenu({ diseaseID, handleAction }: ActionMenuProps) {
         </DropdownMenu>
     );
 }
-const TableSkeleton = () => (
-    <>
-        {[...Array(5)].map((_, index) => (
-            <TableRow key={index}>
-                <TableCell>
-                    <Skeleton className="h-4 w-[100px]" />
-                </TableCell>
-                <TableCell>
-                    <Skeleton className="h-4 w-[300px]" />
-                </TableCell>
-                <TableCell>
-                    <Skeleton className="h-4 w-[100px]" />
-                </TableCell>
-                <TableCell className="text-center">
-                    <Skeleton className="h-8 w-8 rounded-full" />
-                </TableCell>
-            </TableRow>
-        ))}
-    </>
-);
