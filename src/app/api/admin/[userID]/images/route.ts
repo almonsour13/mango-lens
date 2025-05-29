@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/supabase/supabase";
 import { convertBlobToBase64 } from "@/utils/image-utils";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
 
 export async function GET(
     req: Request,
