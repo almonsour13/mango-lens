@@ -88,7 +88,7 @@ export default function LoginForm() {
                 <Card className="mx-auto w-full max-w-md border-0 bg-transparent shadow-none">
                     <CardHeader>
                         <CardTitle className="text-2xl text-primary">
-                            Login
+                            Signin
                         </CardTitle>
                         <CardDescription>
                             Enter your credentials below to login to your account

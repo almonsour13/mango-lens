@@ -67,19 +67,24 @@ export async function overview(): Promise<Overview> {
 export function generateMonthlyRange(from: string, to: string) {
     const startDate = new Date(from);
     const endDate = new Date(to);
-    const months: { year: number; month: number; day?:number }[] = [];
+    const months: { year: number; month: number }[] = [];
+
+    // Always use the 1st day of the month to avoid month overflow
+    startDate.setDate(1);
 
     while (startDate <= endDate) {
         months.push({
             year: startDate.getFullYear(),
             month: startDate.getMonth() + 1,
-            day: startDate.getMonth() + 1,
         });
-        startDate.setMonth(startDate.getMonth() + 1); // Increment month
+
+        // Move to the next month safely
+        startDate.setMonth(startDate.getMonth() + 1);
     }
 
     return months;
 }
+
 export function treeStatistic(from: string, to: string) {
     const tree = Object.values(observable(tree$).get() || {}).filter(
         (t) => t.userID === userID

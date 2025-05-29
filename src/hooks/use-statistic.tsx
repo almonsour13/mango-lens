@@ -202,6 +202,7 @@ export const useImageStatistic = (DateRange: DateRange | null) => {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         const data = imageStatistic(DateRange?.from, DateRange?.to);
         if (data) {
+            console.log(data)
             const formattedData = data.map(
                 (item: {
                     month: number;
