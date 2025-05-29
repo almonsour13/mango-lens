@@ -362,8 +362,8 @@ export default function Page({
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    filteredImages.map((img) => (
-                                        <TableRow className="group">
+                                    filteredImages.map((img, index) => (
+                                        <TableRow className="group" key={index}>
                                             <TableCell className="text-center">
                                                 <Image
                                                     src={img.imageData}

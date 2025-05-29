@@ -57,7 +57,7 @@ export default function ContactSection() {
   }
 
   return (
-    <SectionWrapper id='Contact-us' className="py-16 ">
+    <SectionWrapper id='contact-us' className="py-16 ">
       <div className="">
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold h-full mb-16 text-left">
             <span className="bg-gradient-to-r from-green-900 via-green-500 to-yellow-400 text-transparent bg-clip-text">Contact Us</span>
@@ -71,9 +71,9 @@ export default function ContactSection() {
             <div className="space-y-4">
               <div className="flex items-center">
                 <Mail className="h-5 w-5 mr-2 text-primary" />
-                <span>support@mangocare.com</span>
+                <span>support@mangolens.com</span>
               </div>    
-            </div>
+            </div>  
           </div>
           <div>
             <Form {...form}>

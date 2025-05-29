@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useRouter } from "next/navigation";
 
 type FormData = {
   email: string
@@ -17,6 +18,7 @@ export default function ForgotPasswordForm() {
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
+    const router = useRouter();
     const {
         register,
         handleSubmit,
@@ -28,17 +30,19 @@ export default function ForgotPasswordForm() {
         setError(null)
         setSuccess(null)
         try {
-            const response = await fetch('/api/auth/forgot-password', {
+            const res = await fetch('/api/auth/forgot-password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
+                body: JSON.stringify({email: data.email}),
             })
             
-            if (response.ok) {
-                setSuccess('Password reset instructions have been sent to your email.')
+            const resData = await res.json();
+            
+            if (res.ok) {
+                setSuccess(resData.message)
+                router.replace(resData.url)
             } else {
-                const { error } = await response.json()
-                setError(error || 'An unexpected error occurred. Please try again.')
+                setError(resData.error || 'An error occurred. Please try again.')
             }
         } catch (err) {
             setError('An unexpected error occurred. Please try again.'+err)

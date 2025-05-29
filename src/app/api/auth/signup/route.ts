@@ -39,12 +39,12 @@ export async function POST(req: Request) {
                 expiresIn: '1h' // Token will expire in 1 hour, you can customize this duration
             }
         );
-         await sendVerificationEmail(email, code);
+         await sendVerificationEmail(email, code, "registration");
 
         const response = NextResponse.json({
             success: true,
             message: 'Verification code sent to your email.',
-            url:`/verify?token=${VerificationToken}&email=${email}`
+            url:`/verify?token=${VerificationToken}&email=${email}&type=signup`
         });
 
         return response;

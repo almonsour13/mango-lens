@@ -1,41 +1,12 @@
 "use client";
+import TableSkeleton from "@/components/skeleton/table-skeleton";
+import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
 } from "@/components/ui/card";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import PageWrapper from "@/components/wrapper/page-wrapper";
-import { toast } from "@/hooks/use-toast";
-import { useEffect, useState } from "react";
-import { Image as img } from "@/types/types";
-import { useAuth } from "@/context/auth-context";
-import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
-import {
-    ArrowDownUp,
-    Eye,
-    MoreVertical,
-    RefreshCcw,
-    Save,
-    SlidersHorizontal,
-    Trash2,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import TableSkeleton from "@/components/skeleton/table-skeleton";
-import {
-    GetImageHeathStatusBadge,
-    GetImageStatusBadge,
-} from "@/helper/get-badge";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -45,6 +16,31 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import PageWrapper from "@/components/wrapper/page-wrapper";
+import { useAuth } from "@/context/auth-context";
+import {
+    GetImageHeathStatusBadge,
+    GetImageStatusBadge,
+} from "@/helper/get-badge";
+import { toast } from "@/hooks/use-toast";
+import { Image as img } from "@/types/types";
+import {
+    ArrowDownUp,
+    Eye,
+    MoreVertical,
+    SlidersHorizontal
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 type Images = img & {
     analyzedImage: string;
@@ -58,7 +54,6 @@ type Images = img & {
 export default function Images() {
     const [images, setImages] = useState<Images[] | []>([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2 | 3 | 4>(0);
     const [filterUser, setFilterUser] = useState<string | null>(null);
@@ -89,33 +84,36 @@ export default function Images() {
         fetchImages();
     }, []);
 
-    const uniqueTreeUser = images && Array.from(
-        new Set(images.map((image) => image.userName + " " + image.userName))
-    ).sort();
+    const uniqueTreeUser =
+        images &&
+        Array.from(
+            new Set(
+                images.map((image) => image.userName + " " + image.userName)
+            )
+        ).sort();
 
     const filteredImages =
         images &&
         images
-        .filter((tree) => { 
-            const matchesStatus = 
-                filterStatus === 0 || tree.status === filterStatus;
+            .filter((tree) => {
+                const matchesStatus =
+                    filterStatus === 0 || tree.status === filterStatus;
 
-
-            return matchesStatus;
-        })
-        .sort((a, b) => {
-            if (sortBy === "Newest") {
-                return (
-                    new Date(b.uploadedAt).getTime() -
-                    new Date(a.uploadedAt).getTime()
-                );
-            } else {
-                return (
-                    new Date(a.uploadedAt).getTime() -
-                    new Date(b.uploadedAt).getTime()
-                );
-            }
-        });
+                return matchesStatus;
+            })
+            .sort((a, b) => {
+                if (sortBy === "Newest") {
+                    return (
+                        new Date(b.uploadedAt).getTime() -
+                        new Date(a.uploadedAt).getTime()
+                    );
+                } else {
+                    return (
+                        new Date(a.uploadedAt).getTime() -
+                        new Date(b.uploadedAt).getTime()
+                    );
+                }
+            });
 
     return (
         <>
@@ -166,7 +164,7 @@ export default function Images() {
                                 </DropdownMenuCheckboxItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        
+
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button
@@ -211,17 +209,18 @@ export default function Images() {
                                 >
                                     All
                                 </DropdownMenuCheckboxItem>
-                                {uniqueTreeUser && uniqueTreeUser.map((tree) => (
-                                    <DropdownMenuCheckboxItem
-                                        key={tree}
-                                        checked={filterUser === tree}
-                                        onCheckedChange={() =>
-                                            setFilterUser(tree)
-                                        }
-                                    >
-                                        {tree}
-                                    </DropdownMenuCheckboxItem>
-                                ))}
+                                {uniqueTreeUser &&
+                                    uniqueTreeUser.map((tree) => (
+                                        <DropdownMenuCheckboxItem
+                                            key={tree}
+                                            checked={filterUser === tree}
+                                            onCheckedChange={() =>
+                                                setFilterUser(tree)
+                                            }
+                                        >
+                                            {tree}
+                                        </DropdownMenuCheckboxItem>
+                                    ))}
                                 <DropdownMenuSeparator />
                                 <DropdownMenuLabel>Status: </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
@@ -288,7 +287,8 @@ export default function Images() {
                             <TableBody>
                                 {loading ? (
                                     <TableSkeleton />
-                                ) : filteredImages && filteredImages.length === 0 ? (
+                                ) : filteredImages &&
+                                  filteredImages.length === 0 ? (
                                     <TableRow>
                                         <TableCell
                                             colSpan={6}
@@ -299,8 +299,8 @@ export default function Images() {
                                     </TableRow>
                                 ) : (
                                     filteredImages &&
-                                    filteredImages.map((img) => (
-                                        <TableRow className="group">
+                                    filteredImages.map((img, index) => (
+                                        <TableRow className="group" key={index}>
                                             <TableCell className="">
                                                 <Image
                                                     src={img.imageData}

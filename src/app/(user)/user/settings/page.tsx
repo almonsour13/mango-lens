@@ -32,9 +32,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useCameraContext } from "@/context/camera-context";
 import { getUser, updateUserInfo } from "@/stores/user-store";
+import useOnlineStatus from "@/hooks/use-online";
 
 const formSchema = z.object({
-    profileImage: z.string().optional(),
     fName: z
         .string()
         .min(2, { message: "First name must be at least 2 characters." })
@@ -48,6 +48,7 @@ export default function ProfileSettings() {
     const {capturedImage, setCapturedImage, setIsCameraOpen} = useCameraContext();
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const isOnline = useOnlineStatus()
     
     const userInfo = getUser();
 
@@ -56,7 +57,6 @@ export default function ProfileSettings() {
         defaultValues: {
             fName: "",
             lName: "",
-            profileImage: "",
         },
     });
 
@@ -65,7 +65,6 @@ export default function ProfileSettings() {
             form.reset({
                 fName: form.getValues().fName,
                 lName: form.getValues().lName,
-                profileImage: capturedImage
             });
         }
     },[capturedImage, form])
@@ -75,7 +74,6 @@ export default function ProfileSettings() {
             form.reset({
                 fName: userInfo?.fName || "",
                 lName: userInfo?.lName || "",
-                profileImage: userInfo?.profileImage || "",
             });
         };
         if (userInfo?.userID) {
@@ -88,17 +86,23 @@ export default function ProfileSettings() {
         setLoading(true);
         const payLoad = {
             type: 1,
+            userID:getUser()?.id,
             fName: values.fName,
             lName: values.lName,
-            imageData:
-                (userInfo?.profileImage !== values.profileImage &&
-                    values.profileImage) ||
-                "",
         };
         
-
+        if(!isOnline){
+            
+        }
         try {
-            await updateUserInfo(values.fName, values.lName)
+            const res = await fetch("/api/user",{
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payLoad),
+            })
+            if(res.ok){
+                await updateUserInfo(values.fName, values.lName)
+            }
             setLoading(false)
         } catch (error) {
             setError(
@@ -107,20 +111,6 @@ export default function ProfileSettings() {
         }
     };
 
-    const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                form.reset({
-                    fName: form.getValues().fName,
-                    lName: form.getValues().lName,
-                    profileImage: e.target?.result as string,
-                });
-            };
-            reader.readAsDataURL(file);
-        }
-    };
 
     return (
         <div className="space-y-6">
@@ -137,7 +127,7 @@ export default function ProfileSettings() {
                             onSubmit={form.handleSubmit(onSubmit)}
                             className="space-y-8"
                         >
-                            <FormField
+                            {/* <FormField
                                 control={form.control}
                                 name="profileImage"
                                 render={({ field }) => (
@@ -175,13 +165,6 @@ export default function ProfileSettings() {
                                                                 handleAvatarChange
                                                             }
                                                         />
-                                                        {/* <Label
-                                                            htmlFor="avatar-upload"
-                                                            className="w-full h-10 text-primary-foreground rounded-md flex items-center gap-2 px-4 py-2 bg-primary cursor-pointer"
-                                                        >
-                                                            
-                                                            Change
-                                                        </Label> */}
                                                         <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
                                                             <Button type="button">
@@ -228,7 +211,7 @@ export default function ProfileSettings() {
                                         <FormMessage />
                                     </FormItem>
                                 )}
-                            />
+                            /> */}
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <FormField
                                     control={form.control}
@@ -278,13 +261,12 @@ export default function ProfileSettings() {
                                     type="submit"
                                     className=" bg-primary"
                                     disabled={
+                                        !isOnline ||
                                         loading ||
                                         (form.getValues().fName ===
                                             userInfo?.fName &&
                                             form.getValues().lName ===
-                                                userInfo?.lName &&
-                                            form.getValues().profileImage ===
-                                                userInfo?.profileImage)
+                                                userInfo?.lName)
                                     }
                                 >
                                     {loading ? "Updating..." : "Update Profile"}

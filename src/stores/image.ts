@@ -56,7 +56,7 @@ export const image$ = observable(
                 if (!value.id) {
                     throw new Error("pred_id is required for update");
                 }
-
+                
                 const { data, error } = await supabase
                     .from("image")
                     .update(value)

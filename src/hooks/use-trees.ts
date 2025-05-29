@@ -44,7 +44,7 @@ export const useTrees = () => {
 
     useEffect(() => {
         fetchTrees();
-    }, [imageLoading, treeLoading, analysisLoading]);
+    }, [fetchTrees]);
 
     return { trees, setTrees, loading };
 };

@@ -20,15 +20,15 @@ export const sidebarItems = (role: number|undefined):SidebarItem[] => {
 
     const adminSidebarItems: SidebarItem[] = [
         { href: '/admin', icon: LayoutDashboard, label: 'Dashboard' }, 
-        { href: '/admin/scan', icon: Scan, label: 'New Scan' }, 
+        // { href: '/admin/scan', icon: Scan, label: 'New Scan' }, 
         { href: '/admin/images', icon: Image, label: 'Images' },
         { href: '/admin/users', icon: Users, label: 'Users' },
         { href: '/admin/trees', icon: Trees, label: 'Trees' },
         { href: '/admin/diseases', icon: Leaf, label: 'Diseases' },
         { href: '/admin/feedbacks', icon: MessageCircle, label: 'Feedbacks' },
         // { href: '/admin/pending', icon: GalleryHorizontal, label: 'Pending Scan' },
-        { href: '/admin/logs', icon: FileText, label: 'Activity Logs' },
-        { href: '/admin/settings', icon: Settings, label: 'Settings' },
+        // { href: '/admin/logs', icon: FileText, label: 'Activity Logs' },
+        // { href: '/admin/settings', icon: Settings, label: 'Settings' },
     ];
 
     return role === 1 ? adminSidebarItems : role === 2 ? baseItems : [];

@@ -71,6 +71,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         const cookieToken = getTokenFromCookie();
+        if(!token){
+            // removeUser()
+            console.log(token)
+        }
         setToken(cookieToken);
         setIsLoaded(true);
     }, []);

@@ -18,7 +18,7 @@ const clearAuthCookies = (response: NextResponse) => {
   return response
 }
 
-const authRoutes = ["/signin", "/signup", "/forgot-password", "/update-password"]
+const authRoutes = ["/signin", "/signup", "/forgot-password", "/update-password","/reset-password"]
 
 export async function middleware(request: NextRequest) {
   if (!process.env.JWT_SECRET_KEY) {

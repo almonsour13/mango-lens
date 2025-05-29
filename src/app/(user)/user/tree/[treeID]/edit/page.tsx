@@ -100,7 +100,6 @@ export default function Page({
     });
 
     const { userInfo } = useAuth();
-    const { setIsCameraOpen } = useCameraContext();
 
     const fetchTree = useCallback(async () => {
         setLoading(true);
@@ -278,16 +277,6 @@ export default function Page({
                                                                                 Select
                                                                             </DropdownMenuItem>
                                                                         </Label>
-                                                                        <DropdownMenuItem
-                                                                            className="h-10"
-                                                                            onClick={() =>
-                                                                                setIsCameraOpen(
-                                                                                    true
-                                                                                )
-                                                                            }
-                                                                        >
-                                                                            Camera
-                                                                        </DropdownMenuItem>
                                                                     </DropdownMenuContent>
                                                                 </DropdownMenu>
                                                             </div>

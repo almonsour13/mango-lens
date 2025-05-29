@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(
     req: Request,
-    { params }: { params: { userID: string; feedbackID: string } }
+    { params }: { params: Promise<{ userID: string; feedbackID: string }>}
 ) {
     const { userID, feedbackID } = await params;
 
@@ -50,9 +50,9 @@ export async function POST(
         );
     }
 }
-export async function UPDATE(
+export async function PUT(
     req: Request,
-    { params }: { params: { userID: string; feedbackID: string } }
+    { params }: { params: Promise<{ userID: string; feedbackID: string } >}
 ) {
     const { userID, feedbackID } = await params;
     try {

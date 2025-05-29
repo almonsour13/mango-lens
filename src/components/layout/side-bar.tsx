@@ -104,7 +104,7 @@ const Sidebar = ({ isOpen, toggleSidebar }: Sidebar) => {
                         ))}
                     </nav>
                     {/* Account button at the bottom */}
-                    <div className="px-4  mt-auto">
+                    {/* <div className="px-4  mt-auto">
                         <Button
                             className={`w-full mb-4 h-12 text-left bg-transparent shadow-none text-foreground text-sm font-semibold p-2 py-4 rounded-lg group transition-colors hover:bg-background
                 flex items-center justify-start gap-3`}
@@ -117,7 +117,7 @@ const Sidebar = ({ isOpen, toggleSidebar }: Sidebar) => {
                             </Avatar>
                             <p>AL monsour salida</p>
                         </Button>
-                    </div>
+                    </div> */}
                 </div>
                 {/* </ScrollArea> */}
             </div>

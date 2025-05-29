@@ -61,10 +61,10 @@ export default function Dashboard() {
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Avatar className="cursor-pointer h-8 w-8 border">
-                                    <AvatarImage
+                                    {/* <AvatarImage
                                         src={userInfo?.profileImage}
                                         alt={`${userInfo?.fName} ${userInfo?.lName}`}
-                                    />
+                                    /> */}
                                     <AvatarFallback className="text-xs">
                                         {(userInfo?.fName?.charAt(0) ?? "") +
                                             (userInfo?.lName?.charAt(0) ?? "")}

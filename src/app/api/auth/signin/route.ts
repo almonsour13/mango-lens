@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { sign } from "jsonwebtoken";
 import { compare } from "bcrypt";
-import { query } from "@/lib/db/db";
-import { User } from "@/types/types";
 import { supabase } from "@/supabase/supabase";
 
 export async function POST(req: Request) {

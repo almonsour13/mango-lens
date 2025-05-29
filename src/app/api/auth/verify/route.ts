@@ -15,114 +15,162 @@ export async function POST(request: Request) {
             );
         }
 
-        const { email, code, token } = await request.json();
-
+        const { email, code, token, type } = await request.json();
+        
         if (!email || !code || !token) {
             return NextResponse.json(
                 { success: false, message: "Missing required fields" },
                 { status: 400 }
             );
         }
-        const exists = await emailExists(email);
 
-        if (exists) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    message: "Account already exists with this email.",
-                    redirect: "/signin",
-                },
-                { status: 400 }
-            );
-        }
+        if (type === "signup") {
+            const exists = await emailExists(email);
 
-        let decodedToken;
-        try {
-            decodedToken = verify(token, process.env.JWT_SECRET_KEY) as {
-                fName: string;
-                lName: string;
-                password: string;
-                verificationCode: string;
-            };
-        } catch (error) {
-            // Handle expired token case
-            if (error instanceof TokenExpiredError) {
+            if (exists) {
                 return NextResponse.json(
-                    { success: false, message: "Token expired." },
+                    {
+                        success: false,
+                        message: "Account already exists with this email.",
+                        redirect: "/signin",
+                    },
                     { status: 400 }
                 );
             }
-            console.log(error);
-            return NextResponse.json(
-                { success: false, message: "Invalid token." },
-                { status: 400 }
-            );
-        }
 
-        const { fName, lName, password, verificationCode } = decodedToken;
-        console.log(decodedToken);
-        if (code !== verificationCode) {
-            return NextResponse.json(
-                { success: false, message: "Invalid verification code." },
-                { status: 400 }
-            );
-        }
+            let decodedToken;
+            try {
+                decodedToken = verify(token, process.env.JWT_SECRET_KEY) as {
+                    fName: string;
+                    lName: string;
+                    password: string;
+                    verificationCode: string;
+                };
+            } catch (error) {
+                // Handle expired token case
+                if (error instanceof TokenExpiredError) {
+                    return NextResponse.json(
+                        { success: false, message: "Token expired." },
+                        { status: 400 }
+                    );
+                }
+                console.log(error);
+                return NextResponse.json(
+                    { success: false, message: "Invalid token." },
+                    { status: 400 }
+                );
+            }
 
-        const hashedPassword = await hash(password, 10);
+            const { fName, lName, password, verificationCode } = decodedToken;
+            if (code !== verificationCode) {
+                return NextResponse.json(
+                    { success: false, message: "Invalid verification code." },
+                    { status: 400 }
+                );
+            }
 
-        const newUserId = uuidv4();
-        const { error } = await supabase.from("user").insert([
-            {
-                userID: newUserId,
-                fName: fName,
-                lName: lName,
-                email: email,
-                password: hashedPassword,
-                role: 2,
-            },
-        ]);
-        if (error) {
-            return NextResponse.json(
+            const hashedPassword = await hash(password, 10);
+
+            const newUserId = uuidv4();
+            const { error } = await supabase.from("user").insert([
                 {
-                    success: false,
-                    message: "An error occurred during verification.",
+                    userID: newUserId,
+                    fName: fName,
+                    lName: lName,
+                    email: email,
+                    password: hashedPassword,
+                    role: 2,
                 },
-                { status: 500 }
+            ]);
+            if (error) {
+                return NextResponse.json(
+                    {
+                        success: false,
+                        message: "An error occurred during verification.",
+                    },
+                    { status: 500 }
+                );
+            }
+
+            const newToken = sign(
+                {
+                    userID: newUserId,
+                    role: 2,
+                },
+                process.env.JWT_SECRET_KEY
             );
+
+            const response = NextResponse.json({
+                success: true,
+                message: "Email verified successfully. Account created.",
+                redirect: "/user",
+                role: 2,
+                user: {
+                    userID: newUserId,
+                    fName,
+                    lName,
+                    email,
+                    role: 2,
+                    profileImage: "",
+                },
+            });
+
+            response.cookies.set("token", newToken, {
+                httpOnly: false,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "strict",
+                path: "/",
+                maxAge: 30 * 24 * 60 * 60,
+            });
+
+            return response;
+        } else {
+            let decodedToken;
+            try {
+                decodedToken = verify(token, process.env.JWT_SECRET_KEY) as {
+                    fName: string;
+                    lName: string;
+                    password: string;
+                    verificationCode: string;
+                };
+            } catch (error) {
+                // Handle expired token case
+                if (error instanceof TokenExpiredError) {
+                    return NextResponse.json(
+                        { success: false, message: "Token expired." },
+                        { status: 400 }
+                    );
+                }
+                console.log(error);
+                return NextResponse.json(
+                    { success: false, message: "Invalid token." },
+                    { status: 400 }
+                );
+            }
+
+            const { verificationCode } = decodedToken;
+
+            if (code !== verificationCode) {
+                return NextResponse.json(
+                    { success: false, message: "Invalid verification code." },
+                    { status: 400 }
+                );
+            }
+
+            const newToken = sign(
+                { email, verified: true },
+                process.env.JWT_SECRET_KEY,
+                { expiresIn: '1h' }
+            );
+
+            const response = NextResponse.json({
+                success: true,
+                message: "Email verified successfully.",
+                redirect: `/reset-password?token=${newToken}&email=${email}`,
+                token: newToken
+            });
+            return response;
         }
-
-        const newToken = sign(
-            {
-                userID: newUserId,
-                role: 2,
-            },
-            process.env.JWT_SECRET_KEY
-        );
-
-        const response = NextResponse.json({
-            success: true,
-            message: "Email verified successfully. Account created.",
-            redirect: "/user",
-            role: 2,
-            user: {
-                userID: newUserId,
-                fName,
-                lName,
-                email,
-                role: 2,
-                profileImage: "",
-            },
-        });
-
-        response.cookies.set("token", newToken, {
-            httpOnly: false,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            path: "/",
-            maxAge: 30 * 24 * 60 * 60
-        });
-
-        return response;
     } catch (error) {
         console.error("Verification error:", error);
         return NextResponse.json(

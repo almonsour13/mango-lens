@@ -62,12 +62,12 @@ export default function Page() {
         try {
             const response = await fetch(`/api/admin/${userInfo?.userID}/tree`);
 
-            const data = await response.json();
+            const resData = await response.json();
             if (response.ok) {
-                const { trees } = data;
-                setTrees(trees);
+                const { data } = resData;
+                setTrees(data);
             } else {
-                setError(data.error);
+                setError(resData.error);
             }
         } catch (error) {
             setError(error as string);

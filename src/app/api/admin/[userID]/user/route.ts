@@ -1,17 +1,15 @@
-import { PrismaClient } from "@prisma/client";
+import { supabase } from "@/supabase/supabase";
 import { NextResponse } from "next/server";
-
-const prisma = new PrismaClient();
 
 export async function GET(req: Request) {
     try {
-        const users = await prisma.user.findMany(); // Fetch all users
-
-        return NextResponse.json({ success: true, users });
+        const { data: users, error } = await supabase.from("user").select("*");
+        if(error) return NextResponse.json({ success: true, error });
+        return NextResponse.json({ success: true, users: users });
     } catch (error) {
         console.error("Error:", error);
         return NextResponse.json(
-            { success: false, error: "Something went wrong." },
+            { error: "Something went wrong." },
             { status: 500 }
         );
     }

@@ -13,11 +13,9 @@ export default function Home() {
   const [homeSidebarOpen, setHomeSidebarOpen] = useState(false)
   const [activeLink, setActiveLink] = useState<string>("Home");
   const toggleSidebar = () => setHomeSidebarOpen(!homeSidebarOpen)
-  const sections = ["Home", "About", "How to use", "Get started", "Contact us"];
+  const sections = ["home", "about", "how to use", "get started", "contact us"];
 
-  
   useEffect(() => {
-    
     const sectionElements = document.querySelectorAll("section");
     const observerOptions = {
       root: null,
@@ -30,6 +28,9 @@ export default function Home() {
         if (entry.isIntersecting) {
           const sectionId = entry.target.getAttribute("id")?.replaceAll("-"," ") || "";
           setActiveLink(sectionId);
+          // Update URL when section changes
+          const url = sectionId.toLowerCase().replace(/\s+/g, '-');
+          window.history.pushState({}, '', url === 'home' ? '/' : `/#${url}`);
         }
       });
     }, observerOptions);
@@ -39,7 +40,7 @@ export default function Home() {
     return () => {
       sectionElements.forEach((section) => observer.unobserve(section));
     };
-  }, [activeLink]);
+  }, []);
 
   return (
     <div className="min-h-screen h-auto w-full flex flex-col bg-background relative">

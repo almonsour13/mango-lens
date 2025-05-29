@@ -96,7 +96,7 @@ export default function HomeHeader({
                                     }`}
                                     onClick={() => setActiveLink(title)}
                                 >
-                                    {title}
+                                    {title.charAt(0).toUpperCase() + title.slice(1)}
 
                                     <AnimatePresence>
                                         {activeLink === title && (

@@ -190,12 +190,12 @@ export default function Trash() {
                 </div>
             </div>
             <PageWrapper>
-                <CardHeader className="p-0">
+                {/* <CardHeader className="p-0">
                     <CardDescription>
                         Items in trash will be automatically deleted after 30
                         days
                     </CardDescription>
-                </CardHeader>
+                </CardHeader> */}
                 <div className={`flex justify-between items-center`}>
                     <div className="flex gap-2 md:gap-4">
                         <DropdownMenu>

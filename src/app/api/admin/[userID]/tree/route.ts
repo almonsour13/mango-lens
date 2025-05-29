@@ -43,7 +43,7 @@ export async function GET(
             };
         });
 
-        return NextResponse.json({ success: true, trees: finalTrees });
+        return NextResponse.json({ success: true, data: finalTrees });
     } catch (error) {
         console.error("Error retrieving trees:", error);
         return NextResponse.json(

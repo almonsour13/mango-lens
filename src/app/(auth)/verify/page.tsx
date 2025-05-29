@@ -23,6 +23,7 @@ function VerifyForm() {
     const router = useRouter();
     const email = search.get("email");
     const tokenParams = search.get("token");
+    const type = search.get("type");
     const [token, setToken] = useState("");
     const [value, setValue] = useState("");
     const [error, setError] = useState("");
@@ -36,27 +37,27 @@ function VerifyForm() {
         setError("");
         setIsVerifying(true);
         setResendSuccess(false);
+
         try {
             const res = await fetch(`/api/auth/verify`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, code: value, token }),
+                body: JSON.stringify({ email, code: value, token, type }),
             });
 
             const data = await res.json();
 
             if (res.ok) {
                 const { user, redirect } = data;
-                if (getUser()) {
-                    removeUser();
+                if (type === "signup") {
+                    if (getUser()) {
+                        removeUser();
+                    }
+                    setUser(user);
                 }
-                setUser(user);
                 router.push(redirect);
             } else {
                 setError(data.message);
-                if (data.redirect) {
-                    router.push(data.redirect);
-                }
             }
         } catch (err) {
             setError(
@@ -97,7 +98,7 @@ function VerifyForm() {
             } else {
                 setError(data.message);
                 if (data.redirect) {
-                  router.replace(data.redirect) // Changed from push to replace
+                    router.replace(data.redirect); // Changed from push to replace
                 }
             }
         } catch (err) {

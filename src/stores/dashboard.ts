@@ -143,7 +143,9 @@ export async function recentAnalysis() {
             const identifiedDiseases = Object.values(diseaseidentified$.get() || {});
     
             // Filter images by userID first
-            const userImages = images.filter((image) => image.userID === userID && image.status === 1);
+            const userImages = images
+                .filter((image) => image.userID === userID && image.status === 1)
+                .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
     
             if (userImages.length === 0) {
                 return { success: false, message: "No images found for this user." };

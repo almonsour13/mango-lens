@@ -15,6 +15,7 @@ interface UserInfo {
     profileImage?: string;
 }
 
+
 export const userInfo$ = observable<UserInfo | null>(null);
 syncObservable(
     userInfo$,

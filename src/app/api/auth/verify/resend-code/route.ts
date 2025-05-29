@@ -1,11 +1,7 @@
-import { NextResponse } from "next/server";
-import { sign, verify } from "jsonwebtoken";
-import { compare } from "bcrypt";
-import { query } from "@/lib/db/db";
-import { User } from "@/types/types";
-import { supabase } from "@/supabase/supabase";
 import { emailExists } from "@/lib/auth/auth";
 import { sendVerificationEmail } from "@/lib/email-transporter";
+import { sign, verify } from "jsonwebtoken";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
     try {

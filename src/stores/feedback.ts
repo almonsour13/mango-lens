@@ -22,7 +22,7 @@ export const feedback$ = observable(
                 if (error) throw error;
                 return data;
             } catch (error) {
-                console.error(`Error fetching feedback:`, error);
+                console.error(`Error fetching feedback:`, error, userID);
                 throw error;
             } finally {
                 loadingStore$.feedback.set(false);
