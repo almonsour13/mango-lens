@@ -12,7 +12,7 @@ export default function About() {
           </span>
         </h1>
         <p className="text-lg text-muted-foreground mb-6">
-        MangoLens is a smart Progressive Web App (PWA) that helps detect diseases on mango leaves by simply capturing an image. It provides instant and accurate diagnoses, making it easier for farmers and growers to protect their crops anytime, anywhere, even offline.
+        MangoLens is a Progressive Web App (PWA) that helps detect diseases on mango leaves by simply capturing an image. It provides instant and accurate diagnoses, making it easier for farmers and growers to protect their crops anytime, anywhere, even offline.
         </p>
         <div className="flex gap-4">
         </div>

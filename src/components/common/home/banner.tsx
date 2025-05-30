@@ -17,7 +17,7 @@ export default function Banner() {
                     <div className="flex-1 flex flex-col items-start justify-center gap-2">
                         <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-shad drop-shadow-3xl">
                             <span className="bg-gradient-to-r from-green-900 via-green-500 to-yellow-400 text-transparent bg-clip-text">
-                                {MetaData.title}
+                                {MetaData.title}:
                             </span>{" "}
                             <br />
                             <span className="">
