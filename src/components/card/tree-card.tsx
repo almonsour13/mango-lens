@@ -1,12 +1,17 @@
+"use client";
+
+import type React from "react";
+
 import Link from "next/link";
 import { Card } from "../ui/card";
 import Image from "next/image";
 import { Leaf, TreeDeciduous } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { Tree } from "@/types/types";
+import type { Tree } from "@/types/types";
 import { TreeActionMenu } from "../action menu/tree-action-menu";
 
 interface TreeWithImage extends Tree {
+    farmName: string;
     treeImage: string;
     recentImage: string | null;
     imagesLength: number;
@@ -17,7 +22,11 @@ export default function TreeCard({
     handleAction,
 }: {
     tree: TreeWithImage;
-    handleAction: (e: React.MouseEvent<HTMLDivElement>, action: string, treeID: string) => void;
+    handleAction: (
+        e: React.MouseEvent<HTMLDivElement>,
+        action: string,
+        treeID: string
+    ) => void;
 }) {
     const pathname = usePathname();
 
@@ -27,7 +36,7 @@ export default function TreeCard({
                 <div className="relative aspect-square">
                     {tree.recentImage && tree.recentImage ? (
                         <Image
-                            src={tree.recentImage}
+                            src={tree.recentImage || "/placeholder.svg"}
                             alt={`Tree ${tree.treeCode}`}
                             layout="fill"
                             objectFit="cover"
@@ -45,38 +54,45 @@ export default function TreeCard({
                                     tree.status == 1
                                         ? "bg-primary"
                                         : "bg-destructive"
-                                } text-white px-2.5 py-0.5 rounded-full text-xs flex items-center`}
+                                } text-white px-2.5 py-0.5 rounded-full text-xs flex items-center flex-shrink-0`}
                             >
                                 {tree.status == 1 ? "Active" : "Inactive"}
                             </div>
-                            <div className="bg-muted-foreground  text-white px-2.5 py-0.5 rounded-full text-xs flex items-center">
+                            <div className="bg-muted-foreground text-white px-2.5 py-0.5 rounded-full text-xs flex items-center flex-shrink-0">
                                 <Leaf size={12} className="mr-1" />
                                 {tree.imagesLength}
                             </div>
                         </div>
-                        <div className="flex h-8 items-center gap-2 justify-between w-full">
-                                {tree.treeImage && (
-                                    <div className="relative w-8 h-8 rounded-full overflow-hidden">
-                                        <Image
-                                            src={tree.treeImage}
-                                            alt={tree.treeCode}
-                                            layout="fill"
-                                            objectFit="cover"
-                                        />
-                                    </div>
-                                )}
-                                <div className="flex items-end justify-between flex-1">
-                                <div className="truncate">
-                                    <h3 className="font-semibold text-md text-white truncate">
+                        <div className="flex h-8 items-center gap-2 w-full min-w-0">
+                            {tree.treeImage && (
+                                <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+                                    <Image
+                                        src={
+                                            tree.treeImage || "/placeholder.svg"
+                                        }
+                                        alt={tree.treeCode}
+                                        layout="fill"
+                                        objectFit="cover"
+                                    />
+                                </div>
+                            )}
+                            <div className="flex items-center justify-between flex-1 min-w-0 gap-2">
+                                <div className="min-w-0 flex-1">
+                                    <h3 className="font-semibold text-md text-white truncate leading-tight">
                                         {tree.treeCode}
                                     </h3>
+                                    <p className="text-xs text-gray-300 truncate leading-tight">
+                                        {tree.farmName}
+                                    </p>
                                 </div>
-                                <TreeActionMenu
-                                    treeID={tree.treeID}
-                                    treeCode={tree.treeCode}
-                                    status={tree.status}
-                                    handleAction={handleAction}
-                                />
+                                <div className="flex-shrink-0">
+                                    <TreeActionMenu
+                                        treeID={tree.treeID}
+                                        treeCode={tree.treeCode}
+                                        status={tree.status}
+                                        handleAction={handleAction}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>

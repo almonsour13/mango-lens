@@ -13,7 +13,6 @@ import PageWrapper from "@/components/wrapper/page-wrapper";
 import { Image, Tree } from "@/types/types";
 
 import { TreeImageCard } from "@/components/card/tree-image-card";
-import TreeModal from "@/components/modal/tree-modal";
 import { TreeImageSkeletonCard } from "@/components/skeleton/skeleton-card";
 import { TreeImagesTable } from "@/components/table/tree-images-table";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +31,7 @@ import {
     Plus,
     SlidersHorizontal,
     TreeDeciduous,
+    Trees,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -41,13 +41,11 @@ import { getTreeByID } from "@/stores/tree";
 import { getImageByImageID, getImagesByTreeID } from "@/stores/image";
 import { useTreeData } from "@/hooks/use-tree-data";
 
-
-export default function Page({
+export default function TreeProfile({
     params,
 }: {
     params: Promise<{ treeID: string }>;
 }) {
-    
     const pathname = usePathname();
     const unwrappedParams = React.use(params);
     const { treeID } = unwrappedParams;
@@ -56,36 +54,38 @@ export default function Page({
     const [openDialog, setOpenDialog] = useState(false);
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
-    const filteredImages = images && images
-        .filter(
-            (image) =>
-                filterStatus === 0 ||
-                (filterStatus === 1 &&
-                    image.diseases.some(
-                        (disease) =>
-                            disease.diseaseName === "Healthy" &&
-                            disease.likelihoodScore > 50
-                    )) ||
-                (filterStatus === 2 &&
-                    image.diseases.some(
-                        (disease) =>
-                            disease.diseaseName !== "Healthy" &&
-                            disease.likelihoodScore > 50
-                    ))
-        )
-        .sort((a, b) => {
-            if (sortBy === "Newest") {
-                return (
-                    new Date(b.uploadedAt).getTime() -
-                    new Date(a.uploadedAt).getTime()
-                );
-            } else {
-                return (
-                    new Date(a.uploadedAt).getTime() -
-                    new Date(b.uploadedAt).getTime()
-                );
-            }
-        });
+    const filteredImages =
+        images &&
+        images
+            .filter(
+                (image) =>
+                    filterStatus === 0 ||
+                    (filterStatus === 1 &&
+                        image.diseases.some(
+                            (disease) =>
+                                disease.diseaseName === "Healthy" &&
+                                disease.likelihoodScore > 50
+                        )) ||
+                    (filterStatus === 2 &&
+                        image.diseases.some(
+                            (disease) =>
+                                disease.diseaseName !== "Healthy" &&
+                                disease.likelihoodScore > 50
+                        ))
+            )
+            .sort((a, b) => {
+                if (sortBy === "Newest") {
+                    return (
+                        new Date(b.uploadedAt).getTime() -
+                        new Date(a.uploadedAt).getTime()
+                    );
+                } else {
+                    return (
+                        new Date(a.uploadedAt).getTime() -
+                        new Date(b.uploadedAt).getTime()
+                    );
+                }
+            });
 
     const router = useRouter();
 
@@ -94,9 +94,9 @@ export default function Page({
     };
     const pathSegments = pathname.split("/");
 
-    const handleTreeAction = (value: Tree) => {
-        setTree(value);
-    };
+    // const handleTreeAction = (value: Tree) => {
+    //     setTree(value);
+    // };
     const [showMore, setShowMore] = useState(false);
 
     return (
@@ -112,7 +112,7 @@ export default function Page({
                 <Link
                     href={`${
                         pathSegments[0] + "/" + pathSegments[1]
-                    }/scan/?treeCode=${tree?.treeCode}`}
+                    }/scan/?treeCode=${tree?.treeCode}&farmID=${tree?.farmID}`}
                 >
                     <Button variant="outline" className="w-10 md:w-auto">
                         <Plus className="h-5 w-5" />
@@ -129,107 +129,114 @@ export default function Page({
             ) : (
                 <PageWrapper className="gap-4">
                     {tree !== null && tree && (
-                    <div className="flex justify-between flex-col items-start gap-4">
-                        <div className="flex w-full flex-row items-start justify-start gap-4">
-                            <Avatar className="h-28 md:h-32 w-28 md:w-32 aspect-square bg-primary/10">
-                                <AvatarImage
-                                    src={tree?.treeImage}
-                                    alt="Profile picture"
-                                />
-                                <AvatarFallback className="bg-primary/10">
-                                    <TreeDeciduous className="h-16 w-16 text-primary" />
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className="w-full flex-1 flex justify-between text-left space-y-2">
-                                <div className="space-y-2">
-                                    <h2 className="text-xl font-bold mt-4">
-                                        {tree?.treeCode}
-                                    </h2>
-                                    <div className="flex flex-wrap justify-start gap-2">
-                                        <Badge
-                                            variant={
-                                                tree?.status === 1
-                                                    ? "default"
-                                                    : "secondary"
-                                            }
-                                        >
-                                            {tree?.status === 1
-                                                ? "Active"
-                                                : "Inactive"}
-                                        </Badge>
-                                        <div className="flex items-center">
-                                            <Calendar className="w-4 h-4 mr-1" />
-                                            <p className="text-xs">
-                                                {tree?.treeCode &&
-                                                    formatDate(
-                                                        tree?.addedAt,
-                                                        "MMM dd, yyyy"
-                                                    )}
-                                            </p>
+                        <div className="flex justify-between flex-col items-start gap-4">
+                            <div className="flex w-full flex-row items-start justify-start gap-4">
+                                <Avatar className="h-28 md:h-32 w-28 md:w-32 aspect-square bg-primary/10">
+                                    <AvatarImage
+                                        src={tree?.treeImage}
+                                        alt="Profile picture"
+                                    />
+                                    <AvatarFallback className="bg-primary/10">
+                                        <TreeDeciduous className="h-16 w-16 text-primary" />
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className="w-full flex-1 flex justify-between text-left space-y-2">
+                                    <div className="space-y-2">
+                                        <h2 className="text-xl font-bold mt-4">
+                                            {tree?.treeCode}
+                                        </h2>
+                                        <div className="flex flex-wrap items-center justify-start gap-2 md:gap-4 ">
+                                            <div className="flex items center">
+                                                <Trees className="w-4 h-4 mr-1" />
+                                                <p className="text-xs">
+                                                    {tree.farmName}
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center">
+                                                <Calendar className="w-4 h-4 mr-1" />
+                                                <p className="text-xs">
+                                                    {tree?.treeCode &&
+                                                        formatDate(
+                                                            tree?.addedAt,
+                                                            "MMM dd, yyyy"
+                                                        )}
+                                                </p>
+                                            </div>
+                                            <Badge
+                                                variant={
+                                                    tree?.status === 1
+                                                        ? "default"
+                                                        : "secondary"
+                                                }
+                                            >
+                                                {tree?.status === 1
+                                                    ? "Active"
+                                                    : "Inactive"}
+                                            </Badge>
                                         </div>
                                     </div>
+                                    <Link href={`${pathname}/edit`}>
+                                        <Button
+                                            variant="outline"
+                                            className="w-10 md:w-auto"
+                                            // onClick={() => setOpenDialog(true)}
+                                        >
+                                            <Edit className="w-4 h-4" />
+                                            <span className="hidden md:block">
+                                                Edit Tree
+                                            </span>
+                                        </Button>
+                                    </Link>
                                 </div>
-                                {/* <p className="text-muted-foreground text-wrap hidden md:block">
-                                {tree?.description}
-                            </p> */}
-                                <Link href={`${pathname}/edit`}>
-                                    <Button
-                                        variant="outline"
-                                        className="w-10 md:w-auto"
-                                        // onClick={() => setOpenDialog(true)}
-                                    >
-                                        <Edit className="w-4 h-4" />
-                                        <span className="hidden md:block">
-                                            Edit Tree
-                                        </span>
-                                    </Button>
-                                </Link>
+                            </div>
+                            <div className="text-sm text-wrap">
+                                {tree?.description && (
+                                    <>
+                                        {tree.description.length > 200 ? (
+                                            <>
+                                                {!showMore ? (
+                                                    <>
+                                                        {tree.description.slice(
+                                                            0,
+                                                            200
+                                                        )}
+                                                        ...{" "}
+                                                        <Button
+                                                            variant="link"
+                                                            className="p-0 h-auto"
+                                                            onClick={() =>
+                                                                setShowMore(
+                                                                    true
+                                                                )
+                                                            }
+                                                        >
+                                                            View More
+                                                        </Button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        {tree.description}{" "}
+                                                        <Button
+                                                            variant="link"
+                                                            className="p-0 h-auto"
+                                                            onClick={() =>
+                                                                setShowMore(
+                                                                    false
+                                                                )
+                                                            }
+                                                        >
+                                                            View Less
+                                                        </Button>
+                                                    </>
+                                                )}
+                                            </>
+                                        ) : (
+                                            tree.description
+                                        )}
+                                    </>
+                                )}
                             </div>
                         </div>
-                        <div className="text-sm text-wrap">
-                            {tree?.description && (
-                                <>
-                                    {tree.description.length > 200 ? (
-                                        <>
-                                            {!showMore ? (
-                                                <>
-                                                    {tree.description.slice(
-                                                        0,
-                                                        200
-                                                    )}
-                                                    ...{" "}
-                                                    <Button
-                                                        variant="link"
-                                                        className="p-0 h-auto"
-                                                        onClick={() =>
-                                                            setShowMore(true)
-                                                        }
-                                                    >
-                                                        View More
-                                                    </Button>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    {tree.description}{" "}
-                                                    <Button
-                                                        variant="link"
-                                                        className="p-0 h-auto"
-                                                        onClick={() =>
-                                                            setShowMore(false)
-                                                        }
-                                                    >
-                                                        View Less
-                                                    </Button>
-                                                </>
-                                            )}
-                                        </>
-                                    ) : (
-                                        tree.description
-                                    )}
-                                </>
-                            )}
-                        </div>
-                    </div>
                     )}
                     <div className="flex justify-between items-center">
                         <div className="flex gap-2 md:gap-4">
@@ -339,11 +346,6 @@ export default function Page({
                     </CardContent>
                 </PageWrapper>
             )}
-            <TreeModal
-                openDialog={openDialog}
-                setOpenDialog={setOpenDialog}
-                handleTreeAction={handleTreeAction}
-            />
         </>
     );
 }

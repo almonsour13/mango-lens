@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
     Form,
     FormControl,
@@ -25,7 +25,6 @@ import ModalDrawer from "./modal-drawer-wrapper";
 import { useAuth } from "@/context/auth-context";
 import { Tree } from "@/types/types";
 import { toast } from "@/hooks/use-toast";
-import { DialogDescription } from "@radix-ui/react-dialog";
 import { getTreeByUser } from "@/stores/tree";
 import { migrateImage } from "@/stores/image";
 

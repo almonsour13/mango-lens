@@ -1,5 +1,5 @@
 export type ImageAnalysisDetails = Tree &
-    Image & { analyzedImage: string } & Analysis & { diseases: (DiseaseIdentified & Disease)[] | TfJsDisease[]};
+    Image & { analyzedImage: string, farmID:string, farmName:string } & Analysis & { diseases: (DiseaseIdentified & Disease)[] | TfJsDisease[]};
 
 export interface TfJsDisease{
     diseaseIdentifiedID?: string;
@@ -8,6 +8,7 @@ export interface TfJsDisease{
 }
 export interface ScanResult {
     treeCode: string;
+    farmName:string;
     originalImage: string;
     analyzedImage: string;
     diseases: (DiseaseIdentified & Disease)[] | TfJsDisease[] 
@@ -91,6 +92,7 @@ export interface Image {
     uploadedAt: Date;
 }
 export interface Tree {
+    farmID: string;
     treeID: string;
     userID: string;
     treeCode: string;
@@ -107,4 +109,13 @@ export interface User {
     status: number;
     createdAt: Date;
     profileImage: string | null;
+}
+export interface Farm {
+    farmID: string;
+    userID: string;
+    farmName: string;
+    address: string;
+    description?: string;
+    status: number;
+    addedAt: Date;
 }

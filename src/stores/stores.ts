@@ -4,6 +4,7 @@ import { diseaseidentified$ } from "./diseaseidentified";
 import { image$ } from "./image";
 import { trash$ } from "./trash";
 import { tree$ } from "./tree";
+import { farm$ } from "./farm";
 
 // export default {
 //     tree$,
@@ -41,6 +42,7 @@ export const initializeStore = async () => {
     try {
         
             const stores:any[] = [
+                { store: farm$, name: 'farm' },
                 { store: tree$, name: 'tree' },
                 // { store: treeImage$, name: 'treeImage' },
                 { store: image$, name: 'image' },

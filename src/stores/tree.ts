@@ -7,6 +7,7 @@ import { checkTreeCode } from "@/utils/tree-utils";
 import { convertBlobToBase64, convertImageToBlob } from "@/utils/image-utils";
 import { image$ } from "./image";
 import { treeimage$ } from "./treeimage";
+import { farm$ } from "./farm";
 import { loadingStore$ } from "./loading-store";
 
 const userID = getUser()?.userID;
@@ -90,6 +91,7 @@ export const getTreeByUser = async (): Promise<{
     if (!userID) return { success: false, message: "User not found." };
 
     try {
+        const farms = Object.values(farm$.get() || {});
         const trees = Object.values(tree$.get() || {});
         const images = Object.values(image$.get() || {});
         const treesimage = Object.values(treeimage$.get() || {});
@@ -108,7 +110,8 @@ export const getTreeByUser = async (): Promise<{
                     (image) =>
                         image.treeID === tree.treeID && image.status === 1
                 );
-
+                const farm = farms.find(
+                    (farm) => farm.farmID === tree.farmID && farm.status === 1)
                 // Get the most recent image
                 const recentImage = relatedImages.sort(
                     (a, b) =>
@@ -145,6 +148,7 @@ export const getTreeByUser = async (): Promise<{
 
                 return {
                     ...tree,
+                    farmName:  farm.farmName,
                     treeImage: treeImageBase64,
                     recentImage: recentImageBase64,
                     imagesLength: relatedImages.length,
@@ -165,9 +169,11 @@ export const getTreeByID = async (treeID: string) => {
     const tree = tree$[treeID]?.get();
     const treesimage = Object.values(treeimage$.get() || {});
     const images = Object.values(image$.get() || {});
+    const farm = Object.values(farm$.get() || {});
     if (!tree || tree.status !== 1) {
         return null;
     }
+    const farmName = farm.find(farm => farm.farmID === tree.farmID && farm.status === 1)?.farmName || "Unknown Farm";
     const treeimage = treesimage.filter(
         (treeimage) =>
             treeimage.treeID === tree.treeID && treeimage.status === 1
@@ -177,6 +183,7 @@ export const getTreeByID = async (treeID: string) => {
     );
     return {
         ...tree,
+        farmName,
         treeImage: treeimage ? convertBlobToBase64(treeimage.imageData) : null,
         imagesLength: relatedImages.length,
     };
@@ -185,7 +192,7 @@ export const updateTreeByID = async (
     treeID: string,
     treeCode: string,
     description: string,
-    status: string,
+    status: number,
     treeImage?: string
 ): Promise<{ success: boolean; message: string }> => {
     try {
@@ -205,7 +212,7 @@ export const updateTreeByID = async (
         tree$[treeID].set({
             treeCode,
             description,
-            status: status === "Active" ? 1 : 2,
+            status: status,
             updatedAt: new Date(),
         });
         if (treeImage) {
@@ -236,6 +243,7 @@ export const updateTreeByID = async (
     }
 };
 export const addTree = async (
+    farmID: string,
     treeCode: string,
     description: string,
     treeImage?: string
@@ -243,12 +251,10 @@ export const addTree = async (
     try {
         const treeID = uuidv4();
 
-        if (await checkTreeCode(treeCode)) {
-            return { success: false, message: "Tree code already exists." };
-        }
         const treeData = {
             treeID,
             userID,
+            farmID,
             treeCode,
             description,
             status: 1,
@@ -285,4 +291,46 @@ export const addTree = async (
             message: "An error occurred while adding the tree.",
         };
     }
+};
+export const generateTreeCode = async (farmID:string | null) => {
+    try {
+        const trees = Object.values(tree$.get() || {});
+        if (trees.length === 0) return "TR001";
+
+        const lastTree = trees.filter(tree => tree.farmID === farmID).sort((a, b) => b.addedAt - a.addedAt)[0];
+        if (!lastTree) return "TR001";
+        
+        const lastCode = lastTree.treeCode;
+        const codeNumber = parseInt(lastCode.replace("TR", ""));
+        const newCodeNumber = codeNumber + 1;
+        return `TR${newCodeNumber.toString().padStart(3, "0")}`;
+    } catch (error) {
+        console.error("Error checking last tree code:", error);
+        return "TR001"; // Fallback in case of error
+    }
+}
+export const getTreesByFarmID = async (
+  farmID: string
+): Promise<{
+  success: boolean;
+  data?: any[];
+  message?: string;
+}> => {
+  try {
+    const trees = Object.values(tree$.get() || {});
+    const treesByFarmID = trees.filter(
+      (tree) => tree.farmID === farmID && tree.status === 1
+    );
+
+    return {
+      success: true,
+      data: treesByFarmID,
+    };
+  } catch (error) {
+    console.error("Error fetching trees by farm ID:", error);
+    return {
+      success: false,
+      message: "An error occurred while fetching trees by farm ID.",
+    };
+  }
 };

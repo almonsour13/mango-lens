@@ -18,6 +18,7 @@ import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useAuth } from "@/context/auth-context";
 import { useMetrics } from "@/hooks/use-metrics";
 import useRecentAnalysis from "@/hooks/use-recent-analysis";
+import { getFarmByUser } from "@/stores/farm";
 import { removeOldDatabase } from "@/stores/indexeddb";
 import { loadingStore$ } from "@/stores/loading-store";
 import { Image as Img } from "@/types/types";
@@ -170,7 +171,7 @@ interface Metric {
 
 const Metrics = () => {
     const { loading, metrics } = useMetrics();
-
+    getFarmByUser();
     return (
         <Card className="border-0 p-0 shadow-none">
             <div className="grid gap-2 md:gap-4 grid-cols-2 lg:grid-cols-4">

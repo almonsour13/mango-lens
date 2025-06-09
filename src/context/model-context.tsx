@@ -138,6 +138,7 @@ export function ModelProvider({ children }: { children: ReactNode }) {
             
             const result:ScanResult = {
                 treeCode:"",
+                farmName:"",
                 originalImage: resizedOriginal,
                 analyzedImage: resizedHeatmap,
                 diseases:predictionWithClasses
@@ -161,13 +162,13 @@ export function ModelProvider({ children }: { children: ReactNode }) {
             tf.dispose([inputTensor, predictionTensor]);
             return result;
         } catch (err) {
-            console.log;
             toast({
                 description: `Prediction failed: ${
                     err instanceof Error ? err.message : "Unknown error"
                 }`,
                 variant: "destructive",
             });
+            console.log("Error during prediction:", err instanceof Error ? err.message : "Unknown error");
             return null;
         } finally {
             setIsAnalyzing(false);

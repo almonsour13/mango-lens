@@ -23,6 +23,7 @@ import {
     SelectContent,
     SelectItem,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -56,10 +57,7 @@ import { useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { Tree } from "@/types/types";
 import React from "react";
-import {
-    getTreeByID,
-    updateTreeByID,
-} from "@/stores/tree";
+import { getTreeByID, updateTreeByID } from "@/stores/tree";
 import { moveToTrash } from "@/stores/trash";
 import { set } from "date-fns";
 
@@ -68,9 +66,7 @@ const formSchema = z.object({
         .string()
         .min(2, { message: "Tree code must be at least 2 characters." })
         .max(10, { message: "Tree code must not exceed 10 characters." }),
-    status: z.enum(["Active", "Inactive"], {
-        required_error: "Please select a Status.",
-    }),
+    status: z.number(),
     description: z.string().or(z.literal("")),
     treeImage: z.string().optional(),
 });
@@ -93,7 +89,7 @@ export default function Page({
         resolver: zodResolver(formSchema),
         defaultValues: {
             treeCode: "",
-            status: "Active",
+            status: 1,
             description: "",
             treeImage: "",
         },
@@ -109,7 +105,7 @@ export default function Page({
                 form.reset({
                     treeCode: tree.treeCode,
                     description: tree.description || "",
-                    status: tree.status === 1 ? "Active" : "Inactive",
+                    status: tree.status,
                     treeImage: tree.treeImage || "",
                 });
                 setImgsrc(tree.treeImage);
@@ -164,7 +160,7 @@ export default function Page({
                 ...editTree,
                 treeCode: values.treeCode,
                 description: values.description,
-                status: values.status === "Active" ? 1 : 2,
+                status: values.status,
                 treeImage: values.treeImage,
             });
         } catch (error) {
@@ -182,14 +178,14 @@ export default function Page({
     const handleConfirmDelete = async () => {
         try {
             if (!editTree) return null;
-            const res = await moveToTrash(editTree?.treeID,1);
+            const res = await moveToTrash(editTree?.treeID, 1);
             if (res.success) {
                 toast({
                     title: `Tree Move to trash`,
                     description: res.message,
                 });
                 setConfirmationModalOpen(false);
-                router.back()
+                router.back();
             }
         } catch (error) {
             console.error("Error deleting disease:", error);
@@ -346,42 +342,40 @@ export default function Page({
                                         control={form.control}
                                         name="status"
                                         render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Status</FormLabel>
-                                                <Select
-                                                    onValueChange={
-                                                        field.onChange
-                                                    }
-                                                    defaultValue={field.value}
-                                                >
+                                            <FormItem className="">
+                                                <FormLabel className="text-base">
+                                                    Active Status
+                                                </FormLabel>
+                                                <div className="flex flex-row items-center justify-between rounded-lg border p-4 space-y-0.5">
+                                                    <FormDescription
+                                                        className={
+                                                            field.value === 2
+                                                                ? "text-destructive"
+                                                                : "text-primary"
+                                                        }
+                                                    >
+                                                        {field.value === 1
+                                                            ? "Farm is currently active"
+                                                            : "Farm is currently inactive"}
+                                                    </FormDescription>
                                                     <FormControl>
-                                                        <SelectTrigger
-                                                            className={`${
+                                                        <Switch
+                                                            checked={
                                                                 field.value ===
-                                                                "Active"
-                                                                    ? "text-primary"
-                                                                    : "text-destructive"
-                                                            }`}
-                                                        >
-                                                            <SelectValue placeholder="Select Role" />
-                                                        </SelectTrigger>
+                                                                1
+                                                            }
+                                                            onCheckedChange={(
+                                                                checked
+                                                            ) => {
+                                                                field.onChange(
+                                                                    checked
+                                                                        ? 1
+                                                                        : 2
+                                                                );
+                                                            }}
+                                                        />
                                                     </FormControl>
-                                                    <SelectContent>
-                                                        <SelectItem
-                                                            value="Active"
-                                                            className="text-primary"
-                                                        >
-                                                            Active
-                                                        </SelectItem>
-                                                        <SelectItem
-                                                            value="Inactive"
-                                                            className="text-destructive"
-                                                        >
-                                                            Inactive
-                                                        </SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
+                                                </div>
                                             </FormItem>
                                         )}
                                     />
@@ -413,10 +407,16 @@ export default function Page({
                                             type="submit"
                                             disabled={
                                                 loading ||
-                                                ( imgsrc === editTree.treeImage &&
-                                                form.getValues().treeCode === editTree.treeCode &&
-                                                form.getValues().description === editTree.description &&
-                                                (form.getValues().status === "Active" ? 1 : 2) === editTree.status)
+                                                (imgsrc ===
+                                                    editTree.treeImage &&
+                                                    form.getValues()
+                                                        .treeCode ===
+                                                        editTree.treeCode &&
+                                                    form.getValues()
+                                                        .description ===
+                                                        editTree.description &&
+                                                    form.getValues().status ===
+                                                        editTree.status)
                                             }
                                         >
                                             {loading

@@ -1,4 +1,4 @@
-import { ChartLine, FileText, GalleryHorizontal, Home, Image, LayoutDashboard, Leaf, LucideIcon, MessageCircle, Scan, Settings, Trash2, TreeDeciduous, Trees, Users } from 'lucide-react';
+import { ChartLine, FileText, GalleryHorizontal, Home, Image, LayoutDashboard, Leaf, LucideIcon, MessageCircle, Scan, Settings, Tractor, Trash2, TreeDeciduous, Trees, Users } from 'lucide-react';
 
 interface SidebarItem {
     href: string;
@@ -10,6 +10,7 @@ export const sidebarItems = (role: number|undefined):SidebarItem[] => {
     const baseItems: SidebarItem[] = [
         { href: '/user', icon: Home, label: 'Home' },
         { href: '/user/scan', icon: Scan, label: 'New Scan' }, 
+        { href: '/user/farm', icon: Trees, label: 'Farm' }, 
         { href: '/user/gallery', icon: Image, label: 'Gallery' },
         { href: '/user/tree', icon: TreeDeciduous, label: 'Tree' },
         { href: '/user/statistic', icon: ChartLine, label: 'Statistic' },

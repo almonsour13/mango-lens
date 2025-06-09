@@ -5,6 +5,7 @@ import { syncedCrud } from "@legendapp/state/sync-plugins/crud";
 export const DATABASE_NAME = process.env.NODE_ENV === "development"?"mango-lens-development":"mango-lens";
 export const DATABASE_VERSION = 2;
 export const TABLE_NAMES = [
+    "farm",
     "tree",
     "treeimage",
     "image",

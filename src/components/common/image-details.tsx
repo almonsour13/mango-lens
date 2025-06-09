@@ -20,6 +20,7 @@ import {
     MessageCircle,
     MoreVertical,
     Trash2,
+    TreeDeciduous,
     Trees,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -46,6 +47,7 @@ import { useImageDetails } from "@/hooks/use-image-details";
 import AddFeedBackModel from "../modal/feedback-modal";
 import { v4 } from "uuid";
 import { submitFeedback } from "@/stores/feedback";
+import { Badge } from "../ui/badge";
 
 export default function ImageDetails({ imageID }: { imageID: string }) {
     const { toast } = useToast();
@@ -55,7 +57,7 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [isMigrateModalOpen, setIsMigrateModalOpen] = useState(false);
     const [isFeedbackModel, setIsFeedbackModel] = useState(false);
-    
+
     const { userInfo } = useAuth();
 
     const handleConfirmDelete = async () => {
@@ -96,22 +98,22 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
     };
 
     const onSubmitFeedback = async (content: string) => {
-        if(!userInfo?.userID) return
+        if (!userInfo?.userID) return;
         const newFeedback = {
             feedbackID: v4(),
             content,
             userID: userInfo.userID,
             status: 1,
             feedbackAt: new Date(),
-            responses:[]
-        }
-        
+            responses: [],
+        };
+
         const res = await submitFeedback(newFeedback);
 
         toast({
-            description:res.message
-        })
-    }
+            description: res.message,
+        });
+    };
 
     return (
         <>
@@ -122,7 +124,8 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
                     </button>
                     <Separator orientation="vertical" />
                     <h1 className="text-md font-medium">
-                        {imageDetails?.treeCode+" - Image Details" || 'Loading...'}
+                        {imageDetails?.treeCode + " - Image Details" ||
+                            "Loading..."}
                     </h1>
                 </div>
                 <DropdownMenu>
@@ -257,61 +260,84 @@ function ResultDetails({
     imageDetails: ImageAnalysisDetails;
 }) {
     return (
-        <div className="flex-1 flex flex-col gap-4 border p-4 rounded-lg">
-            <div className="flex flex-row justify-between md:justify-start gap-2">
-                <div className="flex space-x-2">
-                    <Trees className="h-5 w-5 text-muted-foreground" />
-                    <Link
-                        href={`/user/tree/${imageDetails.treeID}`}
-                        className="text-base font-semibold hover:underline"
-                    >
-                        {imageDetails.treeCode || "N/A"}
-                    </Link>
-                </div>
-                <div className="flex space-x-2">
-                    <Calendar className="h-5 w-5 text-muted-foreground" />
-                    <span className="text-base font-semibold">
-                        {formatDate(imageDetails.analyzedAt, "MMM dd, yyyy")}
-                    </span>
-                </div>
-            </div>
-            <div className="flex flex-col gap-2">
+        <div className="flex-1 flex flex-col gap-4">
+            <Card className="border-0 p-0 space-y-2">
+                <CardContent className="space-y-4 p-0">
+                    <div className="flex items-center gap-4">
+                        <Link
+                            href={`/user/farm/${imageDetails.farmID}`}
+                            className="text-base font-semibold hover:underline"
+                        >
+                            <Badge
+                                variant="outline"
+                                className="px-4 py-2 text-sm"
+                            >
+                                <Trees className="h-4 w-4 mr-2 text-green-600" />
+                                {imageDetails.farmName || "N/A"}
+                            </Badge>
+                        </Link>
+                        <Link
+                            href={`/user/tree/${imageDetails.treeID}`}
+                            className="text-base font-semibold hover:underline"
+                        >
+                            <Badge
+                                variant="outline"
+                                className="px-4 py-2 text-sm"
+                            >
+                                <TreeDeciduous className="h-4 w-4 mr-2 text-green-600" />
+                                {imageDetails.treeCode || "N/A"}
+                            </Badge>
+                        </Link>
+                        <div className="flex items-center justify-center">
+                            <Calendar className="h-4 w-4 mr-2 text-green-600" />
+                            <span className="text-sm font-semibold">
+                                {formatDate(
+                                    imageDetails.analyzedAt,
+                                    "MMM dd, yyyy"
+                                )}
+                            </span>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <div className="flex flex-col gap-2 p-4 border rounded-lg">
                 <div className="flex items-center space-x-2">
                     <span className="text-base font-medium">
                         Assign Classification:
                     </span>
                 </div>
-                <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
-                    {imageDetails.diseases.map((disease, index) => {
-                        return (
-                            <div className="flex flex-col" key={index}>
-                                <div className="flex justify-between text-sm mb-1">
-                                    <span>{disease.diseaseName}</span>
-                                    <span>
-                                        {disease.likelihoodScore.toFixed(1)}%
-                                    </span>
+                <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
+                    {imageDetails.diseases &&
+                        imageDetails.diseases.length > 0 &&
+                        imageDetails.diseases.map((disease, index) => {
+                            return (
+                                <div className="flex flex-col" key={index}>
+                                    <div className="flex justify-between text-sm mb-1">
+                                        <span>{disease.diseaseName}</span>
+                                        <span>
+                                            {disease.likelihoodScore.toFixed(1)}
+                                            %
+                                        </span>
+                                    </div>
+                                    <div className="bg-muted h-2 w-full overflow-hidden rounded">
+                                        <div
+                                            className={`${
+                                                disease.diseaseName ===
+                                                "Healthy"
+                                                    ? "bg-primary"
+                                                    : "bg-destructive"
+                                            } h-2`}
+                                            style={{
+                                                width: `${
+                                                    disease.likelihoodScore * 1
+                                                }%`,
+                                            }}
+                                        />
+                                    </div>
                                 </div>
-                                {/* <Progress
-                                    value={disease.likelihoodScore * 100}
-                                    className="h-2 bg-destructive"
-                                /> */}
-                                <div className="bg-muted h-2 w-full overflow-hidden rounded">
-                                    <div
-                                        className={`${
-                                            disease.diseaseName === "Healthy"
-                                                ? "bg-primary"
-                                                : "bg-destructive"
-                                        } h-2`}
-                                        style={{
-                                            width: `${
-                                                disease.likelihoodScore * 1
-                                            }%`,
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
                 </div>
             </div>
         </div>

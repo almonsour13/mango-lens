@@ -1,9 +1,10 @@
 "use client";
 
-import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DiseaseColor } from "@/constant/color";
 import { ScanResult } from "@/types/types";
-import { Trees } from "lucide-react";
+import { TreeDeciduous, Trees, TreesIcon } from "lucide-react";
 
 export default function ResultDetails({
     scanResult,
@@ -11,15 +12,23 @@ export default function ResultDetails({
     scanResult: ScanResult;
 }) {
     return (
-        <div className="flex-1 flex flex-col gap-4 border p-4 rounded-lg bg-">
-            <div className="flex items-center space-x-2">
-                <Trees className="h-5 w-5 text-muted-foreground" />
-                {/* <span className="text-base font-medium">Tree Code:</span> */}
-                <span className="text-base font-semibold">
-                    {scanResult.treeCode || "N/A"}
-                </span>
-            </div>
-            <div className="flex flex-col gap-2">
+        <div className="flex-1 flex flex-col gap-4">
+            {/* Farm and Tree Information */}
+            <Card className="border-0 p-0 space-y-2">
+                <CardContent className="space-y-4 p-0">
+                    <div className="flex gap-4">
+                        <Badge variant="outline" className="px-4 py-2 text-sm">
+                            <Trees className="h-4 w-4 mr-2 text-green-600" />
+                            {scanResult.farmName || "N/A"}
+                        </Badge>
+                        <Badge variant="outline" className="px-4 py-2 text-sm">
+                            <TreeDeciduous className="h-4 w-4 mr-2 text-green-600" />
+                            {scanResult.treeCode || "N/A"}
+                        </Badge>
+                    </div>
+                </CardContent>
+            </Card>
+            <div className="flex flex-col gap-2 p-4 border rounded-lg">
                 <div className="flex items-center space-x-2">
                     <span className="text-base font-medium">
                         Assign Classification:
@@ -39,20 +48,21 @@ export default function ResultDetails({
                                             %
                                         </span>
                                     </div>
-                                <div className="bg-muted h-2 w-full overflow-hidden rounded">
-                                    <div
-                                        className={`${
-                                            disease.diseaseName === "Healthy"
-                                                ? "bg-primary"
-                                                : "bg-destructive"
-                                        } h-2`}
-                                        style={{
-                                            width: `${
-                                                disease.likelihoodScore * 1
-                                            }%`,
-                                        }}
-                                    />
-                                </div>
+                                    <div className="bg-muted h-2 w-full overflow-hidden rounded">
+                                        <div
+                                            className={`${
+                                                disease.diseaseName ===
+                                                "Healthy"
+                                                    ? "bg-primary"
+                                                    : "bg-destructive"
+                                            } h-2`}
+                                            style={{
+                                                width: `${
+                                                    disease.likelihoodScore * 1
+                                                }%`,
+                                            }}
+                                        />
+                                    </div>
                                 </div>
                                 // <Card
                                 //     key={index}

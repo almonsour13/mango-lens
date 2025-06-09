@@ -9,6 +9,7 @@ import { analysis$ } from "./analysis";
 import { analyzedimage$ } from "./analyzeimage";
 import { diseaseidentified$ } from "./diseaseidentified";
 import { loadingStore$ } from "./loading-store";
+import { farm$ } from "./farm";
 
 const userID = getUser()?.userID;
 
@@ -87,6 +88,7 @@ export const getImageByImageID = async (
     imageID: string
 ): Promise<{ success: boolean; data?: any; message?: string }> => {
     try {
+        const farms = Object.values(farm$.get() || {});
         const trees = Object.values(tree$.get() || {});
         const images = Object.values(image$.get() || {});
         const analysis = Object.values(analysis$.get() || {});
@@ -111,12 +113,16 @@ export const getImageByImageID = async (
         const diseases = identifiedDiseases.filter(
             (d) => d.analysisID === analysisEntry?.analysisID
         );
+        const farm = farms.find((f) => f.farmID === tree.farmID);
+        console.log(farm)
         const res = {
             success: true,
             data: {
                 ...image,
                 ...analysisEntry,
                 ...tree,
+                farmID:farm.farmID,
+                farmName:farm.farmName,
                 imageData: convertBlobToBase64(image.imageData) || null,
                 analyzedImage:
                     convertBlobToBase64(analyzedImage?.imageData) || null,
@@ -306,9 +312,11 @@ export const saveScan = async (scanResult: any) => {
                 message: "Tree not found for the given treeCode.",
             };
         }
+        console.log(scanResult)
 
         const treeID = tree.treeID;
         const imageID = uuidv4();
+
         image$[imageID].set({
             imageID: imageID,
             userID,
@@ -317,6 +325,7 @@ export const saveScan = async (scanResult: any) => {
             status: 1,
             uploadedAt: new Date(),
         });
+
         const analysisID = uuidv4();
         analysis$[analysisID].set({
             analysisID: analysisID,

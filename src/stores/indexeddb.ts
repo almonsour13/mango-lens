@@ -8,6 +8,7 @@ import { diseaseidentified$ } from "./diseaseidentified";
 import { trash$ } from "./trash";
 import { feedback$ } from "./feedback";
 import { feedbackResponse$ } from "./feedbackResponse";
+import { farm$ } from "./farm";
 
 export const checkAndInitializeDatabase = async () => {
     return new Promise<void>((resolve, reject) => {
@@ -44,6 +45,7 @@ export const checkAndInitializeDatabase = async () => {
 export const initializeStore = async () => {
     try {
         const stores: any[] = [
+            farm$,
             tree$,
             treeimage$,
             image$,

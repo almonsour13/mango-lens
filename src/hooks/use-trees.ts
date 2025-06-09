@@ -4,6 +4,7 @@ import { Tree } from "@/types/types";
 import { useState, useEffect, useCallback } from "react";
 
 interface TreeWithImage extends Tree {
+    farmName: string;
     treeImage: string;
     recentImage: string | null;
     imagesLength: number;

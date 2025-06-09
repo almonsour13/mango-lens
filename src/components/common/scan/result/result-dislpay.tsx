@@ -17,7 +17,6 @@ import { useEffect, useState } from "react";
 import ResultImage from "../../result-image";
 import AnalysisCarousel from "../../result-image-carousel";
 import ResultDetails from "./result-details";
-import ShowImage from "./show-image";
 import { saveScan } from "@/stores/image";
 
 export default function ResultDisplay() {
@@ -153,11 +152,6 @@ export default function ResultDisplay() {
                 onConfirm={handleConfirmDiscard}
                 title={`Are you sure you want to discard this analysis?`}
                 content={`This action cannot be undone.`}
-            />
-            <ShowImage
-                imageUrl={scanResult.originalImage || ""}
-                showImageDialog={showImageDialog}
-                setShowImageDialog={setShowImageDialog}
             />
         </>
     );

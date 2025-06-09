@@ -18,7 +18,6 @@ import { useScanResult } from "@/context/scan-result-context";
 import { useSearchParams } from "next/navigation";
 
 import AddPendingModal from "@/components/modal/add-pending-modal";
-import TreeModal from "@/components/modal/tree-modal";
 import { useCameraContext } from "@/context/camera-context";
 import { useModel } from "@/context/model-context";
 import { usePendingProcess } from "@/context/pending-process-context";
@@ -50,12 +49,6 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
     const treeCodeParams = searchParams.get("treeCode");
     const { userInfo } = useAuth();
 
-    const [openPendingModal, setOpenPendingModal] = useState(false);
-
-    const [openTreeModal, setOpenTreeModal] = useState(false);
-
-    const { fetchPendings } = usePendingProcess();
-
     const { tfPredict } = useModel();
     useEffect(() => {
         const fetchTrees = async () => {
@@ -69,8 +62,8 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
                 }
             } catch (error) {
                 console.error("Error fetching trees:", error);
-            }finally{
-                setIsLoading(false)
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -110,19 +103,6 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
             setIsScanning(false);
         }
     };
-    const confirmPending = async () => {
-        const data = {
-            userID: userInfo?.userID,
-            treeCode: treeCode,
-            imageUrl: croppedImage || capturedImage,
-        };
-        setOpenPendingModal(false);
-        // await storePendingProcessItem(data);
-        fetchPendings();
-        toast({
-            description: "Successfully added to the pending",
-        });
-    };
     const handleTreeAction = (value: Tree) => {
         setTrees([...trees, value]);
         setTreeCode(value.treeCode);
@@ -140,6 +120,37 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
                     Use Camera
                 </Button>
             )}
+            <div className="flex-1 flex items-center w-full gap-2">
+                <Select value={treeCode} onValueChange={setTreeCode}>
+                    <SelectTrigger>
+                        {isLoading ? (
+                            <p className="p-1 px-2">Loading...</p>
+                        ) : trees && trees.length ? (
+                            <SelectValue placeholder="Select Farm" />
+                        ) : (
+                            <p className="p-1 px-2">No Farms Available</p>
+                        )}
+                    </SelectTrigger>
+                    <SelectContent>
+                        {isLoading ? (
+                            <p className="p-1 px-2">loading</p>
+                        ) : trees && trees.length ? (
+                            <>
+                                {trees.map((tree) => (
+                                    <SelectItem
+                                        key={tree.treeID}
+                                        value={tree.treeCode}
+                                    >
+                                        {tree.treeCode}
+                                    </SelectItem>
+                                ))}
+                            </>
+                        ) : (
+                            <p className="p-1 px-2">No Farm</p>
+                        )}
+                    </SelectContent>
+                </Select>
+            </div>
             <div className="flex-1 flex items-center w-full gap-2">
                 <Select value={treeCode} onValueChange={setTreeCode}>
                     <SelectTrigger>
@@ -171,14 +182,13 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
                     </SelectContent>
                 </Select>
                 <Button
-                    onClick={() => setOpenTreeModal(true)}
                     variant="outline"
                     className="w-10"
                 >
                     <Plus className="h-4 w-4" />
                 </Button>
             </div>
-            <Button
+            {/* <Button
                 className={`w-full ${
                     !capturedImage || isScanning || !treeCode
                         ? " bg-primary/50"
@@ -194,17 +204,7 @@ export const ImageUploadFooter: React.FC<FooterProps> = ({
                     <Scan className="w-4 h-4 mr-2" />
                 )}
                 {isScanning ? "Scanning" : "Scan Image"}
-            </Button>
-            <TreeModal
-                openDialog={openTreeModal}
-                setOpenDialog={setOpenTreeModal}
-                handleTreeAction={handleTreeAction}
-            />
-            <AddPendingModal
-                open={openPendingModal}
-                onClose={setOpenPendingModal}
-                onConfirm={confirmPending}
-            />
+            </Button> */}
         </div>
     );
 };
