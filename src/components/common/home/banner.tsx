@@ -115,7 +115,7 @@ export default function Banner() {
                                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-2xl opacity-50" />
                                 <div className="relative">
                                     <Image
-                                        src="/assets/website-qrcode.png"
+                                        src="/assets/webiste-qr.png"
                                         alt="MangoPro Disease Detection Platform"
                                         width={350}
                                         height={350}
