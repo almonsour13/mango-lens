@@ -20,6 +20,7 @@ interface FarmProps extends Farm {
     totalTrees: number;
     healthyTrees: number;
     diseasedTrees: number;
+    diseaseCount: {[diseaseName: string]: number},
     farmHealth: number;
 }
 export const useFarmData = (farmID: string) => {

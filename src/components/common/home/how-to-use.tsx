@@ -55,17 +55,17 @@ export default function HowToUse() {
             id="how-to-use"
             className="py-24 bg-gradient-to-b from-background to-muted/50"
         >
-            <div className="max-w-7xl mx-auto px-4">
+            <div className="max-w-7xl mx-auto px-4 mt-20">
                 {/* Header Section */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <div className="inline-flex items-center justify-center px-4 py-1.5 mb-6 text-sm font-medium rounded-full bg-primary/10 text-primary">
                         Simple 5-Step Process
                     </div>
-                    <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
+                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 mb-6 text-foreground">
                         How to Use{" "}
                         <span className="text-primary">{MetaData.title}</span>
                     </h2>
-                    <p className="text-xl text-muted-foreground">
+                    <p className="text-md text-muted-foreground">
                         Our intuitive platform makes disease detection simple
                         and efficient. Follow these four steps to protect your
                         mango harvest.

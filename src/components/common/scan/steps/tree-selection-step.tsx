@@ -26,12 +26,12 @@ export default function TreeSelectionStep({
     return (
         <div className="space-y-4">
             {/* Header */}
-            <div className="space-y-2">
-                <div className="space-y-3">
+            <div className="space-y-4">
+                <div className="space-y-2">
                     <h2 className="text-2xl font-semibold tracking-tight text-foreground">
                         Select a Tree Code
                     </h2>
-                    <p className="text-muted-foreground leading-relaxed">
+                    <p className="text-muted-foreground">
                         Select a tree code from the selected farm or generate a new one
                     </p>
                 </div>

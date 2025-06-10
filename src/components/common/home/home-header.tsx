@@ -165,44 +165,12 @@ export default function HomeHeader({
                     </DropdownMenu>
 
                     {userInfo ? (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="default"
-                                    size="sm"
-                                    className="gap-2"
-                                >
-                                    <span className="hidden sm:inline">
-                                        Dashboard
-                                    </span>
-                                    <ChevronDown className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent
-                                align="end"
-                                className="w-48 bg-card border"
-                            >
-                                <DropdownMenuItem className="hover:bg-muted cursor-pointer">
-                                    <User className="mr-2 h-4 w-4 text-muted-foreground" />
-                                    <span className="text-foreground">
-                                        Profile
-                                    </span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="hover:bg-muted cursor-pointer">
-                                    <LayoutDashboard className="mr-2 h-4 w-4 text-muted-foreground" />
-                                    <Link
-                                        href={`/${
-                                            userInfo?.role === 1
-                                                ? "admin"
-                                                : "user"
-                                        }/`}
-                                        className="text-foreground w-full"
-                                    >
-                                        Dashboard
-                                    </Link>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <Button variant="default" size="sm" className="gap-2">
+                            <Link href="/signin" className="flex items-center">
+                                <LayoutDashboard className="mr-2 h-4 w-4" />
+                                Dashboard
+                            </Link>
+                        </Button>
                     ) : (
                         <Button variant="default" size="sm" className="gap-2">
                             <Link href="/signin" className="flex items-center">

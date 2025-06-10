@@ -28,7 +28,7 @@ export default function Banner() {
                 id="Home"
                 className="min-h-screen h-auto flex w-full py-20 bg-transparent relative z-10"
             >
-                <div className="max-w-7xl mx-auto px-4 flex-1 flex flex-col lg:flex-row items-center gap-12 lg:gap-16 mt-16">
+                <div className="max-w-7xl mx-auto px-4 flex-1 flex flex-col lg:flex-row items-center gap-24 md:gap-16 mt-8 md:mt-16">
                     {/* Left Content */}
                     <div className="flex-1 flex flex-col items-start justify-center space-y-8">
                         {/* Trust Badge */}
@@ -41,19 +41,16 @@ export default function Banner() {
                         <div className="space-y-4">
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight">
                                 <span className="text-primary">
-                                    {MetaData.title}
+                                    {MetaData.title}:{" "}
                                 </span>
                                 <br />
                                 <span className="text-foreground">
-                                    Advanced Mango Disease
+                                    Detect Mango Diseases Instantly 
                                 </span>
                                 <br />
-                                <span className="text-muted-foreground">
-                                    Detection Platform
-                                </span>
                             </h1>
 
-                            <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
+                            <p className="text-md text-muted-foreground max-w-xl">
                                 Leverage cutting-edge AI technology to identify
                                 and prevent mango diseases before they impact
                                 your harvest. Protect your investment with
@@ -82,26 +79,13 @@ export default function Banner() {
                         </div>
 
                         {/* CTA Buttons */}
-                        <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                            <Link href="/get-started">
+                        <div className="flex gap-4 pt-4">
+                            <Link href="#get-started">
                                 <Button
                                     size="lg"
                                     className="px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group"
                                 >
-                                    Start Free Analysis
-                                    <ArrowRight
-                                        size={18}
-                                        className="ml-2 group-hover:translate-x-1 transition-transform"
-                                    />
-                                </Button>
-                            </Link>
-                            <Link href="/demo">
-                                <Button
-                                    variant="outline"
-                                    size="lg"
-                                    className="px-8 py-3 rounded-lg font-semibold"
-                                >
-                                    Watch Demo
+                                    Get Started
                                 </Button>
                             </Link>
                         </div>

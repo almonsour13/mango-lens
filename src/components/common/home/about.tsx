@@ -51,18 +51,18 @@ export default function About() {
     ];
 
     return (
-        <SectionWrapper id="about" className="py-24 bg-muted/50">
-            <div className="max-w-7xl mx-auto px-4">
+        <SectionWrapper id="about" className="py-24">
+            <div className="md:max-w-7xl mx-auto px-4 space-y-32 mt-20">
                 {/* Header Section */}
-                <div className="flex flex-col items-center text-center mb-16 max-w-3xl mx-auto">
+                <div className="flex flex-col items-center text-center mb-16 max-w-6xl mx-auto">
                     <div className="inline-flex items-center justify-center px-4 py-1.5 mb-6 text-sm font-medium rounded-full bg-primary/10 text-primary">
                         About Our Platform
                     </div>
-                    <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
+                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground">
                         Revolutionizing Mango Disease Detection with{" "}
                         <span className="text-primary">{MetaData.title}</span>
                     </h2>
-                    <p className="text-xl text-muted-foreground leading-relaxed">
+                    <p className="text-md text-muted-foreground leading-relaxed">
                         MangoLens is an advanced agricultural technology
                         solution that empowers farmers and agricultural
                         professionals to identify and manage mango diseases
@@ -177,22 +177,6 @@ export default function About() {
                                 </p>
                             </div>
                         ))}
-                    </div>
-                </div>
-
-                {/* Call to Action */}
-                <div className="mt-20 text-center">
-                    <div className="inline-flex flex-col sm:flex-row gap-4 items-center">
-                        <Link href="/get-started">
-                            <Button size="lg" className="px-8">
-                                Start Using MangoLens
-                            </Button>
-                        </Link>
-                        <Link href="/contact">
-                            <Button variant="outline" size="lg">
-                                Contact Our Team
-                            </Button>
-                        </Link>
                     </div>
                 </div>
             </div>

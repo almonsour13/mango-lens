@@ -138,6 +138,7 @@ export function ModelProvider({ children }: { children: ReactNode }) {
             const resizedHeatmap = await resizeImage(heatmapUrl || '', 224, 224);
             
             const result:ScanResult = {
+                treeID:"",
                 treeCode:"",
                 farmName:"",
                 originalImage: resizedOriginal,

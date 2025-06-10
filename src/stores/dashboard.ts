@@ -6,77 +6,70 @@ import { analysis$ } from "./analysis";
 import { diseaseidentified$ } from "./diseaseidentified";
 import { analyzedimage$ } from "./analyzeimage";
 import { getUser } from "./user-store";
+import { farm$ } from "./farm";
 
 const userID = getUser()?.userID;
 
 export async function dashboardMetrics() {
-    const trees = Object.values(tree$.get() || {}).filter(
-        (t) => t.status === 1
-    );
-    const images = Object.values(image$.get() || {});
-    const i = images.filter(
-        (image) => image.userID === userID && image.status === 1
-    );
-    const analysis = Object.values(analysis$.get() || {});
-    const an = i.map((image) => {
-        return analysis.filter((a) => a.imageID === image.imageID)[0];
-    });
-    const diseaseidentified = Object.values(diseaseidentified$.get() || {});
-    const di = an.map((a) => {
-        return {
-            a,
-            ...diseaseidentified.filter(
-                (d) => d.analysisID === a.analysisID
-            )[0],
-        };
-    });
-    const detectionRate =
-        di
-            .filter((d) => d.diseaseName !== "Healthy")
-            .reduce((acc, curr) => acc + (curr.likelihoodScore || 0), 0) /
-        di.length;
+    const farms = Object.values(farm$.get() || {});
+    const trees = Object.values(tree$.get() || {});
+    const images = Object.values(image$.get() || {}); // Fixed: should be image$ not tree$
 
-    const currentDate = new Date();
-    const firstDayOfMonth = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        1
+    const totalFarms = farms.filter(
+        (farm) => farm.userID === userID && farm.status !== 3
     );
+    const totalTrees = trees.filter(
+        (tree) => tree.userID === userID && tree.status !== 3
+    ); // Fixed: parameter name
+    const totalImages = images.filter(
+        (image) => image.userID === userID && image.status !== 3
+    ); // Fixed: using images array and parameter name
+
+    // Calculate this month's additions (you'll need to implement the logic based on your data structure)
+    const thisMonth = new Date();
+    thisMonth.setDate(1); // First day of current month
+
+    const thisMonthFarms = farms.filter(
+        (farm) =>
+            farm.userID === userID &&
+            farm.status !== 3 &&
+            new Date(farm.addedAt) >= thisMonth
+    ).length;
+
     const thisMonthTrees = trees.filter(
-        (tree) => new Date(tree.addedAt) >= firstDayOfMonth
+        (tree) =>
+            tree.userID === userID &&
+            tree.status !== 3 &&
+            new Date(tree.addedAt) >= thisMonth
     ).length;
 
     const thisMonthImages = images.filter(
-        (image) => new Date(image.uploadedAt) >= firstDayOfMonth
+        (image) =>
+            image.userID === userID &&
+            image.status !== 3 &&
+            new Date(image.uploadedAt) >= thisMonth
     ).length;
-    const thisMonthDiseases = di.filter(
-        (disease) => new Date(disease.a.analyzedAt) >= firstDayOfMonth
-    ).length;
+
     const metrics = [
         {
+            name: "Total Farms",
+            value: totalFarms.length, // Fixed: get the count, not the array
+            detail: `+${thisMonthFarms} this month`,
+        },
+        {
             name: "Total Trees",
-            value: trees.length,
-            detail: `+${thisMonthTrees} this month`,
+            value: totalTrees.length, // Fixed: get the count, not the array
+            detail: `+${thisMonthTrees} this month`, // Fixed: use correct variable
         },
         {
             name: "Total Images",
-            value: i.length,
-            detail: `+${thisMonthImages} this month`,
-        },
-        {
-            name: "Disease Detected",
-            value: di.length,
-            detail: `+${thisMonthDiseases} this month`,
-        },
-        {
-            name: "Detection Rate",
-            value: `${detectionRate?detectionRate.toFixed(1):0}%`,
-            detail: "From all images",
+            value: totalImages.length, // Fixed: get the count, not the array
+            detail: `+${thisMonthImages} this month`, // Fixed: use correct variable
         },
     ];
+
     return metrics;
 }
-
 export async function recentAnalysis() {
     // const trees = Object.values(observable(tree$).get() || {}).filter(
     //     (t) => t.status === 1
@@ -136,43 +129,62 @@ export async function recentAnalysis() {
     // }
     // });
     try {
-            const trees = Object.values(tree$.get() || {});
-            const images = Object.values(image$.get() || {});
-            const analysis = Object.values(analysis$.get() || {});
-            const analyzedImages = Object.values(analyzedimage$.get() || {});
-            const identifiedDiseases = Object.values(diseaseidentified$.get() || {});
-    
-            // Filter images by userID first
-            const userImages = images
-                .filter((image) => image.userID === userID && image.status === 1)
-                .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
-    
-            if (userImages.length === 0) {
-                return { success: false, message: "No images found for this user." };
-            }
-    
-            // Map additional details for each image
-            const detailedImages = userImages.map((image) => {
-                const tree = trees.find((t) => t.treeID === image.treeID);
-                const analysisEntry = analysis.find((a) => a.imageID === image.imageID);
-                const analyzedImage = analyzedImages.find((ai) => ai.analysisID === analysisEntry?.analysisID);
-                const diseases = identifiedDiseases.filter((d) => d.analysisID === analysisEntry?.analysisID);
-                if(tree.status === 1 && image.status === 1){
-                    return {
-                        ...image,
-                        treeCode: tree?.treeCode || "Unknown",
-                        imageData: convertBlobToBase64(image.imageData) || null,
-                        analyzedImage: convertBlobToBase64(analyzedImage?.imageData) || null,
-                        diseases: diseases.map((d) => ({
-                            diseaseName: d.diseaseName,
-                            likelihoodScore: Number(d.likelihoodScore.toFixed(1)),
-                        })),
-                    };
-                }
-            });
-            return { success: true, data: detailedImages };
-        } catch (error) {
-            console.error("Error fetching images by user:", error);
-            return { success: false, message: "An error occurred while fetching images." };
+        const trees = Object.values(tree$.get() || {});
+        const images = Object.values(image$.get() || {});
+        const analysis = Object.values(analysis$.get() || {});
+        const analyzedImages = Object.values(analyzedimage$.get() || {});
+        const identifiedDiseases = Object.values(
+            diseaseidentified$.get() || {}
+        );
+
+        // Filter images by userID first
+        const userImages = images
+            .filter((image) => image.userID === userID && image.status === 1)
+            .sort(
+                (a, b) =>
+                    new Date(b.uploadedAt).getTime() -
+                    new Date(a.uploadedAt).getTime()
+            );
+
+        if (userImages.length === 0) {
+            return {
+                success: false,
+                message: "No images found for this user.",
+            };
         }
+
+        // Map additional details for each image
+        const detailedImages = userImages.map((image) => {
+            const tree = trees.find((t) => t.treeID === image.treeID);
+            const analysisEntry = analysis.find(
+                (a) => a.imageID === image.imageID
+            );
+            const analyzedImage = analyzedImages.find(
+                (ai) => ai.analysisID === analysisEntry?.analysisID
+            );
+            const diseases = identifiedDiseases.filter(
+                (d) => d.analysisID === analysisEntry?.analysisID
+            );
+            if (tree.status === 1 && image.status === 1) {
+                return {
+                    ...image,
+                    treeCode: tree?.treeCode || "Unknown",
+                    imageData: convertBlobToBase64(image.imageData) || null,
+                    analyzedImage:
+                        convertBlobToBase64(analyzedImage?.imageData) || null,
+                    diseases: diseases.map((d) => ({
+                        diseaseName: d.diseaseName,
+                        likelihoodScore: Number(d.likelihoodScore.toFixed(1)),
+                    })),
+                };
+            }
+        });
+        return { success: true, data: detailedImages };
+    } catch (error) {
+        console.error("Error fetching images by user:", error);
+        return {
+            success: false,
+            message: "An error occurred while fetching images.",
+        };
+    }
 }

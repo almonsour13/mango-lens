@@ -77,6 +77,7 @@ export default function UploadImageStep({
             if (result && result.originalImage && result.analyzedImage) {
                 setScanResult({
                     ...result,
+                    treeID:selectedTree?.treeID as string,
                     treeCode: selectedTree?.treeCode as string,
                     farmName: selectedFarm?.farmName as string,
                     originalImage: result.originalImage,

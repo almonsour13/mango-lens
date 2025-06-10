@@ -41,7 +41,7 @@ export default function GetStarted() {
             id="get-started"
             className="py-24 bg-gradient-to-b from-muted/50 to-background"
         >
-            <div className="max-w-7xl mx-auto px-4">
+            <div className="max-w-7xl mx-auto px-4 mt-20">
                 {/* Header Section */}
                 <div className="text-center max-w-4xl mx-auto mb-16">
                     <div className="inline-flex items-center justify-center px-4 py-1.5 mb-6 text-sm font-medium rounded-full bg-primary/10 text-primary">
@@ -52,7 +52,7 @@ export default function GetStarted() {
                         <span className="text-primary">Mango Harvest</span>{" "}
                         Today
                     </h2>
-                    <p className="text-xl text-muted-foreground leading-relaxed mb-8">
+                    <p className="text-md text-muted-foreground mb-8">
                         Get accurate, real-time diagnosis of mango diseases with
                         our AI-powered platform. Save your crops from potential
                         damage with timely insights and professional
@@ -60,13 +60,13 @@ export default function GetStarted() {
                     </p>
 
                     {/* Quick CTA for existing users */}
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+                    <div className="flex gap-4 justify-center items-center mb-12">
                         <Link href="/signup">
                             <Button
                                 size="lg"
                                 className="px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group"
                             >
-                                Get Started Free
+                                Get Started
                                 <ArrowRight
                                     size={18}
                                     className="ml-2 group-hover:translate-x-1 transition-transform"

@@ -13,6 +13,7 @@ export interface TfJsDisease {
     likelihoodScore: number;
 }
 export interface ScanResult {
+    treeID:string;
     treeCode: string;
     farmName: string;
     originalImage: string;

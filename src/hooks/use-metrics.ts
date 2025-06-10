@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { loadingStore$ } from "@/stores/loading-store";
 import { dashboardMetrics } from "@/stores/dashboard";
-import { TreeDeciduous, ImageIcon, Radar, Percent } from "lucide-react";
+import { TreeDeciduous, ImageIcon, Radar, Percent, Trees } from "lucide-react";
 
 interface Metric {
     name: string;
@@ -20,10 +20,9 @@ export const useMetrics = () => {;
 
     // Icons mapping
     const icons = [
+        { name: "Total Farms", icon: Trees },
         { name: "Total Trees", icon: TreeDeciduous },
         { name: "Total Images", icon: ImageIcon },
-        { name: "Disease Detected", icon: Radar },
-        { name: "Detection Rate", icon: Percent },
     ];
 
     // Listen for changes in loading states

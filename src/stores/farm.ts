@@ -145,7 +145,8 @@ export const updateFarm = async (
             message: "Failed to update farm. Please try again.",
         };
     }
-};export const getFarmByUser = async (): Promise<{
+};
+export const getFarmByUser = async (): Promise<{
     success: boolean;
     data?: any[];
     message?: string;
@@ -164,7 +165,7 @@ export const updateFarm = async (
             const farmTrees = trees.filter(
                 (tree) => tree.farmID === farm.farmID && tree.status === 1
             );
-            
+
             const healthyTrees: any[] = [];
             const diseasedTrees: any[] = [];
             const diseaseCount: { [key: string]: number } = {};
@@ -181,100 +182,95 @@ export const updateFarm = async (
                         return;
                     }
 
-                    console.log(`Found ${treeImages.length} images for tree ${tree.treeID}`);
+                    console.log(
+                        `Found ${treeImages.length} images for tree ${tree.treeID}`
+                    );
 
                     // Process ALL images for disease counting
                     let treeHealthyCount = 0;
                     let treeDiseasedCount = 0;
-                    let mostRecentDiseaseStatus:any = null;
+                    const image: any = Object.values(image$.get() || {})
+                        .filter((img) => img.treeID === tree.treeID)
+                        .sort(
+                            (a, b) =>
+                                new Date(b.uploadedAt).getTime() -
+                                new Date(a.uploadedAt).getTime()
+                        )[0];
+                    const analysis = Object.values(analysis$.get() || {}).find(
+                        (an) => an.imageID === image.imageID
+                    );
 
-                    treeImages.forEach((image) => {
-                        try {
-                            // Find analysis for this image
-                            const imageAnalysis = analysis.find(
-                                (an) => an.imageID === image.imageID && an.analysisID
-                            );
+                    // Skip if no analysis found for this image
+                    if (!analysis) {
+                        console.log(
+                            `No analysis found for image ${image.imageID}`
+                        );
+                        return;
+                    }
 
-                            if (!imageAnalysis) {
-                                console.log(`No analysis found for image ${image.imageID}`);
-                                return;
-                            }
-
-                            // Find disease identification for this analysis
-                            const diseaseIdentified = diseaseidentified.find(
-                                (di) => di.analysisID === imageAnalysis.analysisID
-                            );
-
-                            if (!diseaseIdentified || !diseaseIdentified.diseaseName) {
-                                console.log(
-                                    `No disease identification found for analysis ${imageAnalysis.analysisID}`
-                                );
-                                return;
-                            }
-
-                            const diseaseName = diseaseIdentified.diseaseName;
-
-                            // Count occurrences of each disease across ALL images
-                            if (diseaseCount[diseaseName]) {
-                                diseaseCount[diseaseName]++;
-                            } else {
-                                diseaseCount[diseaseName] = 1;
-                            }
-
-                            // Track counts for this specific tree
-                            if (diseaseName.toLowerCase() === "healthy") {
-                                treeHealthyCount++;
-                            } else {
-                                treeDiseasedCount++;
-                            }
-
-                            // Store the most recent disease status for tree categorization
-                            if (!mostRecentDiseaseStatus || 
-                                new Date(image.uploadedAt).getTime() > new Date(mostRecentDiseaseStatus.uploadedAt).getTime()) {
-                                mostRecentDiseaseStatus = {
-                                    ...diseaseIdentified,
-                                    uploadedAt: image.uploadedAt
-                                };
-                            }
-
-                        } catch (error) {
-                            console.error(`Error processing image ${image.imageID}:`, error);
-                        }
-                    });
+                    // Find disease identification for this analysis
+                    const diseaseIdentified = Object.values(
+                        diseaseidentified$.get() || {}
+                    ).find((di) => di.analysisID === analysis.analysisID);
 
                     // Categorize tree based on most recent disease identification
                     // but count all disease occurrences in diseaseCount
-                    if (mostRecentDiseaseStatus) {
-                        if (mostRecentDiseaseStatus.diseaseName.toLowerCase() === "healthy") {
+                    if (diseaseCount[diseaseIdentified.diseaseName]) {
+                        diseaseCount[diseaseIdentified.diseaseName]++;
+                    } else {
+                        diseaseCount[diseaseIdentified.diseaseName] = 1;
+                    }
+
+                    // Track counts for this specific tree
+                    if (
+                        diseaseIdentified.diseaseName.toLowerCase() ===
+                        "healthy"
+                    ) {
+                        treeHealthyCount++;
+                    } else {
+                        treeDiseasedCount++;
+                    }
+                    if (diseaseIdentified) {
+                        if (
+                            diseaseIdentified.diseaseName.toLowerCase() ===
+                            "healthy"
+                        ) {
                             healthyTrees.push({
                                 treeID: tree.treeID,
-                                ...mostRecentDiseaseStatus,
+                                ...diseaseIdentified,
                                 totalImages: treeImages.length,
                                 healthyImages: treeHealthyCount,
-                                diseasedImages: treeDiseasedCount
+                                diseasedImages: treeDiseasedCount,
                             });
                         } else {
                             diseasedTrees.push({
                                 treeID: tree.treeID,
-                                ...mostRecentDiseaseStatus,
+                                ...diseaseIdentified,
                                 totalImages: treeImages.length,
                                 healthyImages: treeHealthyCount,
-                                diseasedImages: treeDiseasedCount
+                                diseasedImages: treeDiseasedCount,
                             });
                         }
                     }
-
                 } catch (error) {
-                    console.error(`Error processing tree ${tree.treeID}:`, error);
+                    console.error(
+                        `Error processing tree ${tree.treeID}:`,
+                        error
+                    );
                 }
             });
 
             // Calculate farm health percentage
-            const totalProcessedTrees = healthyTrees.length + diseasedTrees.length;
-            const farmHealthPercentage = totalProcessedTrees > 0
-                ? ((healthyTrees.length / totalProcessedTrees) * 100).toFixed(1)
-                : "0";
-            console.log("Disease count:", diseaseCount)
+            const totalProcessedTrees =
+                healthyTrees.length + diseasedTrees.length;
+            const farmHealthPercentage =
+                totalProcessedTrees > 0
+                    ? (
+                          (healthyTrees.length / totalProcessedTrees) *
+                          100
+                      ).toFixed(1)
+                    : "0";
+            console.log("Disease count:", diseaseCount);
             return {
                 ...farm,
                 totalTrees: farmTrees.length,
@@ -287,7 +283,7 @@ export const updateFarm = async (
         });
 
         // Filter out farms that belong to the current user
-        const userFarms = updatedFarms.filter(farm => farm.userID === userID);
+        const userFarms = updatedFarms.filter((farm) => farm.userID === userID);
 
         return {
             success: true,
@@ -307,9 +303,11 @@ export const getFarmByID = async (farmID: string): Promise<any> => {
         const trees = Object.values(tree$.get() || {}).filter(
             (tree) => tree.farmID === farmID
         );
-        console.log(trees)
+        console.log(trees);
         const healthyTrees: any[] = [];
-        const diseasedTrees: any[] = [];    
+        const diseasedTrees: any[] = [];
+        const diseaseCount: { [key: string]: number } = {};
+
         trees.forEach((tree) => {
             // Get the most recent image for this tree
             const image: any = Object.values(image$.get() || {})
@@ -319,7 +317,6 @@ export const getFarmByID = async (farmID: string): Promise<any> => {
                         new Date(b.uploadedAt).getTime() -
                         new Date(a.uploadedAt).getTime()
                 )[0];
-
 
             // Skip if no image found for this tree
             if (!image) {
@@ -350,6 +347,11 @@ export const getFarmByID = async (farmID: string): Promise<any> => {
                 );
                 return;
             }
+            if (diseaseCount[diseaseIdentified.diseaseName]) {
+                diseaseCount[diseaseIdentified.diseaseName]++;
+            } else {
+                diseaseCount[diseaseIdentified.diseaseName] = 1;
+            }
 
             // Categorize tree based on disease identification
             if (diseaseIdentified.diseaseName === "Healthy") {
@@ -371,6 +373,7 @@ export const getFarmByID = async (farmID: string): Promise<any> => {
                 totalTrees: trees.length,
                 healthyTrees: healthyTrees.length,
                 diseasedTrees: diseasedTrees.length,
+                diseaseCount: diseaseCount,
                 farmHealth:
                     trees.length > 0
                         ? ((healthyTrees.length / trees.length) * 100).toFixed(

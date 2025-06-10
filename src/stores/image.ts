@@ -306,8 +306,8 @@ export const migrateImage = async (
 export const saveScan = async (scanResult: any) => {
     try {
         const trees = Object.values(tree$.get() || {});
-        const tree = trees.find((t) => t.treeCode === scanResult.treeCode);
-
+        const tree = trees.find((t) => t.treeID === scanResult.treeID);
+        console.log(scanResult.treeID)
         if (!tree) {
             return {
                 success: false,

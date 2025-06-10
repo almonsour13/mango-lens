@@ -117,7 +117,7 @@ export default function ContactSection() {
                         Get in Touch with{" "}
                         <span className="text-primary">{MetaData.title}</span>
                     </h2>
-                    <p className="text-xl text-muted-foreground">
+                    <p className="text-md text-muted-foreground">
                         Have questions about our disease detection platform? Our
                         team of agricultural experts is ready to assist you.
                     </p>

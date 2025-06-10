@@ -22,7 +22,7 @@ export default function FarmSelectionStep({
         <div className="space-y-4">
             {/* Header */}
             <div className="space-y-2">
-                <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+                <h2 className="text-2xl font-semibold text-foreground">
                     Select Your Farm
                 </h2>
                 <p className="text-muted-foreground">
@@ -34,7 +34,7 @@ export default function FarmSelectionStep({
             {farms.length > 0 ? (
                 <div className="space-y-4">
                     {/* Farm Grid */}
-                    <div className="grid gap-3">
+                    <div className="grid gap-2">
                         {farms.map((farm) => (
                             <Card
                                 key={farm.farmID}

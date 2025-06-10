@@ -68,6 +68,13 @@ export default function FarmProfile({
     };
     const handleAction = async (e: any, action: string, treeID: string) => {};
 
+    const farmHealth = farm?.farmHealth;
+    const isActive = farm?.status === 1;
+
+    const sortedDiseases = Object.entries(farm?.diseaseCount || {})
+        .sort(([, a], [, b]) => b - a)
+        .filter(([disease, count], index) => disease !== "Healthy");
+
     return (
         <>
             <div className="h-14 w-full px-4 flex items-center justify-between border-b">
@@ -241,6 +248,59 @@ export default function FarmProfile({
                                         />
                                     </div>
                                 </div>
+                            </div>
+                            <div className="flex flex-col max-w-lg gap-4">
+                            {sortedDiseases.length > 0 ? (
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm text-foreground">
+                                                Disease Found:
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Disease List */}
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {sortedDiseases.map(
+                                            ([disease, count], index) => {
+                                                return (
+                                                    <div
+                                                        key={disease}
+                                                        className="flex items-center justify-between p-3 bg-destructive/5 border border-destructive/20 rounded-lg hover:bg-destructive/10 transition-colors"
+                                                    >
+                                                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="font-medium text-sm text-foreground capitalize truncate">
+                                                                    {disease
+                                                                        .replace(
+                                                                            /([A-Z])/g,
+                                                                            " $1"
+                                                                        )
+                                                                        .trim()}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 flex-shrink-0">
+                                                            <div className="text-right">
+                                                                <div className="text-sm font-bold text-destructive">
+                                                                    {count}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            }
+                                        )}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex items-center justify-between p-1 px-2 bg-muted border rounded hover:bg-destructive/10 transition-colors">
+                                    <div className="font-medium text-xs text-foreground capitalize truncate">
+                                        None
+                                    </div>
+                                </div>
+                            )}
                             </div>
                         </div>
                     )}
