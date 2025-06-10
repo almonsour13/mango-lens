@@ -4,7 +4,7 @@ import { getImagesByUserID } from "@/stores/image";
 import { Image } from "@/types/types";
 
 type Images = Image & { analyzedImage: string } & { treeCode: string } & {
-    diseases: { likelihoodScore: number; diseaseName: string }[];
+    disease: { likelihoodScore: number; diseaseName: string };
 };
 
 export const useImages = () => {

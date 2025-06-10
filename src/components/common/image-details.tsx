@@ -308,36 +308,32 @@ function ResultDetails({
                     </span>
                 </div>
                 <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
-                    {imageDetails.diseases &&
-                        imageDetails.diseases.length > 0 &&
-                        imageDetails.diseases.map((disease, index) => {
-                            return (
-                                <div className="flex flex-col" key={index}>
-                                    <div className="flex justify-between text-sm mb-1">
-                                        <span>{disease.diseaseName}</span>
-                                        <span>
-                                            {disease.likelihoodScore.toFixed(1)}
-                                            %
-                                        </span>
-                                    </div>
-                                    <div className="bg-muted h-2 w-full overflow-hidden rounded">
-                                        <div
-                                            className={`${
-                                                disease.diseaseName ===
-                                                "Healthy"
-                                                    ? "bg-primary"
-                                                    : "bg-destructive"
-                                            } h-2`}
-                                            style={{
-                                                width: `${
-                                                    disease.likelihoodScore * 1
-                                                }%`,
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                            );
-                        })}
+                    {imageDetails.disease && (
+                        <div className="flex flex-col">
+                            <div className="flex justify-between text-sm mb-1">
+                                <span>{imageDetails.disease.diseaseName}</span>
+                                <span>
+                                    {imageDetails.disease.likelihoodScore}%
+                                </span>
+                            </div>
+                            <div className="bg-muted h-2 w-full overflow-hidden rounded">
+                                <div
+                                    className={`${
+                                        imageDetails.disease.diseaseName ===
+                                        "Healthy"
+                                            ? "bg-primary"
+                                            : "bg-destructive"
+                                    } h-2`}
+                                    style={{
+                                        width: `${
+                                            imageDetails.disease
+                                                .likelihoodScore * 1
+                                        }%`,
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

@@ -6,14 +6,17 @@ import Link from "next/link";
 import { Card } from "../ui/card";
 import Image from "next/image";
 import { Leaf, TreeDeciduous } from "lucide-react";
-import { usePathname } from "next/navigation";
 import type { Tree } from "@/types/types";
 import { TreeActionMenu } from "../action menu/tree-action-menu";
 
 interface TreeWithImage extends Tree {
     farmName: string;
     treeImage: string;
-    recentImage: string | null;
+    recentImage: {
+        imageData:string,
+        diseaseName:string,
+        likelihoodScore:number;
+    };
     imagesLength: number;
 }
 
@@ -28,15 +31,14 @@ export default function TreeCard({
         treeID: string
     ) => void;
 }) {
-    const pathname = usePathname();
 
     return (
-        <Link href={`${pathname}/${tree.treeID}`}>
+        <Link href={`/user/tree/${tree.treeID}`}>
             <Card className="overflow-hidden group bg-card border shadow-none">
                 <div className="relative aspect-square">
                     {tree.recentImage && tree.recentImage ? (
                         <Image
-                            src={tree.recentImage || "/placeholder.svg"}
+                            src={tree.recentImage.imageData || "/placeholder.svg"}
                             alt={`Tree ${tree.treeCode}`}
                             layout="fill"
                             objectFit="cover"
@@ -81,9 +83,11 @@ export default function TreeCard({
                                     <h3 className="font-semibold text-md text-white truncate leading-tight">
                                         {tree.treeCode}
                                     </h3>
-                                    <p className="text-xs text-gray-300 truncate leading-tight">
-                                        {tree.farmName}
-                                    </p>
+                                    {tree.farmName && (
+                                        <p className="text-xs text-gray-300 truncate leading-tight">
+                                            {tree.farmName}
+                                        </p>
+                                    )}
                                 </div>
                                 <div className="flex-shrink-0">
                                     <TreeActionMenu

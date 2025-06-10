@@ -1,11 +1,7 @@
 "use client";
 import { TreeImageCard } from "@/components/card/tree-image-card";
 import { Button } from "@/components/ui/button";
-import {
-    CardContent,
-    CardDescription,
-    CardHeader
-} from "@/components/ui/card";
+import { CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -21,9 +17,8 @@ import Link from "next/link";
 import { useState } from "react";
 
 export default function Gallery() {
-    const {images, loading} = useImages();
+    const { images, loading } = useImages();
 
-    
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const [filterTreeCode, setFilterTreeCode] = useState<string | null>(null);
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
@@ -40,17 +35,8 @@ export default function Gallery() {
             (image) =>
                 filterStatus === 0 ||
                 (filterStatus === 1 &&
-                    image.diseases.some(
-                        (disease) =>
-                            disease.diseaseName === "Healthy" &&
-                            disease.likelihoodScore > 50
-                    )) ||
-                (filterStatus === 2 &&
-                    image.diseases.some(
-                        (disease) =>
-                            disease.diseaseName !== "Healthy" &&
-                            disease.likelihoodScore > 50
-                    ))
+                    image.disease.diseaseName === "Healthy") ||
+                (filterStatus === 2 && image.disease.diseaseName !== "Healthy")
         )
         .sort((a, b) => {
             if (sortBy === "Newest") {

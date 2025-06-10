@@ -10,7 +10,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import PageWrapper from "@/components/wrapper/page-wrapper";
-import { Image, Tree } from "@/types/types";
+import { Farm, Image, Tree } from "@/types/types";
 
 import { TreeImageCard } from "@/components/card/tree-image-card";
 import { TreeImageSkeletonCard } from "@/components/skeleton/skeleton-card";
@@ -61,17 +61,9 @@ export default function TreeProfile({
                 (image) =>
                     filterStatus === 0 ||
                     (filterStatus === 1 &&
-                        image.diseases.some(
-                            (disease) =>
-                                disease.diseaseName === "Healthy" &&
-                                disease.likelihoodScore > 50
-                        )) ||
+                        image.disease.diseaseName === "Healthy") ||
                     (filterStatus === 2 &&
-                        image.diseases.some(
-                            (disease) =>
-                                disease.diseaseName !== "Healthy" &&
-                                disease.likelihoodScore > 50
-                        ))
+                        image.disease.diseaseName !== "Healthy")
             )
             .sort((a, b) => {
                 if (sortBy === "Newest") {

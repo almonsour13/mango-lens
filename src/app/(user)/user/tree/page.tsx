@@ -2,11 +2,7 @@
 import TreeCard from "@/components/card/tree-card";
 import ConfirmationModal from "@/components/modal/confirmation-modal";
 import { Button } from "@/components/ui/button";
-import {
-    CardContent,
-    CardDescription,
-    CardHeader
-} from "@/components/ui/card";
+import { CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -28,15 +24,17 @@ export default function TreePage() {
     const [openDialog, setOpenDialog] = useState(false);
     const pathname = usePathname();
     const { userInfo } = useAuth();
-    const {trees,setTrees, loading} = useTrees()
-    
+    const { trees, setTrees, loading } = useTrees();
+
     const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
     const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
+    const [selectedFarm, setSelectedFarm] = useState<string>("");
 
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [selectedTreeID, setSelectedTreeID] = useState("");
 
     const filteredTree = trees
+        .filter((tree) => selectedFarm === "" || tree.farmName === selectedFarm)
         .filter((tree) => filterStatus == 0 || tree.status == filterStatus)
         .sort((a, b) => {
             if (sortBy === "Newest") {
@@ -51,6 +49,10 @@ export default function TreePage() {
                 );
             }
         });
+
+    const uniqueFarms = [
+        ...new Set(trees.map((tree) => tree.farmName).filter(Boolean)),
+    ];
 
     const { toast } = useToast();
 
@@ -196,6 +198,44 @@ export default function TreePage() {
                                     >
                                         Inactive
                                     </DropdownMenuCheckboxItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        className="gap-1 w-10 md:w-auto"
+                                    >
+                                        <SlidersHorizontal className="h-3.5 w-3.5" />
+                                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                                            Farm
+                                        </span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="start">
+                                    <DropdownMenuLabel>
+                                        Filter by Farm:
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuCheckboxItem
+                                        checked={selectedFarm === ""}
+                                        onCheckedChange={() =>
+                                            setSelectedFarm("")
+                                        }
+                                    >
+                                        All Farms
+                                    </DropdownMenuCheckboxItem>
+                                    {uniqueFarms.map((farmName) => (
+                                        <DropdownMenuCheckboxItem
+                                            key={farmName}
+                                            checked={selectedFarm === farmName}
+                                            onCheckedChange={() =>
+                                                setSelectedFarm(farmName)
+                                            }
+                                        >
+                                            {farmName}
+                                        </DropdownMenuCheckboxItem>
+                                    ))}
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>

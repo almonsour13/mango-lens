@@ -137,17 +137,15 @@ export const generateImage = async (imageDetails: ImageAnalysisDetails) => {
 
         context.font = "24px Arial";
         context.fillStyle = "#4a5568";
-        if (imageDetails.diseases.length > 0) {
-            imageDetails.diseases.forEach((disease) => {
+        if (imageDetails.disease) {
                 context.fillText(
                     `• ${
-                        disease.diseaseName
-                    }: ${disease.likelihoodScore.toFixed(2)}%`,
+                        imageDetails.disease.diseaseName
+                    }: ${imageDetails.disease.likelihoodScore.toFixed(2)}%`,
                     textStartX + 20,
                     textY
                 );
                 textY += lineHeight;
-            });
         } else {
             context.fillText("None", textStartX + 20, textY);
         }

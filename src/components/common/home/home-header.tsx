@@ -4,7 +4,14 @@ import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
-import { LayoutDashboard, MenuIcon, Moon, Sun, User } from "lucide-react";
+import {
+    LayoutDashboard,
+    MenuIcon,
+    Moon,
+    Sun,
+    User,
+    ChevronDown,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -12,10 +19,9 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/context/auth-context";
 import { motion, AnimatePresence } from "framer-motion";
-import React from "react";
 import { MetaData } from "@/constant/metaData";
+import { useAuth } from "@/context/auth-context";
 
 interface HomeHeaderProps {
     sections: string[];
@@ -33,7 +39,7 @@ export default function HomeHeader({
     const [isScrolling, setScrolling] = useState(true);
     const [mounted, setMounted] = useState(false);
     const { theme, setTheme } = useTheme();
-    const { userInfo } = useAuth();
+    const { userInfo } = useAuth(); // Declare useAuth hook
 
     useEffect(() => {
         setMounted(true);
@@ -47,122 +53,166 @@ export default function HomeHeader({
         };
     }, []);
 
-    const ThemeIcon = (theme === "dark" ? Moon : Sun) ;
+    const ThemeIcon = theme === "dark" ? Moon : Sun;
 
     return (
         <header
-            className={`fixed z-30 top-0 w-full bg-gradient-to-b from-background via-transparent to-transparent h-14 transition-all duration-300 ${
+            className={`fixed z-30 top-0 w-full transition-all duration-300 ${
                 !isScrolling
-                    ? "backdrop-blur-lg supports-[backdrop-filter]:bg-background/80"
-                    : ""
+                    ? "backdrop-blur-lg bg-background/90 border-b border-border shadow-sm"
+                    : "bg-transparent"
             }`}
         >
-            <div
-                id=""
-                className="w-full h-full px-4 md:px-12 lg:px-16 flex items-center justify-between bg-transparent"
-            >
-                <div className="flex items-center justify-center gap-2">
+            <div className="max-w-7xl mx-auto px-4 h-16 md:h-20 flex items-center justify-between">
+                {/* Left side - Logo and Mobile Menu */}
+                <div className="flex items-center gap-4">
                     <button
-                        className="lg:hidden p-0"
+                        className="lg:hidden p-2 -ml-2 rounded-md hover:bg-muted transition-colors"
                         onClick={toggleSidebar}
                         aria-label="Toggle sidebar"
                     >
-                        <MenuIcon className="h-5 w-5" />
+                        <MenuIcon className="h-5 w-5 text-foreground" />
                     </button>
-                    <Link href="/" className="flex items-center">
-                        <Image
-                            src="/assets/icon/icon.png"
-                            alt="MangoCare icon"
-                            width={24}
-                            height={24}
-                            className="w-6 h-6 mr-1"
-                        />
-                        <h2 className="text-xl line-clamp-2 hidden md:block font-bold bg-gradient-to-r from-green-900 via-green-500 to-yellow-400 text-transparent bg-clip-text">
+
+                    <Link href="/" className="flex items-center group">
+                        <div className="relative w-8 h-8 mr-3 overflow-hidden rounded-lg flex items-center justify-center shadow-sm">
+                            <Image
+                                src="/assets/icon/icon.png"
+                                alt="MangoCare icon"
+                                width={24}
+                                height={24}
+                                className="w-6 h-6 transition-transform group-hover:scale-110"
+                            />
+                        </div>
+                        <h2 className="text-xl hidden md:block font-bold text-primary transition-all group-hover:text-primary/80">
                             {MetaData.title}
                         </h2>
                     </Link>
                 </div>
-                <div className="flex items-center gap-2">
-                    <nav className="hidden lg:flex gap-1">
-                        {sections.map((title) => (
-                            <React.Fragment key={title}>
-                                <Link
-                                    key={title}
-                                    href={`#${title.replaceAll(" ", "-")}`}
-                                    className={`relative h-8 px-4 flex items-center justify-center rounded text-sm font-medium transition-colors ${
-                                        activeLink === title
-                                            ? "text-primary"
-                                            : "text-muted-foreground hover:text-primary hover:bg-accent"
-                                    }`}
-                                    onClick={() => setActiveLink(title)}
-                                >
-                                    {title.charAt(0).toUpperCase() + title.slice(1)}
 
-                                    <AnimatePresence>
-                                        {activeLink === title && (
-                                            <motion.span
-                                                className="absolute -bottom-1 left-0 h-1 w-full rounded-full bg-primary"
-                                                layoutId="underline"
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                exit={{ opacity: 0 }}
-                                                transition={{ duration: 0.3 }}
-                                            />
-                                        )}
-                                    </AnimatePresence>
-                                </Link>
-                            </React.Fragment>
-                        ))}
-                    </nav>
+                {/* Center - Navigation */}
+                <nav className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 bg-card/50 backdrop-blur-md rounded-full px-2 py-1.5 shadow-sm border">
+                    {sections.map((title) => (
+                        <Link
+                            key={title}
+                            href={`#${title.replaceAll(" ", "-")}`}
+                            className={`relative h-9 px-4 flex items-center justify-center rounded-full text-sm font-medium transition-colors ${
+                                activeLink === title
+                                    ? "text-primary"
+                                    : "text-muted-foreground hover:text-primary hover:bg-muted"
+                            }`}
+                            onClick={() => setActiveLink(title)}
+                        >
+                            {title.charAt(0).toUpperCase() + title.slice(1)}
+
+                            <AnimatePresence>
+                                {activeLink === title && (
+                                    <motion.span
+                                        className="absolute inset-0 rounded-full bg-primary/10 -z-10"
+                                        layoutId="navBackground"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                    />
+                                )}
+                            </AnimatePresence>
+                        </Link>
+                    ))}
+                </nav>
+
+                {/* Right side - Theme Toggle and Auth */}
+                <div className="flex items-center gap-3">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="w-10">
-                                {ThemeIcon && <ThemeIcon className="h-4 w-4" />}
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-9 h-9 rounded-full border"
+                            >
+                                {ThemeIcon && (
+                                    <ThemeIcon className="h-4 w-4 text-foreground" />
+                                )}
                                 <span className="sr-only">Toggle theme</span>
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => setTheme("light")}>
-                                <Sun className="mr-2 h-4 w-4" />
-                                <span>Light</span>
+                        <DropdownMenuContent
+                            align="end"
+                            className="w-36 bg-card border"
+                        >
+                            <DropdownMenuItem
+                                onClick={() => setTheme("light")}
+                                className="hover:bg-muted cursor-pointer"
+                            >
+                                <Sun className="mr-2 h-4 w-4 text-amber-500" />
+                                <span className="text-foreground">Light</span>
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setTheme("dark")}>
-                                <Moon className="mr-2 h-4 w-4" />
-                                <span>Dark</span>
+                            <DropdownMenuItem
+                                onClick={() => setTheme("dark")}
+                                className="hover:bg-muted cursor-pointer"
+                            >
+                                <Moon className="mr-2 h-4 w-4 text-indigo-500" />
+                                <span className="text-foreground">Dark</span>
                             </DropdownMenuItem>
                             <DropdownMenuItem
                                 onClick={() => setTheme("system")}
+                                className="hover:bg-muted cursor-pointer"
                             >
-                                <LayoutDashboard className="mr-2 h-4 w-4" />
-                                <span>System</span>
+                                <LayoutDashboard className="mr-2 h-4 w-4 text-muted-foreground" />
+                                <span className="text-foreground">System</span>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <Button asChild variant="default">
-                        <Link
-                            href={
-                                userInfo
-                                    ? `/${
-                                          userInfo?.role === 1
-                                              ? "admin"
-                                              : "user"
-                                      }/`
-                                    : "/signin"
-                            }
-                        >
-                            {userInfo ? (
-                                <>
-                                    <LayoutDashboard className="h-4 w-4" />
-                                    <span>Dashboard</span>
-                                </>
-                            ) : (
-                                <>
-                                    <User className="h-4 w-4" />
-                                    <span>Sign in</span>
-                                </>
-                            )}
-                        </Link>
-                    </Button>
+
+                    {userInfo ? (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    variant="default"
+                                    size="sm"
+                                    className="gap-2"
+                                >
+                                    <span className="hidden sm:inline">
+                                        Dashboard
+                                    </span>
+                                    <ChevronDown className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                align="end"
+                                className="w-48 bg-card border"
+                            >
+                                <DropdownMenuItem className="hover:bg-muted cursor-pointer">
+                                    <User className="mr-2 h-4 w-4 text-muted-foreground" />
+                                    <span className="text-foreground">
+                                        Profile
+                                    </span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="hover:bg-muted cursor-pointer">
+                                    <LayoutDashboard className="mr-2 h-4 w-4 text-muted-foreground" />
+                                    <Link
+                                        href={`/${
+                                            userInfo?.role === 1
+                                                ? "admin"
+                                                : "user"
+                                        }/`}
+                                        className="text-foreground w-full"
+                                    >
+                                        Dashboard
+                                    </Link>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    ) : (
+                        <Button variant="default" size="sm" className="gap-2">
+                            <Link href="/signin" className="flex items-center">
+                                <User className="h-4 w-4 sm:mr-1" />
+                                <span className="hidden sm:inline">
+                                    Sign in
+                                </span>
+                            </Link>
+                        </Button>
+                    )}
                 </div>
             </div>
         </header>

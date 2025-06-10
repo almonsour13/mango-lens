@@ -23,20 +23,20 @@ export default function Page({
     const router = useRouter();
     const [imageDetails, setImageDetails] =
         useState<ImageAnalysisDetails | null>(null);
-        const [loading, setLoading] = useState(false)
-            const { userInfo } = useAuth();
+    const [loading, setLoading] = useState(false);
+    const { userInfo } = useAuth();
 
     useEffect(() => {
         const fetchImageDetailsByImageID = async () => {
-            setLoading(true)
+            setLoading(true);
             try {
                 const res = await fetch(
                     `/api/admin/${userInfo?.userID}/images/${imageID}`
                 );
                 const data = await res.json();
-                if(res.ok){
-                    setImageDetails(data.data)
-                }else{
+                if (res.ok) {
+                    setImageDetails(data.data);
+                } else {
                     toast({
                         description: `${data.error}`,
                     });
@@ -46,10 +46,9 @@ export default function Page({
                     description: `${error}`,
                 });
             } finally {
-                
-            setLoading(false)
+                setLoading(false);
             }
-        }
+        };
         fetchImageDetailsByImageID();
     }, [imageID]);
     const handleBack = () => {
@@ -64,7 +63,8 @@ export default function Page({
                     </button>
                     <Separator orientation="vertical" />
                     <h1 className="text-md font-medium">
-                        {imageDetails?.treeCode && imageDetails?.treeCode+" - Image Details"}
+                        {imageDetails?.treeCode &&
+                            imageDetails?.treeCode + " - Image Details"}
                     </h1>
                 </div>
                 <div className="flex items-center gap-2"></div>
@@ -133,39 +133,38 @@ function ResultDetails({
                     </span>
                 </div>
                 <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
-                    {imageDetails.diseases.map((disease, index) => {
-                        return (
-                            <div className="flex flex-col" key={index}>
-                                <div className="flex justify-between text-sm mb-1">
-                                    <span>{disease.diseaseName}</span>
-                                    <span>
-                                        {disease.likelihoodScore.toFixed(1)}%
-                                    </span>
-                                </div>
-                                {/* <Progress
+                    <div className="flex flex-col">
+                        <div className="flex justify-between text-sm mb-1">
+                            <span>{imageDetails.disease.diseaseName}</span>
+                            <span>
+                                {imageDetails.disease.likelihoodScore.toFixed(
+                                    1
+                                )}
+                                %
+                            </span>
+                        </div>
+                        {/* <Progress
                                     value={disease.likelihoodScore * 100}
                                     className="h-2 bg-destructive"
                                 /> */}
-                                <div className="bg-muted h-2 w-full overflow-hidden rounded">
-                                    <div
-                                        className={`${
-                                            disease.diseaseName === "Healthy"
-                                                ? "bg-primary"
-                                                : "bg-destructive"
-                                        } h-2`}
-                                        style={{
-                                            width: `${
-                                                disease.likelihoodScore * 1
-                                            }%`,
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        );
-                    })}
+                        <div className="bg-muted h-2 w-full overflow-hidden rounded">
+                            <div
+                                className={`${
+                                    imageDetails.disease.diseaseName ===
+                                    "Healthy"
+                                        ? "bg-primary"
+                                        : "bg-destructive"
+                                } h-2`}
+                                style={{
+                                    width: `${
+                                        imageDetails.disease.likelihoodScore * 1
+                                    }%`,
+                                }}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
-

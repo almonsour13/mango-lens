@@ -170,12 +170,12 @@ export default function UploadImageStep({
     return (
         <div className="space-y-4">
             {/* Header */}
-            <div className="space-y-">
+            <div className="space-y-2">
                 <h2 className="text-2xl font-semibold tracking-tight text-foreground">
                     Upload & Analyze
                 </h2>
-                <p className="text-muted-foreground leading-relaxed">
-                    Upload a clear image of the leaf for detailed analysis
+                <p className="text-muted-foreground text-sm">
+                    Upload a clear leaf image for automatic scanning and analysis
                 </p>
             </div>
 

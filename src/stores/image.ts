@@ -57,7 +57,7 @@ export const image$ = observable(
                 if (!value.id) {
                     throw new Error("pred_id is required for update");
                 }
-                
+
                 const { data, error } = await supabase
                     .from("image")
                     .update(value)
@@ -110,28 +110,28 @@ export const getImageByImageID = async (
         const analyzedImage = analyzedImages.find(
             (ai) => ai.analysisID === analysisEntry?.analysisID
         );
-        const diseases = identifiedDiseases.filter(
-            (d) => d.analysisID === analysisEntry?.analysisID
+        const disease = identifiedDiseases.find(
+            (d) => d.analysisID === analysisEntry.analysisID
         );
         const farm = farms.find((f) => f.farmID === tree.farmID);
-        console.log(farm)
+        console.log(farm);
         const res = {
             success: true,
             data: {
                 ...image,
                 ...analysisEntry,
                 ...tree,
-                farmID:farm.farmID,
-                farmName:farm.farmName,
+                farmID: farm.farmID,
+                farmName: farm.farmName,
                 imageData: convertBlobToBase64(image.imageData) || null,
                 analyzedImage:
                     convertBlobToBase64(analyzedImage?.imageData) || null,
-                diseases: diseases.map((d) => ({
-                    diseaseName: d.diseaseName,
-                    likelihoodScore: Number(d.likelihoodScore.toFixed(1)),
-                })),
+                disease: {
+                    diseaseName: disease.diseaseName,
+                    likelihoodScore: Number(disease.likelihoodScore.toFixed(1)),
+                },
             },
-        };;
+        };
         return res;
     } catch (error) {
         console.error("Error fetching image by imageID:", error);
@@ -172,8 +172,8 @@ export const getImagesByTreeID = async (
             const analyzedImage = analyzedImages.find(
                 (ai) => ai.analysisID === analysisEntry?.analysisID
             );
-            const diseases = identifiedDiseases.filter(
-                (d) => d.analysisID === analysisEntry?.analysisID
+            const disease = identifiedDiseases.find(
+                (d) => d.analysisID === analysisEntry.analysisID
             );
 
             return {
@@ -182,10 +182,10 @@ export const getImagesByTreeID = async (
                 imageData: convertBlobToBase64(image.imageData) || null,
                 analyzedImage:
                     convertBlobToBase64(analyzedImage?.imageData) || null,
-                diseases: diseases.map((d) => ({
-                    diseaseName: d.diseaseName,
-                    likelihoodScore: Number(d.likelihoodScore.toFixed(1)),
-                })),
+                disease: {
+                    diseaseName: disease.diseaseName,
+                    likelihoodScore: Number(disease.likelihoodScore.toFixed(1)),
+                },
             };
         });
 
@@ -233,8 +233,8 @@ export const getImagesByUserID = async (): Promise<{
             const analyzedImage = analyzedImages.find(
                 (ai) => ai.analysisID === analysisEntry?.analysisID
             );
-            const diseases = identifiedDiseases.filter(
-                (d) => d.analysisID === analysisEntry?.analysisID
+            const disease = identifiedDiseases.find(
+                (d) => d.analysisID === analysisEntry.analysisID
             );
             if (tree.status === 1 && image.status === 1) {
                 return {
@@ -243,10 +243,12 @@ export const getImagesByUserID = async (): Promise<{
                     imageData: convertBlobToBase64(image.imageData) || null,
                     analyzedImage:
                         convertBlobToBase64(analyzedImage?.imageData) || null,
-                    diseases: diseases.map((d) => ({
-                        diseaseName: d.diseaseName,
-                        likelihoodScore: Number(d.likelihoodScore.toFixed(1)),
-                    })),
+                    disease: {
+                        diseaseName: disease.diseaseName,
+                        likelihoodScore: Number(
+                            disease.likelihoodScore.toFixed(1)
+                        ),
+                    },
                 };
             }
         });
@@ -312,7 +314,7 @@ export const saveScan = async (scanResult: any) => {
                 message: "Tree not found for the given treeCode.",
             };
         }
-        console.log(scanResult)
+        console.log(scanResult);
 
         const treeID = tree.treeID;
         const imageID = uuidv4();

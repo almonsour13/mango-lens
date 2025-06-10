@@ -26,6 +26,7 @@ function interpolateColor(
 export const generateHeatmapOverlay = async (
     heatmap: number[][],
     originalImage: HTMLImageElement,
+    isHealthy:boolean,
     alpha: number = 0.5 // Blend factor between original image and heatmap
 ) => {
     const canvas = document.createElement("canvas");
@@ -40,22 +41,31 @@ export const generateHeatmapOverlay = async (
         });
         return;
     }
-
-    // Draw original image
+ 
     ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
 
-    // Create heatmap overlay
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
-
+    
     // Define color gradient (from blue to red, similar to OpenCV's COLORMAP_JET)
-    const colors: [number, number, number][] = [
-        [0, 0, 255], // Blue
-        [0, 255, 255], // Cyan
+    const healthyColors: [number, number, number][] = [
+        [0, 0, 255], // 
         [0, 255, 0], // Green
-        [255, 255, 0], // Yellow
-        [255, 0, 0], // Red
+        [0, 255, 0], // Green
+        [0, 255, 0], // Green
+        [0, 255, 0], // Green
     ];
+
+    const unhealthyColors: [number, number, number][] = [
+        [0, 0, 255], // Blue
+        [255, 0, 0], // Light red
+        [255, 0, 0], // Light red
+        [255, 0, 0], // Light red
+        [255, 0, 0], // Very light red
+    ];
+
+    // Choose color palette based on health status
+    const colors = isHealthy ? healthyColors : unhealthyColors;
 
     // Scale heatmap to image dimensions
     const scaleX = canvas.width / heatmap[0].length;

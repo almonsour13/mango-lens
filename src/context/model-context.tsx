@@ -131,7 +131,8 @@ export function ModelProvider({ children }: { children: ReactNode }) {
             const heatmaps = await gradClassActivationMap(model, inputTensor, [
                 predictedClassIndex,
             ]);
-            const heatmapUrl = await generateHeatmapOverlay(heatmaps[0], img);
+            const isHealthy = classes[predictedClassIndex] === "Healthy"
+            const heatmapUrl = await generateHeatmapOverlay(heatmaps[0], img, isHealthy);
             const resizedOriginal = await resizeImage(image, 224, 224);
             
             const resizedHeatmap = await resizeImage(heatmapUrl || '', 224, 224);
@@ -141,7 +142,7 @@ export function ModelProvider({ children }: { children: ReactNode }) {
                 farmName:"",
                 originalImage: resizedOriginal,
                 analyzedImage: resizedHeatmap,
-                diseases:predictionWithClasses
+                diseases:[predictionWithClasses[0]]
             }
 
             // Helper function to resize images

@@ -1,4 +1,3 @@
-import { usePathname } from "next/navigation";
 import {
     Edit,
     MoreVertical,
@@ -25,9 +24,6 @@ export function TreeActionMenu({
     status,
     handleAction,
 }: ActionMenuProps) {
-    const pathname = usePathname();
-
-    const pathSegments = pathname.split("/");
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -38,9 +34,7 @@ export function TreeActionMenu({
             <DropdownMenuContent align="end">
                 {status == 1 && (
                     <Link
-                        href={`${
-                            pathSegments[0] + "/" + pathSegments[1]
-                        }/scan/?treeCode=${treeCode}`}
+                        href={`/user/scan/?treeCode=${treeCode}`}
                     >
                         <DropdownMenuItem>
                             <Scan className="mr-2 h-4 w-4" />
@@ -48,7 +42,7 @@ export function TreeActionMenu({
                         </DropdownMenuItem>
                     </Link>
                 )}{" "}
-                <Link href={`${pathname}/${treeID}/edit`}>
+                <Link href={`/user/tree/${treeID}/edit`}>
                     <DropdownMenuItem
                     // onClick={(e) => handleAction(e, "Edit", treeID)}
                     >

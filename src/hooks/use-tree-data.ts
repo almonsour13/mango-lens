@@ -5,7 +5,7 @@ import { getTreeByID } from "@/stores/tree";
 import { getImagesByTreeID } from "@/stores/image";
 
 type images = Image & { analyzedImage: string} & {
-    diseases: { likelihoodScore: number; diseaseName: string }[];
+    disease: { likelihoodScore: number; diseaseName: string };
 };
 
 export const useTreeData = (treeID: string) => {

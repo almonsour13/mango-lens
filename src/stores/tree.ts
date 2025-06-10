@@ -9,6 +9,8 @@ import { image$ } from "./image";
 import { treeimage$ } from "./treeimage";
 import { farm$ } from "./farm";
 import { loadingStore$ } from "./loading-store";
+import { analysis$ } from "./analysis";
+import { diseaseidentified$ } from "./diseaseidentified";
 
 const userID = getUser()?.userID;
 
@@ -95,6 +97,8 @@ export const getTreeByUser = async (): Promise<{
         const trees = Object.values(tree$.get() || {});
         const images = Object.values(image$.get() || {});
         const treesimage = Object.values(treeimage$.get() || {});
+        const analysis = Object.values(analysis$.get() || {});
+        const diseaseidentified = Object.values(diseaseidentified$.get() || {});
 
         const userTrees = trees.filter((tree) => tree.status === 1);
 
@@ -105,57 +109,99 @@ export const getTreeByUser = async (): Promise<{
         // Process trees with their images
         const treeWithImage = await Promise.all(
             userTrees.map(async (tree) => {
-                // Get related images for this tree
-                const relatedImages = images.filter(
-                    (image) =>
-                        image.treeID === tree.treeID && image.status === 1
-                );
-                const farm = farms.find(
-                    (farm) => farm.farmID === tree.farmID && farm.status === 1)
-                // Get the most recent image
-                const recentImage = relatedImages.sort(
-                    (a, b) =>
-                        new Date(b.uploadedAt).getTime() -
-                        new Date(a.uploadedAt).getTime()
-                )[0];
-
-                // Get tree image
-                const treeimage = treesimage.find(
-                    (treeimage) =>
-                        treeimage.treeID === tree.treeID &&
-                        treeimage.status === 1
-                );
-
-                // Convert images to base64 if they exist
-                let treeImageBase64 = null;
-                let recentImageBase64 = null;
-
                 try {
-                    if (treeimage?.imageData) {
-                        treeImageBase64 = await convertBlobToBase64(
-                            treeimage.imageData
+                    // Get related images for this tree
+                    const relatedImages = images.filter(
+                        (image) =>
+                            image.treeID === tree.treeID && image.status === 1
+                    );
+                    console.log(relatedImages);
+
+                    const farm = farms.find(
+                        (farm) => farm.farmID === tree.farmID && farm.status === 1
+                    );
+
+                    // Get the most recent image
+                    const recentImage = relatedImages.sort(
+                        (a, b) =>
+                            new Date(b.uploadedAt).getTime() -
+                            new Date(a.uploadedAt).getTime()
+                    )[0];
+
+                    // Initialize analysis and disease identification variables
+                    let an:any = null;
+                    let diseaseIdentified = null;
+
+                    // Only proceed if we have a recent image
+                    if (recentImage) {
+                        an = analysis.find(
+                            (an) => an.analysisID && recentImage.imageID && 
+                                   an.imageID === recentImage.imageID
                         );
+
+                        // Only look for disease identification if analysis exists
+                        if (an && an.analysisID) {
+                            diseaseIdentified = diseaseidentified.find(
+                                (di) => di.analysisID === an.analysisID
+                            );
+                        }
                     }
 
-                    if (recentImage?.imageData) {
-                        recentImageBase64 = await convertBlobToBase64(
-                            recentImage.imageData
-                        );
+                    console.log(diseaseIdentified);
+
+                    // Get tree image
+                    const treeimage = treesimage.find(
+                        (treeimage) =>
+                            treeimage.treeID === tree.treeID &&
+                            treeimage.status === 1
+                    );
+
+                    // Convert images to base64 if they exist
+                    let treeImageBase64 = null;
+                    let recentImageBase64 = null;
+
+                    try {
+                        if (treeimage?.imageData) {
+                            treeImageBase64 = await convertBlobToBase64(
+                                treeimage.imageData
+                            );
+                        }
+
+                        if (recentImage?.imageData) {
+                            recentImageBase64 = await convertBlobToBase64(
+                                recentImage.imageData
+                            );
+                        }
+                    } catch (error) {
+                        console.error("Error converting image to base64:", error);
+                        // Continue processing even if image conversion fails
                     }
+
+                    return {
+                        ...tree,
+                        farmName: farm?.farmName || 'Unknown Farm',
+                        treeImage: treeImageBase64,
+                        recentImage: recentImage ? {
+                            imageData: recentImageBase64,
+                            diseaseName: diseaseIdentified?.diseaseName || null,
+                            likelihoodScore: diseaseIdentified?.likelihoodScore || null
+                        } : null,
+                        imagesLength: relatedImages.length,
+                    };
                 } catch (error) {
-                    console.error("Error converting image to base64:", error);
+                    console.error(`Error processing tree ${tree.treeID}:`, error);
+                    // Return tree with minimal data if processing fails
+                    return {
+                        ...tree,
+                        farmName: 'Unknown Farm',
+                        treeImage: null,
+                        recentImage: null,
+                        imagesLength: 0,
+                    };
                 }
-
-                return {
-                    ...tree,
-                    farmName:  farm.farmName,
-                    treeImage: treeImageBase64,
-                    recentImage: recentImageBase64,
-                    imagesLength: relatedImages.length,
-                };
             })
         );
-
+        
         return { success: true, data: treeWithImage };
     } catch (error) {
         console.error("Error fetching trees by user:", error);
@@ -173,7 +219,9 @@ export const getTreeByID = async (treeID: string) => {
     if (!tree || tree.status !== 1) {
         return null;
     }
-    const farmName = farm.find(farm => farm.farmID === tree.farmID && farm.status === 1)?.farmName || "Unknown Farm";
+    const farmName =
+        farm.find((farm) => farm.farmID === tree.farmID && farm.status === 1)
+            ?.farmName || "Unknown Farm";
     const treeimage = treesimage.filter(
         (treeimage) =>
             treeimage.treeID === tree.treeID && treeimage.status === 1
@@ -292,14 +340,16 @@ export const addTree = async (
         };
     }
 };
-export const generateTreeCode = async (farmID:string | null) => {
+export const generateTreeCode = async (farmID: string | null) => {
     try {
         const trees = Object.values(tree$.get() || {});
         if (trees.length === 0) return "TR001";
 
-        const lastTree = trees.filter(tree => tree.farmID === farmID).sort((a, b) => b.addedAt - a.addedAt)[0];
+        const lastTree = trees
+            .filter((tree) => tree.farmID === farmID)
+            .sort((a, b) => b.addedAt - a.addedAt)[0];
         if (!lastTree) return "TR001";
-        
+
         const lastCode = lastTree.treeCode;
         const codeNumber = parseInt(lastCode.replace("TR", ""));
         const newCodeNumber = codeNumber + 1;
@@ -308,29 +358,139 @@ export const generateTreeCode = async (farmID:string | null) => {
         console.error("Error checking last tree code:", error);
         return "TR001"; // Fallback in case of error
     }
-}
+};
 export const getTreesByFarmID = async (
-  farmID: string
+    farmID: string
 ): Promise<{
-  success: boolean;
-  data?: any[];
-  message?: string;
+    success: boolean;
+    data?: any[];
+    message?: string;
 }> => {
-  try {
-    const trees = Object.values(tree$.get() || {});
-    const treesByFarmID = trees.filter(
-      (tree) => tree.farmID === farmID && tree.status === 1
-    );
+    // Validate input parameter
+    if (!farmID || farmID.trim() === '') {
+        return { success: false, message: "Farm ID is required." };
+    }
 
-    return {
-      success: true,
-      data: treesByFarmID,
-    };
-  } catch (error) {
-    console.error("Error fetching trees by farm ID:", error);
-    return {
-      success: false,
-      message: "An error occurred while fetching trees by farm ID.",
-    };
-  }
+    try {
+        const farms = Object.values(farm$.get() || {});
+        const trees = Object.values(tree$.get() || {});
+        const images = Object.values(image$.get() || {});
+        const treesimage = Object.values(treeimage$.get() || {});
+        const analysis = Object.values(analysis$.get() || {});
+        const diseaseidentified = Object.values(diseaseidentified$.get() || {});
+
+        // Filter trees by the specific farmID and active status
+        const farmTrees = trees.filter((tree) => 
+            tree.farmID === farmID && tree.status === 1
+        );
+
+        if (farmTrees.length === 0) {
+            return { success: false, message: "No trees found for this farm." };
+        }
+
+        // Find the farm details for the given farmID
+        const farm = farms.find(
+            (farm) => farm.farmID === farmID && farm.status === 1
+        );
+
+        // Process trees with their images
+        const treeWithImage = await Promise.all(
+            farmTrees.map(async (tree) => {
+                try {
+                    // Get related images for this tree
+                    const relatedImages = images.filter(
+                        (image) =>
+                            image.treeID === tree.treeID && image.status === 1
+                    );
+                    console.log(relatedImages);
+
+                    // Get the most recent image
+                    const recentImage = relatedImages.sort(
+                        (a, b) =>
+                            new Date(b.uploadedAt).getTime() -
+                            new Date(a.uploadedAt).getTime()
+                    )[0];
+
+                    // Initialize analysis and disease identification variables
+                    let an:any = null;
+                    let diseaseIdentified = null;
+
+                    // Only proceed if we have a recent image
+                    if (recentImage) {
+                        an = analysis.find(
+                            (an) => an.analysisID && recentImage.imageID && 
+                                   an.imageID === recentImage.imageID
+                        );
+
+                        // Only look for disease identification if analysis exists
+                        if (an && an.analysisID) {
+                            diseaseIdentified = diseaseidentified.find(
+                                (di) => di.analysisID === an.analysisID
+                            );
+                        }
+                    }
+
+                    console.log(diseaseIdentified);
+
+                    // Get tree image
+                    const treeimage = treesimage.find(
+                        (treeimage) =>
+                            treeimage.treeID === tree.treeID &&
+                            treeimage.status === 1
+                    );
+
+                    // Convert images to base64 if they exist
+                    let treeImageBase64 = null;
+                    let recentImageBase64 = null;
+
+                    try {
+                        if (treeimage?.imageData) {
+                            treeImageBase64 = await convertBlobToBase64(
+                                treeimage.imageData
+                            );
+                        }
+
+                        if (recentImage?.imageData) {
+                            recentImageBase64 = await convertBlobToBase64(
+                                recentImage.imageData
+                            );
+                        }
+                    } catch (error) {
+                        console.error("Error converting image to base64:", error);
+                        // Continue processing even if image conversion fails
+                    }
+
+                    return {
+                        ...tree,
+                        farmName: "",
+                        treeImage: treeImageBase64,
+                        recentImage: recentImage ? {
+                            imageData: recentImageBase64,
+                            diseaseName: diseaseIdentified?.diseaseName || null,
+                            likelihoodScore: diseaseIdentified?.likelihoodScore || null
+                        } : null,
+                        imagesLength: relatedImages.length,
+                    };
+                } catch (error) {
+                    console.error(`Error processing tree ${tree.treeID}:`, error);
+                    // Return tree with minimal data if processing fails
+                    return {
+                        ...tree,
+                        farmName: farm?.farmName || 'Unknown Farm',
+                        treeImage: null,
+                        recentImage: null,
+                        imagesLength: 0,
+                    };
+                }
+            })
+        );
+
+        return { success: true, data: treeWithImage };
+    } catch (error) {
+        console.error("Error fetching trees by farm ID:", error);
+        return {
+            success: false,
+            message: "An error occurred while fetching trees by farm ID.",
+        };
+    }
 };

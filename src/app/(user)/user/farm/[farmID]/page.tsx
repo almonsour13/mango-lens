@@ -30,59 +30,44 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Farm } from "@/types/types";
-import { getFarmByID } from "@/stores/farm";
+import { useFarmData } from "@/hooks/use-farm-data";
+import TreeCard from "@/components/card/tree-card";
 
-interface FarmProfileProps extends Farm {
-    totalTrees: number;
-    healthyTrees: number;
-    healthRate: number;
-}
 export default function FarmProfile({
     params,
 }: {
     params: Promise<{ farmID: string }>;
 }) {
     const [showMore, setShowMore] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const unwrappedParams = React.use(params);
     const { farmID } = unwrappedParams;
+    const { farm, setFarm, trees, loading } = useFarmData(farmID);
     const router = useRouter();
-    const [sortBy, setSortBy] = useState<"Newest" | "Oldest" | "Health">(
-        "Newest"
-    );
-    const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
-    const [farmData, setFarmData] = useState<FarmProfileProps | null>(null);
 
-    useEffect(() => {
-        const fetchFarmData = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-                const res = await getFarmByID(farmID);
-                if (res.success) {
-                    setFarmData(res.data);
-                } else {
-                    setError(res.message || "Failed to fetch farm data");
-                }
-            } catch (error) {
-                console.error("Error fetching farm data:", error);
-                setError("Failed to load farm data. Please try again.");
-            } finally {
-                setLoading(false);
+    const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest");
+    const [filterStatus, setFilterStatus] = useState<0 | 1 | 2>(0);
+
+    const filteredTree = trees
+        .filter((tree) => filterStatus == 0 || tree.status == filterStatus)
+        .sort((a, b) => {
+            if (sortBy === "Newest") {
+                return (
+                    new Date(b.addedAt).getTime() -
+                    new Date(a.addedAt).getTime()
+                );
+            } else {
+                return (
+                    new Date(a.addedAt).getTime() -
+                    new Date(b.addedAt).getTime()
+                );
             }
-        };
-        fetchFarmData();
-    }, [farmID]);
+        });
+
     const handleBack = () => {
         router.back();
     };
-    const getHealthStatusColor = (health: number) => {
-        if (health >= 90) return "text-emerald-600";
-        if (health >= 75) return "text-green-600";
-        if (health >= 60) return "text-amber-600";
-        return "text-red-600";
-    };
+    const handleAction = async (e: any, action: string, treeID: string) => {};
+
     return (
         <>
             <div className="h-14 w-full px-4 flex items-center justify-between border-b">
@@ -91,12 +76,10 @@ export default function FarmProfile({
                         <ArrowLeft className="h-5 w-5" />
                     </button>
                     <Separator orientation="vertical" />
-                    <h1 className="text-md">
-                        {farmData?.farmName || "unknown"}
-                    </h1>
+                    <h1 className="text-md">{farm?.farmName || "unknown"}</h1>
                 </div>
 
-                <Link  href={`/user/tree/add?farmID=${farmID}`}>
+                <Link href={`/user/tree/add?farmID=${farmID}`}>
                     <Button variant="outline" className="w-10 md:w-auto">
                         <Plus className="h-5 w-5" />
                         <span className="hidden md:block text-sm">
@@ -111,33 +94,33 @@ export default function FarmProfile({
                 </div>
             ) : (
                 <PageWrapper className="gap-4">
-                    {farmData !== null && farmData && (
+                    {farm !== null && farm && (
                         <div className="space-y-4">
                             <div className="flex justify-between items-start">
                                 <div className="space-y-2">
-                                    <h2 className="text-xl lg:text-3xl font-bold">
-                                        {farmData.farmName}
+                                    <h2 className="text-xl lg:text-2xl font-bold">
+                                        {farm.farmName}
                                     </h2>
                                     <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
                                         <div className="flex items-center gap-1">
                                             <MapPin className="w-4 h-4" />
-                                            {farmData.address}
+                                            {farm.address}
                                         </div>
                                         <div className="flex items-center gap-1">
                                             <Calendar className="w-4 h-4" />
-                                            {formatDate(
-                                                farmData.addedAt,
+                                            {/* {formatDate(
+                                                farm.addedAt,
                                                 "MMM dd, yyyy"
-                                            )}
+                                            )} */}
                                         </div>
                                         <Badge
                                             variant={
-                                                farmData.status === 1
+                                                farm.status === 1
                                                     ? "default"
                                                     : "secondary"
                                             }
                                         >
-                                            {farmData.status === 1
+                                            {farm.status === 1
                                                 ? "Active"
                                                 : "Inactive"}
                                         </Badge>
@@ -159,13 +142,13 @@ export default function FarmProfile({
 
                             {/* Description */}
                             <div className="text-sm text-muted-foreground">
-                                {farmData.description && (
+                                {farm.description && (
                                     <>
-                                        {farmData.description.length > 150 ? (
+                                        {farm.description.length > 150 ? (
                                             <>
                                                 {!showMore ? (
                                                     <>
-                                                        {farmData.description.slice(
+                                                        {farm.description.slice(
                                                             0,
                                                             150
                                                         )}
@@ -184,7 +167,7 @@ export default function FarmProfile({
                                                     </>
                                                 ) : (
                                                     <>
-                                                        {farmData.description}{" "}
+                                                        {farm.description}{" "}
                                                         <Button
                                                             variant="link"
                                                             className="p-0 h-auto text-xs"
@@ -200,90 +183,65 @@ export default function FarmProfile({
                                                 )}
                                             </>
                                         ) : (
-                                            farmData.description
+                                            farm.description
                                         )}
                                     </>
                                 )}
                             </div>
 
                             {/* Stats */}
-                            <div className="grid grid-cols-3  gap-4">
-                                {/* Total Trees */}
-                                <Card>
-                                    <CardHeader className="flex flex-row items-center justify-between pb-0">
-                                        <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
+                            <div className="flex flex-col max-w-lg gap-4">
+                                <div className="grid grid-cols-3 gap-4 ">
+                                    <div className="text-center p-1 bg-muted/10  rounded-lg border">
+                                        <div className="text-lg font-bold ">
+                                            {farm.totalTrees || 0}
+                                        </div>
+                                        <div className="text-xs text-muted-foreground">
                                             Total Trees
-                                        </CardTitle>
-                                        <TreeDeciduous className="w-4 h-4 text-primary" />
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-2xl font-bold">
-                                            {farmData.totalTrees?.toLocaleString() ||
-                                                0}
                                         </div>
-                                        <p className="text-xs text-muted-foreground mt-1">
-                                            Trees in this farm
-                                        </p>
-                                    </CardContent>
-                                </Card>
+                                    </div>
+                                    <div className="text-center p-1 bg-primary/10 rounded-lg border">
+                                        <div className="text-lg font-bold text-primary">
+                                            {farm.healthyTrees}
+                                        </div>
+                                        <div className="text-xs text-slate-600 dark:text-slate-400">
+                                            Healthy
+                                        </div>
+                                    </div>
+                                    <div className="text-center p-1 bg-destructive/10 rounded-lg border">
+                                        <div className="text-lg font-bold text-destructive">
+                                            {farm.diseasedTrees}
+                                        </div>
+                                        <div className="text-xs text-slate-600 dark:text-slate-400">
+                                            Diseased
+                                        </div>
+                                    </div>
+                                </div>
 
-                                {/* Healthy Trees */}
-                                <Card>
-                                    <CardHeader className="flex flex-row items-center justify-between pb-0">
-                                        <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
-                                            Healthy Trees
-                                        </CardTitle>
-                                        <Activity className="w-4 h-4 text-primary" />
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-2xl font-bold">
-                                            {farmData.healthyTrees?.toLocaleString() ||
-                                                0}
+                                {/* Farm Health */}
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm font-medium text-muted-foreground">
+                                                Farm Health
+                                            </span>
                                         </div>
-                                        <p className="text-xs text-muted-foreground mt-1">
-                                            Trees in good condition
-                                        </p>
-                                    </CardContent>
-                                </Card>
-
-                                {/* Health Rate */}
-                                <Card>
-                                    <CardHeader className="flex flex-row items-center justify-between pb-0">
-                                        <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
-                                            Health Rate
-                                        </CardTitle>
-                                        <Activity className="w-4 h-4 text-primary" />
-                                    </CardHeader>
-                                    <CardContent className="flex flex-col">
-                                        <div className="flex-1 flex flex-row w-full justify-between">
-                                            <div className="mt-2">
-                                                <Progress
-                                                    value={
-                                                        farmData.healthRate || 0
-                                                    }
-                                                    className="h-2"
-                                                    style={{
-                                                        background:
-                                                            "rgb(243 244 246)",
-                                                    }}
-                                                />
-                                            </div>
-                                            <div
-                                                className={`text-2xl font-bold ${getHealthStatusColor(
-                                                    farmData.healthRate || 0
-                                                )}`}
-                                            >
-                                                {farmData.healthRate || 0}%
-                                            </div>
-                                        </div>
-                                        <p className="text-xs text-muted-foreground mt-2">
-                                            Overall farm health
-                                        </p>
-                                    </CardContent>
-                                </Card>
+                                        <span
+                                            className={`text-sm font-bold text-primary`}
+                                        >
+                                            {farm.farmHealth}%
+                                        </span>
+                                    </div>
+                                    <div className="w-full bg-muted rounded-full h-2">
+                                        <div
+                                            className={`h-2 rounded-full transition-all duration-300 bg-primary`}
+                                            style={{
+                                                width: `${farm.farmHealth}%`,
+                                            }}
+                                        />
+                                    </div>
+                                </div>
                             </div>
-
-                            {/* <Progress value={healthRate} className="h-2 w-full max-w-md" /> */}
                         </div>
                     )}
                     <div className="flex justify-between items-center">
@@ -374,6 +332,28 @@ export default function FarmProfile({
                         </div>
                         <div className=""></div>
                     </div>
+
+                    <CardContent className="p-0 flex-1">
+                        {loading && trees.length === 0 ? (
+                            <div className="flex-1 h-full w-full flex items-center justify-center">
+                                loading
+                            </div>
+                        ) : trees && trees.length > 0 ? (
+                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4">
+                                {filteredTree.map((tree, index) => (
+                                    <TreeCard
+                                        tree={tree}
+                                        key={index}
+                                        handleAction={handleAction}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex-1 h-full w-full flex items-center justify-center">
+                                No Trees
+                            </div>
+                        )}
+                    </CardContent>
                 </PageWrapper>
             )}
         </>

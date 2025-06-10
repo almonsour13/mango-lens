@@ -163,12 +163,9 @@ export default function UploadPage() {
             <PageWrapper>
                 <div className=" ">
                     {/* Progress Section */}
-                    <div className="mb-8 max-w-2xl mx-auto">
-                        <div className="text-center mb-6">
-                            <h1 className="text-2xl font-bold tracking-tight mb-2">
-                                Scan a leaf image
-                            </h1>
-                            <p className="text-md text-muted-foreground max-w-2xl mx-auto ">
+                    <div className="mb-8 w-full flex flex-col">
+                        <div className="text-left mb-6">
+                            <p className="text-sm text-muted-foreground mx-auto ">
                                 Follow these simple steps to select your farm
                                 and tree, then upload a leaf image for detailed
                                 analysis

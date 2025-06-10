@@ -19,42 +19,28 @@ import {
     TreeDeciduous,
     Activity,
     Percent,
+    CheckCircle,
+    AlertTriangle,
+    Bug,
+    ChevronUp,
+    ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { Farm } from "@/types/types";
-import { useEffect, useState } from "react";
-import { getFarmByUser } from "@/stores/farm";
 import { formatDate } from "date-fns";
+import { useFarms } from "@/hooks/use-farm";
+import { useState } from "react";
+import { FarmCard } from "@/components/card/farm-card";
 
-interface FarmProps extends Farm{
-    totalTrees: number;
-    healthyTrees: number;
-    healthRate: number;
-}
 export default function Farms() {
-    const [farms, setFarms] = useState<FarmProps[]>([]);
+    const { farms, setFarms, loading } = useFarms();
 
-    useEffect(() => {
-        const getFarmData = async () => {
-            try {
-                const res = await getFarmByUser();
-                if (res.success) {
-                    setFarms(res.data as FarmProps[]);
-                } else {
-                    console.error("Failed to fetch farms:", res.message);
-                }
-            } catch (error) {
-                console.error("Error fetching farms:", error);
-            }
-        };
-        getFarmData();
-    }, []);
     return (
         <>
             <div className="h-14 w-full px-4 flex items-center justify-between border-b">
@@ -101,182 +87,9 @@ export default function Farms() {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {farms.map((farm) => {
-                                const healthRate = 50;
-                                return (
-                                    <Link href={`/user/farm/${farm.farmID}`} key={farm.farmID}>
-                                        <Card
-                                            
-                                            className="overflow-hidden hover:shadow-md transition-shadow border-muted"
-                                        >
-                                            <div
-                                                className={`h-1 
-                                                ${
-                                                    farm.status === 1
-                                                        ? "bg-primary"
-                                                        : "bg-secondary"
-                                                }`}
-                                            />
-                                            <CardHeader className="pb-2">
-                                                <div className="flex items-start justify-between">
-                                                    <CardTitle className="text-lg font-medium">
-                                                        {farm.farmName}
-                                                    </CardTitle>
-                                                    <div
-                                                        className={`${
-                                                            farm.status == 1
-                                                                ? "bg-primary"
-                                                                : "bg-secondary"
-                                                        } text-white px-2.5 py-0.5 rounded-full text-xs flex items-center`}
-                                                    >
-                                                        {farm.status == 1
-                                                            ? "Active"
-                                                            : "Inactive"}
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center text-sm text-muted-foreground mt-1">
-                                                    <MapPin className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
-                                                    <span className="truncate">
-                                                        {farm.address}
-                                                    </span>
-                                                </div>
-                                            </CardHeader>
-                                            <CardContent className="pb-4">
-                                                {farm.description && (
-                                                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2 h-10">
-                                                        {farm.description}
-                                                    </p>
-                                                )}
-
-                                                <div className="space-y-3 mb-4">
-                                                    <div className="flex items-center justify-between">
-                                                        <div className="flex items-center gap-1.5 text-sm">
-                                                            <TreeDeciduous className="h-4 w-4 text-primary" />
-                                                            <span>
-                                                                Total Trees
-                                                            </span>
-                                                        </div>
-                                                        <span className="text-sm font-medium">
-                                                            {farm.totalTrees || 0}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center justify-between">
-                                                        <div className="flex items-center gap-1.5 text-sm">
-                                                            <Activity className="h-4 w-4 text-primary" />
-                                                            <span>
-                                                                Healthy Trees
-                                                            </span>
-                                                        </div>
-                                                        <span className="text-sm font-medium">
-                                                            21212
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center justify-between">
-                                                        <div className="flex items-center gap-1.5 text-sm">
-                                                            <Percent className="h-4 w-4 text-primary" />
-                                                            <span>
-                                                                Health Rate
-                                                            </span>
-                                                        </div>
-                                                        <span className="text-sm font-medium">
-                                                            {healthRate}%
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                <div className="mb-4">
-                                                    <div className="w-full bg-muted rounded-full h-2">
-                                                        <div
-                                                            className={`h-2 rounded-full transition-all duration-300 ${
-                                                                healthRate > 70
-                                                                    ? "bg-primary"
-                                                                    : healthRate >
-                                                                      50
-                                                                    ? "bg-secondary"
-                                                                    : "bg-destructive"
-                                                            }`}
-                                                            style={{
-                                                                width: `${healthRate}%`,
-                                                            }}
-                                                        ></div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex items-center text-xs text-muted-foreground">
-                                                        <Calendar className="h-3 w-3 mr-1" />
-                                                        Added{" "}
-                                                        {formatDate(
-                                                            farm.addedAt,
-                                                            " MMM dd, yyyy"
-                                                        )}
-                                                    </div>
-
-                                                    <div className="flex gap-2">
-                                                        <DropdownMenu>
-                                                            <DropdownMenuTrigger
-                                                                asChild
-                                                            >
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="sm"
-                                                                    className="h-8 w-8 p-0"
-                                                                >
-                                                                    <span className="sr-only">
-                                                                        Open
-                                                                        menu
-                                                                    </span>
-                                                                    <MoreVertical className="h-4 w-4" />
-                                                                </Button>
-                                                            </DropdownMenuTrigger>
-                                                            <DropdownMenuContent
-                                                                align="end"
-                                                                className="w-48"
-                                                            >
-                                                                <DropdownMenuItem
-                                                                    asChild
-                                                                >
-                                                                    <Link
-                                                                        href={`/user/farm/${farm.farmID}`}
-                                                                        className="flex items-center gap-2"
-                                                                    >
-                                                                        <MapPin className="h-4 w-4" />
-                                                                        View
-                                                                        Details
-                                                                    </Link>
-                                                                </DropdownMenuItem>
-                                                                <DropdownMenuItem
-                                                                    asChild
-                                                                >
-                                                                    <Link
-                                                                        href={`/user/farm/${farm.farmID}/edit`}
-                                                                        className="flex items-center gap-2"
-                                                                    >
-                                                                        <Activity className="h-4 w-4" />
-                                                                        Edit
-                                                                        Farm
-                                                                    </Link>
-                                                                </DropdownMenuItem>
-                                                                <DropdownMenuItem
-                                                                    asChild
-                                                                >
-                                                                    <Link
-                                                                        href={`/user/tree/add?farmID=${farm.farmID}`}
-                                                                        className="flex items-center gap-2"
-                                                                    >
-                                                                        <TreeDeciduous className="h-4 w-4" />
-                                                                        Add Tree
-                                                                    </Link>
-                                                                </DropdownMenuItem>
-                                                            </DropdownMenuContent>
-                                                        </DropdownMenu>
-                                                    </div>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    </Link>
-                                );
-                            })}
+                            {farms.map((farm, index) => (
+                               <FarmCard key={index} farm={farm} />
+                            ))}
                         </div>
                     )}
                 </CardContent>
