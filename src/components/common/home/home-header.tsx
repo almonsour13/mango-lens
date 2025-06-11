@@ -128,7 +128,7 @@ export default function HomeHeader({
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="w-9 h-9 rounded-full border"
+                                className="w-9 h-9 rounded border"
                             >
                                 {ThemeIcon && (
                                     <ThemeIcon className="h-4 w-4 text-foreground" />
@@ -165,14 +165,14 @@ export default function HomeHeader({
                     </DropdownMenu>
 
                     {userInfo ? (
-                        <Button variant="default" size="sm" className="gap-2">
-                            <Link href="/signin" className="flex items-center">
+                        <Button variant="default" className="gap-2 h-9">
+                            <Link href="/signin" className="flex items-center ">
                                 <LayoutDashboard className="mr-2 h-4 w-4" />
                                 Dashboard
                             </Link>
                         </Button>
                     ) : (
-                        <Button variant="default" size="sm" className="gap-2">
+                        <Button variant="default" size="sm" className="gap-2 h-9">
                             <Link href="/signin" className="flex items-center">
                                 <User className="h-4 w-4 sm:mr-1" />
                                 <span className="hidden sm:inline">
