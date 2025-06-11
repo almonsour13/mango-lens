@@ -107,7 +107,7 @@ export default function ContactSection() {
             id="contact-us"
             className="py-24 bg-gradient-to-b from-background to-muted/50"
         >
-            <div className="max-w-7xl mx-auto px-4">
+            <div className="max-w-7xl mx-auto">
                 {/* Header Section */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <div className="inline-flex items-center justify-center px-4 py-1.5 mb-6 text-sm font-medium rounded-full bg-primary/10 text-primary">

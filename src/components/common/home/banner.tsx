@@ -28,7 +28,7 @@ export default function Banner() {
                 id="Home"
                 className="min-h-screen h-auto flex w-full py-20 bg-transparent relative z-10"
             >
-                <div className="max-w-7xl mx-auto px-4 flex-1 flex flex-col lg:flex-row items-center gap-24 md:gap-16 mt-8 md:mt-16">
+                <div className="max-w-7xl mx-auto flex-1 flex flex-col lg:flex-row items-center gap-24 md:gap-16 mt-8 md:mt-16">
                     {/* Left Content */}
                     <div className="flex-1 flex flex-col items-start justify-center space-y-8">
                         {/* Trust Badge */}

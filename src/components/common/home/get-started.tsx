@@ -41,7 +41,7 @@ export default function GetStarted() {
             id="get-started"
             className="py-24 bg-gradient-to-b from-muted/50 to-background"
         >
-            <div className="max-w-7xl mx-auto px-4 mt-20">
+            <div className="max-w-7xl mx-auto mt-20">
                 {/* Header Section */}
                 <div className="text-center max-w-4xl mx-auto mb-16">
                     <div className="inline-flex items-center justify-center px-4 py-1.5 mb-6 text-sm font-medium rounded-full bg-primary/10 text-primary">

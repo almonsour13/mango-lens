@@ -162,9 +162,6 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
                                     Farm Health
                                 </span>
                             </div>
-                            <span className="text-sm font-bold text-primary">
-                                {farmHealth}%
-                            </span>
                         </div>
                         <div className="w-full bg-primary rounded-full h-2">
                             <div
@@ -177,13 +174,16 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
                                 }}
                             />
                         </div>
-                        <div className="flex justify-end">
+                        <div className="flex justify-between">
                             <span className="text-sm font-bold text-destructive">
                                 {(
                                     (farm.diseasedTrees / farm.totalTrees) *
                                     100
                                 ).toFixed(1)}
                                 %
+                            </span>
+                            <span className="text-sm font-bold text-primary">
+                                {farmHealth}%
                             </span>
                         </div>
                     </div>

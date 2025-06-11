@@ -55,7 +55,7 @@ export default function About() {
 
     return (
         <SectionWrapper id="about" className="py-24">
-            <div className="md:max-w-7xl mx-auto px-4 space-y-32 mt-20">
+            <div className="md:max-w-7xl mx-auto space-y-32 mt-20">
                 {/* Header Section */}
                 <div className="flex flex-col items-center text-center mb-16 max-w-6xl mx-auto">
                     <div className="inline-flex items-center justify-center px-4 py-1.5 mb-6 text-sm font-medium rounded-full bg-primary/10 text-primary">

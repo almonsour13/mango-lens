@@ -41,7 +41,7 @@ export default function HomeHeader({
     const { theme, setTheme } = useTheme();
     const { userInfo } = useAuth(); // Declare useAuth hook
 
-    useEffect(() => {
+     useEffect(() => {
         setMounted(true);
         const handleScroll = () => {
             setScrolling(window.scrollY === 0);
@@ -75,7 +75,7 @@ export default function HomeHeader({
                     </button>
 
                     <Link href="/" className="flex items-center group">
-                        <div className="relative w-8 h-8 mr-3 overflow-hidden rounded-lg flex items-center justify-center shadow-sm">
+                        <div className="relative w-8 h-8 mr-3 overflow-hidden rounded-lg flex items-center justify-center">
                             <Image
                                 src="/assets/icon/icon.png"
                                 alt="MangoCare icon"

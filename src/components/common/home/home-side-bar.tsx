@@ -88,7 +88,7 @@ const HomeSidebar: React.FC<SidebarProps> = ({
                                     className="flex items-center gap-3 group"
                                     onClick={toggleSidebar}
                                 >
-                                    <div className="relative w-10 h-10 overflow-hidden rounded-xl bg-primary flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                                    <div className="relative w-10 h-10 overflow-hidden rounded-xl flex items-center justify-center group-hover:shadow-md transition-shadow">
                                         <Image
                                             src={
                                                 MetaData.icons.icon ||

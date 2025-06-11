@@ -233,11 +233,6 @@ export default function FarmProfile({
                                                 Farm Health
                                             </span>
                                         </div>
-                                        <span
-                                            className={`text-sm font-bold text-primary`}
-                                        >
-                                            {farm.farmHealth}%
-                                        </span>
                                     </div>
                                     <div className="w-full bg-primary rounded-full h-2">
                                         <div
@@ -251,7 +246,7 @@ export default function FarmProfile({
                                             }}
                                         />
                                     </div>
-                                    <div className="flex justify-end">
+                                    <div className="flex justify-between">
                                         <span className="text-sm font-bold text-destructive">
                                             {(
                                                 (farm.diseasedTrees /
@@ -260,6 +255,11 @@ export default function FarmProfile({
                                             ).toFixed(1)}
                                             %
                                         </span>
+                                        <span
+                                            className={`text-sm font-bold text-primary`}
+                                        >
+                                            {farm.farmHealth}%
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -267,9 +267,9 @@ export default function FarmProfile({
                                 {sortedDiseases.length > 0 ? (
                                     <div className="space-y-1">
                                         <div className="flex items-center justify-between">
-                                                <span className="text-sm font-medium">
-                                                    Disease Found:
-                                                </span>
+                                            <span className="text-sm font-medium">
+                                                Disease Found:
+                                            </span>
                                         </div>
 
                                         {/* Disease List */}
