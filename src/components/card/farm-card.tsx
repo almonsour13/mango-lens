@@ -125,7 +125,7 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
                     )}
                 </CardHeader>
 
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-2">
                     {/* Statistics Grid */}
                     <div className="grid grid-cols-3 gap-4">
                         <div className="text-center p-1 bg-muted/10 rounded-lg border">
@@ -155,7 +155,7 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
                     </div>
 
                     {/* Farm Health */}
-                    <div className="space-y-2">
+                    <div className="flex flex-col gap-1">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <span className="text-sm font-medium text-muted-foreground">
@@ -166,11 +166,25 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
                                 {farmHealth}%
                             </span>
                         </div>
-                        <div className="w-full bg-muted rounded-full h-2">
+                        <div className="w-full bg-primary rounded-full h-2">
                             <div
-                                className="h-2 rounded-full transition-all duration-300 bg-primary"
-                                style={{ width: `${farmHealth}%` }}
+                                className="h-2 rounded-full transition-all duration-300 bg-destructive"
+                                style={{
+                                    width: `${
+                                        (farm.diseasedTrees / farm.totalTrees) *
+                                        100
+                                    }%`,
+                                }}
                             />
+                        </div>
+                        <div className="flex justify-end">
+                            <span className="text-sm font-bold text-destructive">
+                                {(
+                                    (farm.diseasedTrees / farm.totalTrees) *
+                                    100
+                                ).toFixed(1)}
+                                %
+                            </span>
                         </div>
                     </div>
 
@@ -187,7 +201,7 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
                                         return (
                                             <div
                                                 key={disease}
-                                                className="flex items-center justify-between p-3 bg-destructive/5 border border-destructive/20 rounded-lg hover:bg-destructive/10 transition-colors"
+                                                className="flex items-center justify-between p-2 bg-destructive/5 border border-destructive/20 rounded hover:bg-destructive/10 transition-colors"
                                             >
                                                 <div className="flex items-center gap-3 flex-1 min-w-0">
                                                     <div className="flex-1 min-w-0">
@@ -214,7 +228,7 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
                                 )}
                             </div>
                         ) : (
-                            <div className="flex items-center justify-between p-3 bg-muted border rounded hover:bg-destructive/10 transition-colors">
+                            <div className="flex items-center justify-between p-2 bg-muted border rounded hover:bg-destructive/10 transition-colors">
                                 <div className="font-medium text-sm text-foreground capitalize truncate">
                                     None
                                 </div>
@@ -223,7 +237,7 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
                     </div>
 
                     {/* Footer */}
-                    <div className="flex items-center justify-between pt-2 border-t">
+                    <div className="flex items-center justify-between">
                         <div className="flex items-center text-xs">
                             <Calendar className="h-3 w-3 mr-1" />
                             Added {formatDate(farm.addedAt, "MMM dd, yyyy")}

@@ -1,11 +1,6 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Farm } from "@/types/types";
 import Link from "next/link";
 
@@ -54,17 +49,25 @@ export const DashboardFarmCard = ({ farm }: { farm: FarmProps }) => {
                                     Farm Health
                                 </span>
                             </div>
-                            <span className="text-sm font-bold text-primary">
+                            <span className="text-xs font-bold text-primary">
                                 {farmHealth}%
                             </span>
                         </div>
-                        <div className="w-full bg-muted-foreground/20 rounded-full h-2">
+                        <div className="w-full bg-primary rounded-full h-2">
                             <div
-                                className="h-2 rounded-full transition-all duration-300 bg-primary"
+                                className="h-2 rounded-full transition-all duration-300 bg-destructive"
                                 style={{
-                                    width: `${farmHealth}%`,
+                                    width: `${
+                                        (farm.diseasedTrees / farm.totalTrees) *
+                                        100
+                                    }%`,
                                 }}
                             />
+                        </div>
+                        <div className="flex justify-end">
+                            <span className="text-xs font-bold text-destructive">
+                                {((farm.diseasedTrees / farm.totalTrees) * 100).toFixed(1)}%
+                            </span>
                         </div>
                     </div>
                     <div className="flex flex-col gap-1">

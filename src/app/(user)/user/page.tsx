@@ -190,7 +190,7 @@ const Metrics = () => {
 
     return (
         <div className="w-full">
-            <div className="grid grid-cols-3 gap-3 md:gap-4">
+            <div className="grid grid-cols-3 gap-2 md:gap-4">
                 {loading
                     ? Array.from({ length: 3 }).map((_, index) => (
                           <Card key={index} className="border bg-card/50">
@@ -210,19 +210,19 @@ const Metrics = () => {
                               className="border bg-card/50 hover:bg-card/70 transition-colors duration-200"
                           >
                               <CardContent className="p-4">
-                                  <div className="flex items-center justify-between mb-3">
+                                  <div className="flex items-center justify-between gap-3">
                                       <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground leading-tight">
                                           {metric.name}
                                       </CardTitle>
-                                      <div className="flex-shrink-0 ml-2">
-                                          <metric.icon className="text-primary h-4 w-4 md:h-5 md:w-5" />
+                                      <div className="flex-shrink-0 ml-2 hidden md:block">
+                                          <metric.icon className="text-primary  h-4 w-4 md:h-5 md:w-5" />
                                       </div>
                                   </div>
                                   <div className="space-y-1">
                                       <div className="text-xl md:text-2xl font-bold text-foreground">
                                           {metric.value.toLocaleString()}
                                       </div>
-                                      <p className="text-xs text-muted-foreground leading-tight">
+                                      <p className="text-xs hidden md:block text-muted-foreground leading-tight">
                                           {metric.detail}
                                       </p>
                                   </div>
