@@ -207,7 +207,7 @@ const Metrics = () => {
                     : enhancedMetrics.slice(0, 3).map((metric, index) => (
                           <Card
                               key={index}
-                              className="border bg-card/50 hover:bg-card/70 transition-colors duration-200"
+                              className="border bg-card/50 hover:bg-card/70 transition-colors duration-200 shadow-none"
                           >
                               <CardContent className="p-4">
                                   <div className="flex items-center justify-between gap-3">

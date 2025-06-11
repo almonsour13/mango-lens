@@ -182,10 +182,6 @@ export const getFarmByUser = async (): Promise<{
                         return;
                     }
 
-                    console.log(
-                        `Found ${treeImages.length} images for tree ${tree.treeID}`
-                    );
-
                     // Process ALL images for disease counting
                     let treeHealthyCount = 0;
                     let treeDiseasedCount = 0;
@@ -270,7 +266,6 @@ export const getFarmByUser = async (): Promise<{
                           100
                       ).toFixed(1)
                     : "0";
-            console.log("Disease count:", diseaseCount);
             return {
                 ...farm,
                 totalTrees: farmTrees.length,

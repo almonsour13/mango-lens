@@ -125,7 +125,7 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
                     )}
                 </CardHeader>
 
-                <CardContent className="space-y-2">
+                <CardContent className="space-y-3">
                     {/* Statistics Grid */}
                     <div className="grid grid-cols-3 gap-4">
                         <div className="text-center p-1 bg-muted/10 rounded-lg border">
@@ -158,7 +158,7 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium text-muted-foreground">
+                                <span className="text-sm font-medium">
                                     Farm Health
                                 </span>
                             </div>
@@ -191,7 +191,7 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
                     {/* Disease Breakdown */}
                     <div className="flex flex-col gap-1">
                         {" "}
-                        <span className="text-sm font-medium text-muted-foreground">
+                        <span className="text-sm font-medium">
                             Disease Found:
                         </span>
                         {sortedDiseases.length > 0 ? (
@@ -238,7 +238,7 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
 
                     {/* Footer */}
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center text-xs">
+                        <div className="flex items-center text-xs text-muted-foreground">
                             <Calendar className="h-3 w-3 mr-1" />
                             Added {formatDate(farm.addedAt, "MMM dd, yyyy")}
                         </div>

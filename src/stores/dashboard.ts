@@ -71,64 +71,8 @@ export async function dashboardMetrics() {
     return metrics;
 }
 export async function recentAnalysis() {
-    // const trees = Object.values(observable(tree$).get() || {}).filter(
-    //     (t) => t.status === 1
-    // );
-    // const images = Object.values(observable(image$).get() || {}).filter(
-    //     (i) => i.status === 1
-    // );
-    // const i = await Promise.all(
-    //     images
-    //         .filter((image) => image.userID === userID && image.status === 1)
-    //         .slice(0, 5)
-    //         .map(async (image) => {
-    //             return {
-    //                 ...image,
-    //                 imageData: (await convertBlobToBase64(
-    //                     image.imageData
-    //                 )) as string,
-    //             };
-    //         })
-    // );
-
-    // const t = i.map((image) => {
-    //     const treeCode = trees.filter(
-    //         (t) => t.treeID === image.treeID && t.status === 1
-    //     )[0];
-    //     if (treeCode && treeCode.status === 1) {
-    //         return {
-    //             ...image,
-    //             treeCode: treeCode ? treeCode.treeCode : null,
-    //         };
-    //     }
-    // });
-
-    // const analysis = Object.values(observable(analysis$).get() || {});
-    // const f = t.map((image) => {
-    //     const an = analysis.filter((a) => a.imageID === image.imageID)[0];
-    //     if(an){
-    //     const analyzedimage = Object.values(
-    //         observable(analyzedimage$).get() || {}
-    //     ).filter((ai) => ai.analysisID === an.analysisID)[0];
-    //     const diseases = Object.values(
-    //         observable(diseaseidentified$).get() || {}
-    //     ).filter(
-    //         (d) => d.analysisID === an.analysisID && d.likelihoodScore > 0.5
-    //     );
-    //     return {
-    //         ...image,
-    //         analyzedImage: convertBlobToBase64(analyzedimage.imageData),
-    //         diseases: diseases.map((d) => {
-    //             return {
-    //                 diseaseName: d.diseaseName,
-    //                 likelihoodScore: Number(d.likelihoodScore.toFixed(1)),
-    //             };
-    //         }),
-
-    //     };
-    // }
-    // });
     try {
+        const farms = Object.values(farm$.get() || {});
         const trees = Object.values(tree$.get() || {});
         const images = Object.values(image$.get() || {});
         const analysis = Object.values(analysis$.get() || {});
@@ -154,8 +98,10 @@ export async function recentAnalysis() {
         }
 
         // Map additional details for each image
-        const detailedImages = userImages.map((image) => {
+        const detailedImages = userImages.slice(0,5).map((image) => {
             const tree = trees.find((t) => t.treeID === image.treeID);
+            const farm = farms.find((f) => f.farmID === tree.farmID);
+            console.log("asdads",farm.farmName)
             const analysisEntry = analysis.find(
                 (a) => a.imageID === image.imageID
             );
@@ -165,9 +111,11 @@ export async function recentAnalysis() {
             const diseases = identifiedDiseases.filter(
                 (d) => d.analysisID === analysisEntry?.analysisID
             );
-            if (tree.status === 1 && image.status === 1) {
+            if (tree.status === 1 && image.status === 1 && farm.status !== 3) {
                 return {
                     ...image,
+                    farmName:farm.farmName,
+                    farmID:farm.farmID,
                     treeCode: tree?.treeCode || "Unknown",
                     imageData: convertBlobToBase64(image.imageData) || null,
                     analyzedImage:

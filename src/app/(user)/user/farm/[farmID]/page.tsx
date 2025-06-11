@@ -115,10 +115,10 @@ export default function FarmProfile({
                                         </div>
                                         <div className="flex items-center gap-1">
                                             <Calendar className="w-4 h-4" />
-                                            {/* {formatDate(
+                                            {formatDate(
                                                 farm.addedAt,
                                                 "MMM dd, yyyy"
-                                            )} */}
+                                            )}
                                         </div>
                                         <Badge
                                             variant={
@@ -229,7 +229,7 @@ export default function FarmProfile({
                                 <div className="space-y-1">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-sm font-medium text-muted-foreground">
+                                            <span className="text-sm font-medium">
                                                 Farm Health
                                             </span>
                                         </div>
@@ -263,15 +263,13 @@ export default function FarmProfile({
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex flex-col max-w-lg gap-2">
+                            <div className="flex flex-col max-w-lg">
                                 {sortedDiseases.length > 0 ? (
                                     <div className="space-y-1">
                                         <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
                                                 <span className="text-sm text-foreground">
                                                     Disease Found:
                                                 </span>
-                                            </div>
                                         </div>
 
                                         {/* Disease List */}

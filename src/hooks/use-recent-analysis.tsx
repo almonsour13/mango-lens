@@ -5,22 +5,27 @@ import { Image } from "@/types/types";
 
 type Images = Image & {
     analyzedImage: string | null;
+    farmName:string,
+    farmID:string
     treeCode: string;
     diseases: { likelihoodScore: number; diseaseName: string }[];
 };
 const useRecentAnalysis = () => {
     const [loading, setLoading] = useState(true);
     const [analysis, setAnalysis] = useState<Images[]>([]);
+    const [farmLoading, setFarmLoading] = useState(false);
     const [treeLoading, setTreeLoading] = useState(false);
     const [imageLoading, setImageLoading] = useState(false);
     const [analysisLoading, setAnalysisLoading] = useState(false);
 
     useEffect(() => {
+        const unsubscribeFarm = loadingStore$.farm.onChange(({ value }) => setFarmLoading(value));
         const unsubscribeTree = loadingStore$.tree.onChange(({ value }) => setTreeLoading(value));
         const unsubscribeImage = loadingStore$.image.onChange(({ value }) => setImageLoading(value));
         const unsubscribeAnalysis = loadingStore$.analysis.onChange(({ value }) => setAnalysisLoading(value));
 
         return () => {
+            unsubscribeFarm()
             unsubscribeTree();
             unsubscribeImage();
             unsubscribeAnalysis();
@@ -45,7 +50,7 @@ const useRecentAnalysis = () => {
         if (!imageLoading && !treeLoading && !analysisLoading) {
             fetchImages();
         }
-    }, [imageLoading, treeLoading, analysisLoading]);
+    }, [farmLoading, imageLoading, treeLoading, analysisLoading]);
 
     return { loading, analysis };
 };

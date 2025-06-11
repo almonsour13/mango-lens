@@ -261,9 +261,9 @@ function ResultDetails({
 }) {
     return (
         <div className="flex-1 flex flex-col gap-4">
-            <Card className="border-0 p-0 space-y-2">
+            <Card className="border-0 p-0 space-y-2 shadow-none">
                 <CardContent className="space-y-4 p-0">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 md:gap-4">
                         <Link
                             href={`/user/farm/${imageDetails.farmID}`}
                             className="text-base font-semibold hover:underline"

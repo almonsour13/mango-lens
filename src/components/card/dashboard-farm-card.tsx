@@ -2,6 +2,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Farm } from "@/types/types";
+import {
+    MoveUpRight,
+    SquareArrowOutUpRight,
+    SquareArrowUp,
+    SquareArrowUpRight,
+} from "lucide-react";
 import Link from "next/link";
 
 interface FarmProps extends Farm {
@@ -37,6 +43,7 @@ export const DashboardFarmCard = ({ farm }: { farm: FarmProps }) => {
                             <Badge variant={isActive ? "default" : "secondary"}>
                                 {isActive ? "Active" : "Inactive"}
                             </Badge>
+                            {/* <SquareArrowOutUpRight className="h-5 w-5 text-primary" /> */}
                         </div>
                     </div>
                 </CardHeader>
@@ -66,7 +73,11 @@ export const DashboardFarmCard = ({ farm }: { farm: FarmProps }) => {
                         </div>
                         <div className="flex justify-end">
                             <span className="text-xs font-bold text-destructive">
-                                {((farm.diseasedTrees / farm.totalTrees) * 100).toFixed(1)}%
+                                {(
+                                    (farm.diseasedTrees / farm.totalTrees) *
+                                    100
+                                ).toFixed(1)}
+                                %
                             </span>
                         </div>
                     </div>

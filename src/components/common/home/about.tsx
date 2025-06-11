@@ -9,45 +9,48 @@ import {
     Cloud,
     Cpu,
     Leaf,
+    LineChart,
+    ShieldCheck,
     Smartphone,
     WifiOff,
 } from "lucide-react";
 
 export default function About() {
     const features = [
-      {
-        icon: Camera,
-        title: "Easy Scanning",
-        description: "Just take a photo of the mango leaf to start detection.",
-      },
-      {
-        icon: Cpu,
-        title: "Quick Results",
-        description: "Get instant disease analysis within seconds.",
-      },
-      {
-        icon: WifiOff,
-        title: "Offline Mode",
-        description: "Works without internet in remote farm areas.",
-      },
-      {
-      icon: Cpu,
-      title: "Lightning Fast Results",
-      description:
-      "Get disease analysis and recommendations in just a few seconds.",
-      },
-      {
-      icon: Leaf,
-      title: "Multi-Disease Detection",
-      description:
-      "Recognizes all common mango diseases and provides treatment guidance.",
-      },
-      {
-      icon: Cloud,
-      title: "Smart Insights",
-      description:
-      "View historical data and trends to make better farming decisions.",
-      },
+        {
+            icon: Camera,
+            title: "Easy Scanning",
+            description:
+                "Just take a photo of the mango leaf to start detection.",
+        },
+        {
+            icon: Cpu,
+            title: "Quick Results",
+            description: "Get instant disease analysis within seconds.",
+        },
+        {
+            icon: WifiOff,
+            title: "Offline Mode",
+            description: "Works without internet in remote farm areas.",
+        },
+        {
+            icon: ShieldCheck,
+            title: "Precision Diagnosis",
+            description:
+                "Identifies the most likely disease with high accuracy per scan.",
+        },
+        {
+            icon: Cpu,
+            title: "Single-Label Classification",
+            description:
+                "Accurate detection of one disease category per leaf scan.",
+        },
+        {
+            icon: LineChart,
+            title: "Insightful Analytics",
+            description:
+                "Track progress, view past scans, and monitor farm health trends.",
+        },
     ];
 
     return (
@@ -107,12 +110,12 @@ export default function About() {
                             Our Mission
                         </h3>
                         <p className="text-muted-foreground leading-relaxed">
-                            At MangoLens, {"we're"} committed to bridging the gap
-                            between technology and agriculture. Our mission is
-                            to provide accessible, accurate, and timely disease
-                            detection tools that help protect mango crops
-                            worldwide, ensuring food security and improving
-                            farmer livelihoods.
+                            At MangoLens, {"we're"} committed to bridging the
+                            gap between technology and agriculture. Our mission
+                            is to provide accessible, accurate, and timely
+                            disease detection tools that help protect mango
+                            crops worldwide, ensuring food security and
+                            improving farmer livelihoods.
                         </p>
 
                         <div className="space-y-6">
