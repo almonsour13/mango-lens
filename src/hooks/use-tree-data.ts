@@ -4,10 +4,14 @@ import { Image,Tree } from "@/types/types"; // Assuming correct types for 'image
 import { getTreeByID } from "@/stores/tree";
 import { getImagesByTreeID } from "@/stores/image";
 
-type images = Image & { analyzedImage: string} & {
+type images = Image & {
+    analyzedImage: string;
+    treeCode: string;
+    farmID: string;
+    farmName: string;
+} & {
     disease: { likelihoodScore: number; diseaseName: string };
 };
-
 export const useTreeData = (treeID: string) => {
     const [tree, setTree] = useState<(Tree & { treeImage?: string,  farmName:string }) | null>(null);
     const [images, setImages] = useState<images[]>([]);
