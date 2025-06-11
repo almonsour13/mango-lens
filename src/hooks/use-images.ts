@@ -3,7 +3,7 @@ import { loadingStore$ } from "@/stores/loading-store";
 import { getImagesByUserID } from "@/stores/image";
 import { Image } from "@/types/types";
 
-type Images = Image & { analyzedImage: string } & { treeCode: string } & {
+type Images = Image & { analyzedImage: string,treeCode: string, farmID:string, farmName:string } & {
     disease: { likelihoodScore: number; diseaseName: string };
 };
 

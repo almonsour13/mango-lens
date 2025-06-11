@@ -204,6 +204,7 @@ export const getImagesByUserID = async (): Promise<{
     message?: string;
 }> => {
     try {
+        const farms = Object.values(farm$.get() || {});
         const trees = Object.values(tree$.get() || {});
         const images = Object.values(image$.get() || {});
         const analysis = Object.values(analysis$.get() || {});
@@ -227,6 +228,7 @@ export const getImagesByUserID = async (): Promise<{
         // Map additional details for each image
         const detailedImages = userImages.map((image) => {
             const tree = trees.find((t) => t.treeID === image.treeID);
+            const farm = farms.find((f) => f.farmID === tree.farmID);
             const analysisEntry = analysis.find(
                 (a) => a.imageID === image.imageID
             );
@@ -236,9 +238,11 @@ export const getImagesByUserID = async (): Promise<{
             const disease = identifiedDiseases.find(
                 (d) => d.analysisID === analysisEntry.analysisID
             );
-            if (tree.status === 1 && image.status === 1) {
+            if (tree.status === 1 && image.status === 1 && farm.status !== 3) {
                 return {
                     ...image,
+                    farmName:farm.farmName,
+                    farmID:farm.farmID,
                     treeCode: tree?.treeCode || "Unknown",
                     imageData: convertBlobToBase64(image.imageData) || null,
                     analyzedImage:

@@ -9,10 +9,14 @@ import { formatDistanceToNow } from "date-fns";
 import { Badge } from "../ui/badge";
 import { useAuth } from "@/context/auth-context";
 
-type images = img & { analyzedImage: string } & { treeCode?: string } & {
+type images = img & {
+    analyzedImage: string;
+    treeCode: string;
+    farmID: string;
+    farmName: string;
+} & {
     disease: { likelihoodScore: number; diseaseName: string };
 };
-
 export const TreeImageCard = ({ image }: { image: images }) => {
     const { userInfo } = useAuth();
     const pathname = usePathname();
@@ -43,8 +47,17 @@ export const TreeImageCard = ({ image }: { image: images }) => {
                         objectFit="cover"
                         className="transition-transform duration-300 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-20 flex items-end">
-                        <div className="flex flex-col md:items-center md:flex-row gap-1 justify-between w-full p-2">
+                    <div className="absolute flex flex-col p-2 md:p-2 justify-between inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-20">
+                        <div className="flex items-center justify-between w-full">
+                            <Badge
+                                variant={isHealthy ? "default" : "destructive"}
+                                className="font-medium text-xs px-2 py-0.5"
+                            >
+                                {image.disease.likelihoodScore}%{" "}
+                                {isHealthy ? "Healthy" : "Diseased"}
+                            </Badge>
+                        </div>
+                        <div className="flex flex-col md:items-center md:flex-row gap-1 justify-between w-full">
                             <div className="flex flex-col">
                                 {image.treeCode &&
                                     pathname.includes("gallery") && (
@@ -55,6 +68,9 @@ export const TreeImageCard = ({ image }: { image: images }) => {
                                             {image.treeCode}
                                         </Link>
                                     )}
+                                <p className="text-xs text-white/90">
+                                    {image.farmName}
+                                </p>
                                 <p className="text-xs text-white/70">
                                     {formatDistanceToNow(
                                         new Date(image.uploadedAt),
@@ -63,12 +79,6 @@ export const TreeImageCard = ({ image }: { image: images }) => {
                                 </p>
                             </div>
                         </div>
-                    </div>
-                    <div className="absolute left-2 top-2 z-30 flex gap-1 items-center">
-                        <Badge variant={isHealthy ? "default" : "destructive"}>
-                            {image.disease.likelihoodScore}%{" "}
-                            {isHealthy ? "Healthy" : "Diseased"}
-                        </Badge>
                     </div>
                 </div>
             </Card>

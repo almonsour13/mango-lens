@@ -46,7 +46,7 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
 
     return (
         <Link href={`/user/farm/${farm.farmID}`}>
-            <Card className="group overflow-hidden border bg-card/50">
+            <Card className="group overflow-hidden border bg-card/50 shadow-none">
                 {/* Status Bar */}
                 <div
                     className={`h-1 ${
@@ -60,15 +60,15 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
                             <CardTitle className="text-lg font-semibold truncate">
                                 {farm.farmName}
                             </CardTitle>
-                            <div className="flex items-center gap-2 mt-1">
-                                <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                                <span className="text-sm text-muted-foreground truncate">
+                            <div className="flex items-center gap-1 text-muted-foreground ">
+                                <MapPin className="w-3 h-3" />
+                                <span className="text-xs truncate">
                                     {farm.address}
                                 </span>
                             </div>
                         </div>
                         <div className="flex items-center gap-2 ml-3">
-                            <Badge variant={isActive ? "default" : "secondary"}>
+                            <Badge variant={isActive ? "default" : "secondary"} className="font-medium text-xs px-2 py-0.5">
                                 {isActive ? "Active" : "Inactive"}
                             </Badge>
                             <DropdownMenu>
@@ -228,7 +228,7 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
                                 )}
                             </div>
                         ) : (
-                            <div className="flex items-center justify-between p-2 bg-muted border rounded hover:bg-destructive/10 transition-colors">
+                            <div className="flex items-center justify-between p-2 bg-muted/10 hover:bg-muted/20 border rounded transition-colors">
                                 <div className="font-medium text-sm text-foreground capitalize truncate">
                                     None
                                 </div>
@@ -237,9 +237,8 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
                     </div>
 
                     {/* Footer */}
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center text-xs text-muted-foreground">
-                            <Calendar className="h-3 w-3 mr-1" />
+                    <div className="flex items-center justify-between text-muted-foreground">
+                        <div className="flex items-center text-xs">
                             Added {formatDate(farm.addedAt, "MMM dd, yyyy")}
                         </div>
                         <Link href={`/user/farm/${farm.farmID}`}>
@@ -249,7 +248,7 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
                                 className="text-xs"
                             >
                                 View Details
-                                <Eye className="h-3 w-3 ml-1" />
+                                {/* <Eye className="h-3 w-3 ml-1" /> */}
                             </Button>
                         </Link>
                     </div>

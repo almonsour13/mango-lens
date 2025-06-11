@@ -101,7 +101,6 @@ export async function recentAnalysis() {
         const detailedImages = userImages.slice(0,5).map((image) => {
             const tree = trees.find((t) => t.treeID === image.treeID);
             const farm = farms.find((f) => f.farmID === tree.farmID);
-            console.log("asdads",farm.farmName)
             const analysisEntry = analysis.find(
                 (a) => a.imageID === image.imageID
             );

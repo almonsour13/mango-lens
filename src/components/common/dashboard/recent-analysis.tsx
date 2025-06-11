@@ -5,7 +5,7 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import useRecentAnalysis from "@/hooks/use-recent-analysis";
 import { format } from "date-fns";
-import { Eye } from "lucide-react";
+import { Eye, Trees } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -84,7 +84,7 @@ export const RecentAnalysis = () => {
                                                 {isHealthy ? (
                                                     <Badge
                                                         variant="default"
-                                                        className="text-xs"
+                                                        className="font-medium text-xs px-2 py-0.5"
                                                     >
                                                         {image.diseases?.find(
                                                             (disease) =>
@@ -96,7 +96,7 @@ export const RecentAnalysis = () => {
                                                 ) : (
                                                     <Badge
                                                         variant="destructive"
-                                                        className="text-xs"
+                                                        className="font-medium text-xs px-2 py-0.5"
                                                     >
                                                         {image.diseases
                                                             .filter(
@@ -120,11 +120,14 @@ export const RecentAnalysis = () => {
                                             </div>
                                         </div>
                                         <div className="flex items-center justify-between">
-                                            {image.farmName && (
-                                                <p className="text-xs text-muted-foreground truncate">
-                                                    {image.farmName}
-                                                </p>
-                                            )}
+                                            <div className="flex items-center text-muted-foreground gap-1">
+                                                <Trees className="h-3 w-3" />
+                                                {image.farmName && (
+                                                    <p className="text-xs truncate">
+                                                        {image.farmName}
+                                                    </p>
+                                                )}
+                                            </div>
                                             <span className="text-xs text-muted-foreground">
                                                 {format(
                                                     image.uploadedAt,

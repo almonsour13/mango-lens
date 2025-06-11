@@ -105,7 +105,7 @@ export default function FarmProfile({
                         <div className="space-y-4">
                             <div className="flex justify-between items-start">
                                 <div className="space-y-2">
-                                    <h2 className="text-xl lg:text-2xl font-bold">
+                                    <h2 className="text-2xl font-bold">
                                         {farm.farmName}
                                     </h2>
                                     <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
@@ -267,13 +267,13 @@ export default function FarmProfile({
                                 {sortedDiseases.length > 0 ? (
                                     <div className="space-y-1">
                                         <div className="flex items-center justify-between">
-                                                <span className="text-sm text-foreground">
+                                                <span className="text-sm font-medium">
                                                     Disease Found:
                                                 </span>
                                         </div>
 
                                         {/* Disease List */}
-                                        <div className="grid grid-cols-3 gap-2">
+                                        <div className="grid grid-cols-2 md:sgrid-cols-3 gap-2">
                                             {sortedDiseases.map(
                                                 ([disease, count], index) => {
                                                     return (
@@ -307,7 +307,7 @@ export default function FarmProfile({
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="flex items-center justify-between p-1 px-2 bg-muted border rounded hover:bg-destructive/10 transition-colors">
+                                    <div className="flex items-center justify-between p-1 px-2 bg-muted/10 hover:bg-muted/20 border rounded transition-colors">
                                         <div className="font-medium text-xs text-foreground capitalize truncate">
                                             None
                                         </div>

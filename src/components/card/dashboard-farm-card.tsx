@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Farm } from "@/types/types";
 import {
+    MapPin,
     MoveUpRight,
     SquareArrowOutUpRight,
     SquareArrowUp,
@@ -32,15 +33,15 @@ export const DashboardFarmCard = ({ farm }: { farm: FarmProps }) => {
                             <CardTitle className="text-lg font-semibold truncate">
                                 {farm.farmName}
                             </CardTitle>
-                            <div className="flex items-center gap-2">
-                                {/* <MapPin className="h-3 w-3 text-muted-foreground flex-shrink-0" /> */}
-                                <span className="text-xs text-muted-foreground truncate">
+                            <div className="flex items-center gap-1 text-muted-foreground ">
+                                <MapPin className="w-3 h-3" />
+                                <span className="text-xs truncate">
                                     {farm.address}
                                 </span>
                             </div>
                         </div>
                         <div className="flex items-center gap-2 ml-3">
-                            <Badge variant={isActive ? "default" : "secondary"}>
+                            <Badge variant={isActive ? "default" : "secondary"} className="font-medium text-xs px-2 py-0.5">
                                 {isActive ? "Active" : "Inactive"}
                             </Badge>
                             {/* <SquareArrowOutUpRight className="h-5 w-5 text-primary" /> */}
@@ -52,7 +53,7 @@ export const DashboardFarmCard = ({ farm }: { farm: FarmProps }) => {
                     <div className="space-y-1">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <span className="text-xs font-medium text-muted-foreground">
+                                <span className="text-xs font-medium">
                                     Farm Health
                                 </span>
                             </div>
@@ -83,7 +84,7 @@ export const DashboardFarmCard = ({ farm }: { farm: FarmProps }) => {
                     </div>
                     <div className="flex flex-col gap-1">
                         {" "}
-                        <span className="text-xs font-medium text-muted-foreground">
+                        <span className="text-xs font-medium">
                             Disease Found:
                         </span>
                         <div className="flex gap-2">
@@ -108,7 +109,7 @@ export const DashboardFarmCard = ({ farm }: { farm: FarmProps }) => {
                                         );
                                     })
                             ) : (
-                                <div className="flex items-center justify-between p-1 px-2 bg-muted border rounded hover:bg-destructive/10 transition-colors">
+                                <div className="flex items-center justify-between p-1 px-2 bg-muted/10 hover:bg-muted/20 border rounded transition-colors">
                                     <div className="font-medium text-xs text-foreground capitalize truncate">
                                         None
                                     </div>
