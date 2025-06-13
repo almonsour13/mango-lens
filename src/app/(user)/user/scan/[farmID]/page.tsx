@@ -23,7 +23,7 @@ import {
 import { addTree, generateTreeCode } from "@/stores/tree";
 import { toast } from "@/hooks/use-toast";
 
-export default function ({ params }: { params: Promise<{ farmID: string }> }) {
+export default function Page({ params }: { params: Promise<{ farmID: string }> }) {
     const unwrappedParams = React.use(params);
     const { farmID } = unwrappedParams;
     const { farm, setFarm, trees, loading } = useFarmData(farmID);
@@ -94,7 +94,7 @@ export default function ({ params }: { params: Promise<{ farmID: string }> }) {
                             <div className="space-y-3">
                                 <p className="text-sm">
                                     When you add a new tree, a unique tree code
-                                    will be automatically generated. You don't
+                                    will be automatically generated. You {"don't"}
                                     need to create one yourself.
                                 </p>
 
@@ -108,7 +108,7 @@ export default function ({ params }: { params: Promise<{ farmID: string }> }) {
                                                 1.
                                             </div>
                                             <div>
-                                                Click "Add New Tree" button
+                                                Click {`"Add New Tree"`} button
                                             </div>
                                         </li>
                                         <li className="flex items-start gap-2">
