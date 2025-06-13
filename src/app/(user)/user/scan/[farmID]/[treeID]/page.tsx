@@ -321,7 +321,7 @@ export default function TreeDetailsPage({
                 <CardContent className="p-0 flex-1 h-full">
                     <Card className="p-0 h-full md:p-4 border-0 bg-transparent md:border flex flex-col gap-4 shadow-none">
                         <CardContent
-                            className={`relative h-full aspect-square md:aspect-auto p-0 flex items-center justify-center overflow-hidden border rounded-lg`}
+                            className={`relative  h-auto md:h-full aspect-square md:aspect-auto p-0 flex items-center justify-center overflow-hidden border rounded-lg`}
                         >
                             {image ? (
                                 <div className="h-full w-auto aspect-square overflow-hidden flex item-center justify-center relative">
