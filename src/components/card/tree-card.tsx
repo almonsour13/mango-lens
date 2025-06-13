@@ -13,9 +13,9 @@ interface TreeWithImage extends Tree {
     farmName: string;
     treeImage: string;
     recentImage: {
-        imageData:string,
-        diseaseName:string,
-        likelihoodScore:number;
+        imageData: string;
+        diseaseName: string;
+        likelihoodScore: number;
     };
     imagesLength: number;
 }
@@ -31,14 +31,15 @@ export default function TreeCard({
         treeID: string
     ) => void;
 }) {
-
     return (
         <Link href={`/user/tree/${tree.treeID}`}>
             <Card className="overflow-hidden group bg-card border shadow-none">
                 <div className="relative aspect-square">
                     {tree.recentImage && tree.recentImage ? (
                         <Image
-                            src={tree.recentImage.imageData || "/placeholder.svg"}
+                            src={
+                                tree.recentImage.imageData || "/placeholder.svg"
+                            }
                             alt={`Tree ${tree.treeCode}`}
                             layout="fill"
                             objectFit="cover"
@@ -66,19 +67,46 @@ export default function TreeCard({
                             </div>
                         </div>
                         <div className="flex h-8 items-center gap-2 w-full min-w-0">
-                            {tree.treeImage && (
-                                <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-                                    <Image
-                                        src={
-                                            tree.treeImage || "/placeholder.svg"
-                                        }
-                                        alt={tree.treeCode}
-                                        layout="fill"
-                                        objectFit="cover"
+                            <div className="flex items-center justify-between gap-2 flex-1">
+                                <div className="flex items-center gap-2 min-w-0">
+                                    <div className="h-8 w-8 bg-card rounded flex items-center justify-center flex-shrink-0">
+                                        {tree.treeImage ? (
+                                            <div className="relative w-8 h-8 rounded overflow-hidden flex-shrink-0">
+                                                <Image
+                                                    src={
+                                                        tree.treeImage ||
+                                                        "/placeholder.svg"
+                                                    }
+                                                    alt={tree.treeCode}
+                                                    layout="fill"
+                                                    objectFit="cover"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <TreeDeciduous className="h-4 w-4 text-primary" />
+                                        )}
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <h3 className="font-medium text-sm truncate">
+                                            {tree.treeCode}
+                                        </h3>
+                                        {tree.farmName && (
+                                            <p className="text-xs text-muted-foreground truncate">
+                                                {tree.farmName}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="flex-shrink-0">
+                                    <TreeActionMenu
+                                        treeID={tree.treeID}
+                                        treeCode={tree.treeCode}
+                                        status={tree.status}
+                                        handleAction={handleAction}
                                     />
                                 </div>
-                            )}
-                            <div className="flex items-center justify-between flex-1 min-w-0 gap-2">
+                            </div>
+                            {/* <div className="flex items-center justify-between flex-1 min-w-0 gap-2">
                                 <div className="min-w-0 flex-1">
                                     <h3 className="font-semibold text-md text-white truncate leading-tight">
                                         {tree.treeCode}
@@ -97,7 +125,7 @@ export default function TreeCard({
                                         handleAction={handleAction}
                                     />
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>

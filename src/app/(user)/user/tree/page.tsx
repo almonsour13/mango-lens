@@ -263,7 +263,6 @@ export default function TreePage() {
                     )}
                 </CardContent>
             </PageWrapper>
-            <AddButton setOpenDialog={setOpenDialog} />
             <ConfirmationModal
                 open={confirmationModalOpen}
                 onClose={() => setConfirmationModalOpen(false)}
@@ -278,21 +277,5 @@ export default function TreePage() {
                 } image(s).`}
             />
         </>
-    );
-}
-
-function AddButton({
-    setOpenDialog,
-}: {
-    setOpenDialog: (value: boolean) => void;
-}) {
-    return (
-        <Button
-            variant="default"
-            className="absolute h-12 w-12 hidden md:flex bottom-20 md:bottom-4 right-2 md:right-4"
-            onClick={() => setOpenDialog(true)}
-        >
-            <PlusIcon />
-        </Button>
     );
 }

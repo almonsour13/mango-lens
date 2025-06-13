@@ -6,16 +6,16 @@ import {
     CardContent,
     CardDescription,
     CardHeader,
-    CardTitle,
 } from "@/components/ui/card";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useToast } from "@/hooks/use-toast";
-import { ImageAnalysisDetails } from "@/types/types";
-import { formatDate } from "date-fns";
+import { format } from "date-fns";
 import {
+    AlertTriangle,
     ArrowDownToLine,
     ArrowLeft,
     Calendar,
+    CheckCircle,
     Edit,
     MessageCircle,
     MoreVertical,
@@ -24,24 +24,22 @@ import {
     Trees,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { generateImage } from "@/actions/generate-image-analysis-report";
 import { useAuth } from "@/context/auth-context";
-import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import Link from "next/link";
 import ConfirmationModal from "../modal/confirmation-modal";
 import MigrateImageModal from "../modal/migrate-image-modal";
 import {
+    DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Progress } from "../ui/progress";
 import { Separator } from "../ui/separator";
 import ResultImage from "./result-image";
 import AnalysisCarousel from "./result-image-carousel";
-import { getImageByImageID } from "@/stores/image";
 import { moveToTrash } from "@/stores/trash";
 import { useImageDetails } from "@/hooks/use-image-details";
 import AddFeedBackModel from "../modal/feedback-modal";
@@ -114,6 +112,8 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
             description: res.message,
         });
     };
+
+    const isHealthy = imageDetails?.disease?.diseaseName === "Healthy";
 
     return (
         <>
@@ -207,24 +207,146 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
                 <>
                     <PageWrapper>
                         <CardHeader className="p-0">
-                            {/* <CardTitle>Image Details</CardTitle> */}
                             <CardDescription>
                                 View detailed analysis results
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="flex flex-col  gap-2 md:gap-4 px-0">
-                            <ResultImage
-                                originalImage={imageDetails.imageData}
-                                analyzedImage={imageDetails.analyzedImage || ""}
-                                // boundingBoxes={imageDetails.boundingBoxes}
-                            />
-                            <AnalysisCarousel
-                                originalImage={imageDetails.imageData}
-                                analyzedImage={imageDetails.analyzedImage || ""}
-                                // boundingBoxes={imageDetails.boundingBoxes}
-                            />
+                        <CardContent className="flex flex-col gap-4 p-0">
+                            {/* Image Analysis Card - styled like farm card */}
 
-                            <ResultDetails imageDetails={imageDetails} />
+                            <CardContent className="p-0 space-y-4">
+                                {/* Image Display */}
+                                <div className="space-y-4">
+                                    <ResultImage
+                                        originalImage={imageDetails.imageData}
+                                        analyzedImage={
+                                            imageDetails.analyzedImage || ""
+                                        }
+                                    />
+                                    <AnalysisCarousel
+                                        originalImage={imageDetails.imageData}
+                                        analyzedImage={
+                                            imageDetails.analyzedImage || ""
+                                        }
+                                    />
+                                </div>
+
+                                {/* Farm and Tree Info */}
+                                <div className="flex flex-wrap items-center gap-3">
+                                    <div className="flex items-center gap-2">
+                                        <span>Farm:</span>
+                                        <Link
+                                            href={`/user/farm/${imageDetails.farmID}`}
+                                            className="hover:underline"
+                                        >
+                                            <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded">
+                                                <Trees className="h-3.5 w-3.5 text-primary" />
+                                                <span className="text-sm font-medium">
+                                                    {imageDetails.farmName}
+                                                </span>
+                                            </div>
+                                        </Link>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span>Tree:</span>
+                                        <Link
+                                            href={`/user/tree/${imageDetails.treeID}`}
+                                            className="hover:underline"
+                                        >
+                                            <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded">
+                                                <TreeDeciduous className="h-3.5 w-3.5 text-primary" />
+                                                <span className="text-sm font-medium">
+                                                    {imageDetails.treeCode}
+                                                </span>
+                                            </div>
+                                        </Link>
+                                    </div>
+                                    <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded">
+                                        <Calendar className="h-3.5 w-3.5 text-primary" />
+                                        <span className="text-sm font-medium">
+                                            {format(
+                                                new Date(
+                                                    imageDetails.analyzedAt
+                                                ),
+                                                "MMM dd, yyyy"
+                                            )}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Disease Classification */}
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm font-medium">
+                                                Analysis Result
+                                            </span>
+                                        </div>
+                                        <Badge
+                                            variant={
+                                                isHealthy
+                                                    ? "default"
+                                                    : "outline"
+                                            }
+                                            className={`font-medium text-xs px-2 py-0.5 ${
+                                                isHealthy
+                                                    ? ""
+                                                    : "text-destructive border-destructive/30"
+                                            }`}
+                                        >
+                                            {isHealthy
+                                                ? "Healthy"
+                                                : "Disease Detected"}
+                                        </Badge>
+                                    </div>
+
+                                    {imageDetails.disease && (
+                                        <div className="flex flex-col gap-1.5 bg-muted/20 p-3 rounded-lg border">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    {isHealthy ? (
+                                                        <CheckCircle className="h-4 w-4 text-primary" />
+                                                    ) : (
+                                                        <AlertTriangle className="h-4 w-4 text-destructive" />
+                                                    )}
+                                                    <span className="text-sm font-medium capitalize">
+                                                        {imageDetails.disease.diseaseName
+                                                            .replace(
+                                                                /([A-Z])/g,
+                                                                " $1"
+                                                            )
+                                                            .trim()}
+                                                    </span>
+                                                </div>
+                                                <span className="text-sm font-bold">
+                                                    {
+                                                        imageDetails.disease
+                                                            .likelihoodScore
+                                                    }
+                                                    %
+                                                </span>
+                                            </div>
+                                            <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
+                                                <div
+                                                    className={`h-full ${
+                                                        isHealthy
+                                                            ? "bg-primary"
+                                                            : "bg-destructive"
+                                                    } transition-all duration-300`}
+                                                    style={{
+                                                        width: `${imageDetails.disease.likelihoodScore}%`,
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="text-xs text-muted-foreground">
+                                                {isHealthy
+                                                    ? "This leaf appears to be healthy with no signs of disease."
+                                                    : "Disease detected. Consider treatment options."}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </CardContent>
                         </CardContent>
                     </PageWrapper>
                     <AddFeedBackModel
@@ -251,91 +373,5 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
                 </>
             )}
         </>
-    );
-}
-
-function ResultDetails({
-    imageDetails,
-}: {
-    imageDetails: ImageAnalysisDetails;
-}) {
-    return (
-        <div className="flex-1 flex flex-col gap-4">
-            <Card className="border-0 p-0 space-y-2 shadow-none">
-                <CardContent className="space-y-4 p-0">
-                    <div className="flex items-center gap-2 md:gap-4">
-                        <Link
-                            href={`/user/farm/${imageDetails.farmID}`}
-                            className="text-base font-semibold hover:underline"
-                        >
-                            <Badge
-                                variant="outline"
-                                className="px-4 py-2 text-sm"
-                            >
-                                <Trees className="h-4 w-4 mr-2 text-green-600" />
-                                {imageDetails.farmName || "N/A"}
-                            </Badge>
-                        </Link>
-                        <Link
-                            href={`/user/tree/${imageDetails.treeID}`}
-                            className="text-base font-semibold hover:underline"
-                        >
-                            <Badge
-                                variant="outline"
-                                className="px-4 py-2 text-sm"
-                            >
-                                <TreeDeciduous className="h-4 w-4 mr-2 text-green-600" />
-                                {imageDetails.treeCode || "N/A"}
-                            </Badge>
-                        </Link>
-                        <div className="flex items-center justify-center">
-                            <Calendar className="h-4 w-4 mr-2 text-green-600" />
-                            <span className="text-sm font-semibold">
-                                {formatDate(
-                                    imageDetails.analyzedAt,
-                                    "MMM dd, yyyy"
-                                )}
-                            </span>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-
-            <div className="flex flex-col gap-2 p-4 border rounded-lg">
-                <div className="flex items-center space-x-2">
-                    <span className="text-base font-medium">
-                        Assign Classification:
-                    </span>
-                </div>
-                <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
-                    {imageDetails.disease && (
-                        <div className="flex flex-col">
-                            <div className="flex justify-between text-sm mb-1">
-                                <span>{imageDetails.disease.diseaseName}</span>
-                                <span>
-                                    {imageDetails.disease.likelihoodScore}%
-                                </span>
-                            </div>
-                            <div className="bg-muted h-2 w-full overflow-hidden rounded">
-                                <div
-                                    className={`${
-                                        imageDetails.disease.diseaseName ===
-                                        "Healthy"
-                                            ? "bg-primary"
-                                            : "bg-destructive"
-                                    } h-2`}
-                                    style={{
-                                        width: `${
-                                            imageDetails.disease
-                                                .likelihoodScore * 1
-                                        }%`,
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
     );
 }

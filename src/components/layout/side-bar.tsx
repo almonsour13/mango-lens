@@ -90,8 +90,10 @@ const Sidebar = ({ isOpen, toggleSidebar }: Sidebar) => {
                                         (pathname.startsWith(item.href) &&
                                             item.href.split("/").length > 2) ||
                                         pathname === item.href
-                                            ? "bg-primary text-primary-foreground"
-                                            : "hover:bg-background"
+                                            ? // ? "bg-primary text-primary-foreground"
+                                              // : "hover:bg-background"
+                                              "bg-primary/10 text-primary border-l-2 border-primary font-medium"
+                                            : "hover:bg-muted/50"
                                     }`}
                                 >
                                     <item.icon

@@ -137,12 +137,3 @@ export default function Page() {
         </>
     );
 }
-// export default function Page() {
-//     return (
-//         <AuthProvider>
-//             <Suspense fallback={<div>loading</div>}>
-//                 <UploadField />
-//             </Suspense>
-//         </AuthProvider>
-//     );
-// }

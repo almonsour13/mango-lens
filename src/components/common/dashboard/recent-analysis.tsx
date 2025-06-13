@@ -5,14 +5,23 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import useRecentAnalysis from "@/hooks/use-recent-analysis";
 import { format } from "date-fns";
-import { Eye, Trees } from "lucide-react";
+import {
+    AlertTriangle,
+    Calendar,
+    CheckCircle,
+    Eye,
+    TreeDeciduous,
+    Trees,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export const RecentAnalysis = () => {
     const { loading, analysis } = useRecentAnalysis();
     const router = useRouter();
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
     return (
         <Card className="border-0 p-0 shadow-none flex-1">
@@ -38,102 +47,123 @@ export const RecentAnalysis = () => {
                                     disease.diseaseName === "Healthy" &&
                                     disease.likelihoodScore > 30
                             );
+                            const diseasePercentage = isHealthy
+                                ? image.diseases?.find(
+                                      (disease) =>
+                                          disease.diseaseName === "Healthy"
+                                  )?.likelihoodScore || 0
+                                : image.diseases
+                                      .filter(
+                                          (di) => di.diseaseName !== "Healthy"
+                                      )
+                                      .reduce(
+                                          (acc, disease) =>
+                                              acc + disease.likelihoodScore,
+                                          0
+                                      )
+                                      .toFixed(1);
                             return (
                                 <div
                                     key={image.imageID}
-                                    className="flex items-center gap-4 p-4 bg-card/50  hover:bg-card cursor-pointer border rounded-lg"
+                                    className="relative overflow-hidden bg-card/50 border rounded-lg transition-all duration-200 hover:shadow-md hover:border-primary/30"
+                                    onMouseEnter={() => setHoveredIndex(index)}
+                                    onMouseLeave={() => setHoveredIndex(null)}
                                     onClick={() =>
                                         router.push(
                                             `/user/gallery/${image.imageID}`
                                         )
                                     }
                                 >
-                                    <div className="relative group">
-                                        <Image
-                                            src={
-                                                image.imageData ||
-                                                "/placeholder.svg" ||
-                                                "/placeholder.svg"
-                                            }
-                                            alt={`Tree ${image.treeCode}`}
-                                            width={56}
-                                            height={56}
-                                            className="rounded object-cover border border-slate-200 dark:border-gray-700"
-                                        />
-                                        {image.analyzedImage && (
+                                    {/* Left border indicator */}
+                                    {/* <div
+                                        className={`absolute top-0 left-0 w-1 h-full ${
+                                            isHealthy
+                                                ? "bg-primary"
+                                                : "bg-destructive"
+                                        }`}
+                                    /> */}
+
+                                    <div className="flex items-center gap-4 p-3 pl-4 cursor-pointer">
+                                        {/* Image with hover effect */}
+                                        <div className="relative h-14 w-14 flex-shrink-0 rounded overflow-hidden">
                                             <Image
                                                 src={
-                                                    image.analyzedImage ||
-                                                    "/placeholder.svg" ||
+                                                    image.imageData ||
                                                     "/placeholder.svg"
                                                 }
-                                                alt={`Tree ${image.imageID} Analyzed`}
+                                                alt={`Tree ${image.treeCode}`}
                                                 width={56}
                                                 height={56}
-                                                className="absolute inset-0 object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 border border-slate-200 dark:border-gray-700"
+                                                className="object-cover h-full w-full"
                                             />
-                                        )}
-                                    </div>
-
-                                    <div className="flex-1  space-y-1 min-w-0">
-                                        <div className="flex items-center justify-between ">
-                                            <h4 className="text-md font-medium">
-                                                Tree {image.treeCode}
-                                            </h4>
-                                            <div className="flex items-center gap-2">
-                                                {isHealthy ? (
-                                                    <Badge
-                                                        variant="default"
-                                                        className="font-medium text-xs px-2 py-0.5"
-                                                    >
-                                                        {image.diseases?.find(
-                                                            (disease) =>
-                                                                disease.diseaseName ===
-                                                                "Healthy"
-                                                        )?.likelihoodScore || 0}
-                                                        % Healthy
-                                                    </Badge>
-                                                ) : (
-                                                    <Badge
-                                                        variant="destructive"
-                                                        className="font-medium text-xs px-2 py-0.5"
-                                                    >
-                                                        {image.diseases
-                                                            .filter(
-                                                                (di) =>
-                                                                    di.diseaseName !==
-                                                                    "Healthy"
-                                                            )
-                                                            .reduce(
-                                                                (
-                                                                    acc,
-                                                                    disease
-                                                                ) =>
-                                                                    acc +
-                                                                    disease.likelihoodScore,
-                                                                0
-                                                            )
-                                                            .toFixed(1) +
-                                                            "% Diseased"}
-                                                    </Badge>
+                                            {image.analyzedImage &&
+                                                hoveredIndex === index && (
+                                                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 transition-opacity duration-200">
+                                                        <Image
+                                                            src={
+                                                                image.analyzedImage ||
+                                                                "/placeholder.svg"
+                                                            }
+                                                            alt={`Tree ${image.imageID} Analyzed`}
+                                                            width={56}
+                                                            height={56}
+                                                            className="object-cover h-full w-full opacity-90"
+                                                        />
+                                                        <Eye className="absolute h-5 w-5 text-white" />
+                                                    </div>
                                                 )}
-                                            </div>
                                         </div>
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center text-muted-foreground gap-1">
-                                                <Trees className="h-3 w-3" />
-                                                {image.farmName && (
-                                                    <p className="text-xs truncate">
-                                                        {image.farmName}
-                                                    </p>
-                                                )}
+
+                                        {/* Content */}
+                                        <div className="flex-1 space-y-1.5 min-w-0">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <TreeDeciduous className="h-4 w-4 text-primary" />
+                                                    <h4 className="text-sm font-medium">
+                                                        {image.treeCode}
+                                                    </h4>
+                                                </div>
+                                                <Badge
+                                                    variant={
+                                                        isHealthy
+                                                            ? "default"
+                                                            : "destructive"
+                                                    }
+                                                    className={`font-medium text-xs px-2 py-0.5 `}
+                                                >
+                                                    {isHealthy ? (
+                                                        <CheckCircle className="h-3 w-3 mr-1" />
+                                                    ) : (
+                                                        <AlertTriangle className="h-3 w-3 mr-1" />
+                                                    )}
+                                                    {diseasePercentage}%{" "}
+                                                    {isHealthy
+                                                        ? "Healthy"
+                                                        : "Diseased"}
+                                                </Badge>
                                             </div>
-                                            <span className="text-xs text-muted-foreground">
-                                                {format(
-                                                    image.uploadedAt,
-                                                    "MMM d, h:mm a"
-                                                )}
-                                            </span>
+
+                                            <div className="flex items-center justify-between text-xs text-muted-foreground">
+                                                <div className="flex items-center gap-1.5">
+                                                    <Trees className="h-3.5 w-3.5" />
+                                                    {image.farmName && (
+                                                        <p className="truncate max-w-[150px]">
+                                                            {image.farmName}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                <div className="flex items-center gap-1.5">
+                                                    <Calendar className="h-3.5 w-3.5" />
+                                                    <span>
+                                                        {format(
+                                                            new Date(
+                                                                image.uploadedAt
+                                                            ),
+                                                            "MMM d, h:mm a"
+                                                        )}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

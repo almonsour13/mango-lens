@@ -25,13 +25,14 @@ import {
     Plus,
     SlidersHorizontal,
     TreeDeciduous,
-    Trees
+    Trees,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTreeData } from "@/hooks/use-tree-data";
+import { format } from "date-fns";
 
 export default function TreeProfile({
     params,
@@ -82,6 +83,7 @@ export default function TreeProfile({
     //     setTree(value);
     // };
     const [showMore, setShowMore] = useState(false);
+    const isActive = tree?.status === 1;
 
     return (
         <>
@@ -94,9 +96,9 @@ export default function TreeProfile({
                     <h1 className="text-md">{tree?.treeCode}</h1>
                 </div>
                 <Link
-                    href={`${
-                        pathSegments[0] + "/" + pathSegments[1]
-                    }/scan/?treeCode=${tree?.treeCode}&farmID=${tree?.farmID}`}
+                    href={`${pathSegments[0] + "/" + pathSegments[1]}/scan/${
+                        tree?.farmID
+                    }/${tree?.treeID}`}
                 >
                     <Button variant="outline" className="w-10 md:w-auto">
                         <Plus className="h-5 w-5" />
@@ -113,111 +115,110 @@ export default function TreeProfile({
             ) : (
                 <PageWrapper className="gap-4">
                     {tree !== null && tree && (
-                        <div className="flex justify-between flex-col items-start gap-4">
-                            <div className="flex w-full flex-row items-start justify-start gap-4">
-                                <Avatar className="h-28 md:h-32 w-28 md:w-32 aspect-square bg-primary/10">
-                                    <AvatarImage
-                                        src={tree?.treeImage}
-                                        alt="Profile picture"
-                                    />
-                                    <AvatarFallback className="bg-primary/10">
-                                        <TreeDeciduous className="h-16 w-16 text-primary" />
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div className="w-full flex-1 flex justify-between text-left space-y-2">
-                                    <div className="space-y-2">
-                                        <h2 className="text-xl font-bold mt-4">
-                                            {tree?.treeCode}
-                                        </h2>
-                                        <div className="flex flex-wrap items-center justify-start gap-2 md:gap-4 ">
-                                            <div className="flex items center">
-                                                <Trees className="w-4 h-4 mr-1" />
-                                                <p className="text-xs">
-                                                    {tree.farmName}
-                                                </p>
+                        <div className="relative">
+                            {/* Status indicator */}
+                            <div
+                                className={`absolute top-0 left-0 w-1 h-full rounded-l-md ${
+                                    isActive ? "bg-primary" : "bg-destructive"
+                                }`}
+                            />
+
+                            <div className="pl-4 border rounded-md p-4">
+                                <div className="flex gap-4">
+                                    <Avatar className="h-24 w-24 rounded-md bg-primary/10">
+                                        <AvatarImage
+                                            src={
+                                                tree?.treeImage ||
+                                                "/placeholder.svg"
+                                            }
+                                            alt={tree?.treeCode}
+                                            className="object-cover"
+                                        />
+                                        <AvatarFallback className="bg-primary/10">
+                                            <TreeDeciduous className="h-12 w-12 text-primary" />
+                                        </AvatarFallback>
+                                    </Avatar>
+
+                                    <div className="flex-1 flex flex-col justify-between">
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between items-start">
+                                                <h2 className="text-xl font-bold">
+                                                    {tree?.treeCode}
+                                                </h2>
+                                                <Link href={`${pathname}/edit`}>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                    >
+                                                        <Edit className="w-4 h-4 mr-2" />
+                                                        <span className="hidden md:inline">
+                                                            Edit Tree
+                                                        </span>
+                                                    </Button>
+                                                </Link>
                                             </div>
-                                            <div className="flex items-center">
-                                                <Calendar className="w-4 h-4 mr-1" />
-                                                <p className="text-xs">
-                                                    {tree?.treeCode &&
-                                                        formatDate(
-                                                            tree?.addedAt,
+
+                                            <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+                                                <div className="flex items-center gap-1">
+                                                    <Trees className="w-4 h-4" />
+                                                    <span>{tree.farmName}</span>
+                                                </div>
+                                                <div className="flex items-center gap-1">
+                                                    <Calendar className="w-4 h-4" />
+                                                    <span>
+                                                        {format(
+                                                            new Date(
+                                                                tree.addedAt
+                                                            ),
                                                             "MMM dd, yyyy"
                                                         )}
-                                                </p>
+                                                    </span>
+                                                </div>
+                                                <Badge
+                                                    variant={
+                                                        isActive
+                                                            ? "default"
+                                                            : "outline"
+                                                    }
+                                                    className={`font-medium text-xs px-2 py-0.5 ${
+                                                        isActive
+                                                            ? ""
+                                                            : "text-destructive border-destructive/30"
+                                                    }`}
+                                                >
+                                                    {isActive
+                                                        ? "Active"
+                                                        : "Inactive"}
+                                                </Badge>
                                             </div>
-                                            <Badge
-                                                variant={
-                                                    tree?.status === 1
-                                                        ? "default"
-                                                        : "secondary"
-                                                }
-                                            >
-                                                {tree?.status === 1
-                                                    ? "Active"
-                                                    : "Inactive"}
-                                            </Badge>
                                         </div>
                                     </div>
-                                    <Link href={`${pathname}/edit`}>
-                                        <Button
-                                            variant="outline"
-                                            className="w-10 md:w-auto"
-                                            // onClick={() => setOpenDialog(true)}
-                                        >
-                                            <Edit className="w-4 h-4" />
-                                            <span className="hidden md:block">
-                                                Edit Tree
-                                            </span>
-                                        </Button>
-                                    </Link>
                                 </div>
-                            </div>
-                            <div className="text-sm text-wrap">
-                                {tree?.description && (
-                                    <>
-                                        {tree.description.length > 200 ? (
-                                            <>
-                                                {!showMore ? (
-                                                    <>
-                                                        {tree.description.slice(
-                                                            0,
-                                                            200
-                                                        )}
-                                                        ...{" "}
-                                                        <Button
-                                                            variant="link"
-                                                            className="p-0 h-auto"
-                                                            onClick={() =>
-                                                                setShowMore(
-                                                                    true
-                                                                )
-                                                            }
-                                                        >
-                                                            View More
-                                                        </Button>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        {tree.description}{" "}
-                                                        <Button
-                                                            variant="link"
-                                                            className="p-0 h-auto"
-                                                            onClick={() =>
-                                                                setShowMore(
-                                                                    false
-                                                                )
-                                                            }
-                                                        >
-                                                            View Less
-                                                        </Button>
-                                                    </>
-                                                )}
-                                            </>
-                                        ) : (
-                                            tree.description
+
+                                {/* Description */}
+                                {tree.description && (
+                                    <div className="text-sm text-muted-foreground mt-4">
+                                        {tree.description.length > 200 &&
+                                        !showMore
+                                            ? `${tree.description.slice(
+                                                  0,
+                                                  200
+                                              )}... `
+                                            : tree.description}
+                                        {tree.description.length > 200 && (
+                                            <Button
+                                                variant="link"
+                                                className="p-0 h-auto text-xs"
+                                                onClick={() =>
+                                                    setShowMore(!showMore)
+                                                }
+                                            >
+                                                {showMore
+                                                    ? "Show less"
+                                                    : "Show more"}
+                                            </Button>
                                         )}
-                                    </>
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -308,7 +309,12 @@ export default function TreeProfile({
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
-                        <div className=""></div>
+                        <div className="text-sm text-muted-foreground">
+                            {filteredImages?.length || 0}{" "}
+                            {(filteredImages?.length || 0) === 1
+                                ? "image"
+                                : "images"}
+                        </div>
                     </div>
                     <CardContent className="p-0">
                         {loading ? (

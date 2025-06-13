@@ -27,7 +27,7 @@ export function TreeActionMenu({
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button className="p-1 rounded-full bg-white/20 hover:bg-white/30 transition-colors">
+                <button className="p-1 rounded-full transition-colors">
                     <MoreVertical size={16} className="text-white" />
                 </button>
             </DropdownMenuTrigger>

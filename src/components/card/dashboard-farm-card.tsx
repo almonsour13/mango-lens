@@ -1,13 +1,14 @@
 "use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Farm } from "@/types/types";
+import type { Farm } from "@/types/types";
 import {
     MapPin,
-    MoveUpRight,
-    SquareArrowOutUpRight,
-    SquareArrowUp,
-    SquareArrowUpRight,
+    Bug,
+    CheckCircle,
+    AlertTriangle,
+    ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -18,87 +19,134 @@ interface FarmProps extends Farm {
     diseaseCount: { [diseaseName: string]: number };
     farmHealth: number;
 }
+
 export const DashboardFarmCard = ({ farm }: { farm: FarmProps }) => {
     const isActive = farm.status === 1;
     const farmHealth = farm.farmHealth;
-    const sortedDiseases = Object.entries(farm.diseaseCount)
+    const healthPercentage = farm.totalTrees
+        ? (farm.healthyTrees / farm.totalTrees) * 100
+        : 100;
+    const diseasePercentage = farm.totalTrees
+        ? (farm.diseasedTrees / farm.totalTrees) * 100
+        : 0;
+
+    const sortedDiseases = Object.entries(farm.diseaseCount || {})
         .sort(([, a], [, b]) => b - a)
-        .filter(([disease, count], index) => disease !== "Healthy");
+        .filter(([disease]) => disease !== "Healthy");
+
     return (
-        <Link href={`/user/farm/${farm.farmID}`}>
-            <Card className="group overflow-hidden border bg-card/50">
+        <Link href={`/user/farm/${farm.farmID}`} className="block group">
+            <Card className="overflow-hidden border bg-card/50 transition-all duration-200 hover:shadow-md hover:border-primary/30">
+                {/* Status Bar with gradient - matching the FarmCard */}
+                {/* <div
+                    className={`h-1.5 ${
+                        isActive
+                            ? "bg-gradient-to-r from-primary/80 via-primary to-primary/80"
+                            : "bg-gradient-to-r from-destructive/80 via-destructive to-destructive/80"
+                    }`}
+                /> */}
+
                 <CardHeader className="pb-2">
                     <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
                             <CardTitle className="text-lg font-semibold truncate">
                                 {farm.farmName}
                             </CardTitle>
-                            <div className="flex items-center gap-1 text-muted-foreground ">
-                                <MapPin className="w-3 h-3" />
+                            <div className="flex items-center gap-1.5 text-muted-foreground mt-1">
+                                <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
                                 <span className="text-xs truncate">
-                                    {farm.address}
+                                    {farm.address || "No address specified"}
                                 </span>
                             </div>
                         </div>
                         <div className="flex items-center gap-2 ml-3">
-                            <Badge variant={isActive ? "default" : "secondary"} className="font-medium text-xs px-2 py-0.5">
+                            <Badge
+                                variant={isActive ? "default" : "outline"}
+                                className={`font-medium text-xs px-2 py-0.5 ${
+                                    isActive
+                                        ? ""
+                                        : "text-destructive border-destructive/30"
+                                }`}
+                            >
                                 {isActive ? "Active" : "Inactive"}
                             </Badge>
-                            {/* <SquareArrowOutUpRight className="h-5 w-5 text-primary" /> */}
                         </div>
                     </div>
                 </CardHeader>
-                <CardContent className="space-y-2">
-                    {/* Farm Health */}
-                    <div className="space-y-1">
+
+                <CardContent className="space-y-3 pt-0">
+                    {/* Farm Health - styled like the FarmCard */}
+                    <div className="flex flex-col gap-1.5 bg-muted/20 p-2.5 rounded-lg border">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <span className="text-xs font-medium">
                                     Farm Health
                                 </span>
                             </div>
-                        </div>
-                        <div className="w-full bg-primary rounded-full h-2">
-                            <div
-                                className="h-2 rounded-full transition-all duration-300 bg-destructive"
-                                style={{
-                                    width: `${
-                                        (farm.diseasedTrees / farm.totalTrees) *
-                                        100
-                                    }%`,
-                                }}
-                            />
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-xs font-bold text-destructive">
-                                {farm.diseasedTrees?(
-                                    (farm.diseasedTrees / farm.totalTrees) *
-                                    100
-                                ).toFixed(1):"0"}
-                                %
-                            </span>
-                            
-                            <span className="text-xs font-bold text-primary">
+                            <span className="text-xs font-bold">
                                 {farmHealth}%
                             </span>
                         </div>
+                        <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                            <div className="flex h-full">
+                                <div
+                                    className="h-full bg-primary transition-all duration-300"
+                                    style={{ width: `${healthPercentage}%` }}
+                                />
+                                <div
+                                    className="h-full bg-destructive transition-all duration-300"
+                                    style={{ width: `${diseasePercentage}%` }}
+                                />
+                            </div>
+                        </div>
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                            <div className="flex items-center gap-1">
+                                <span className="h-2 w-2 rounded-full bg-primary inline-block"></span>
+                                <span>
+                                    Healthy: {healthPercentage.toFixed(1)}%
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <span className="h-2 w-2 rounded-full bg-destructive inline-block"></span>
+                                <span>
+                                    Diseased: {diseasePercentage.toFixed(1)}%
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex flex-col gap-1">
-                        {" "}
-                        <span className="text-xs font-medium">
-                            Disease Found:
-                        </span>
-                        <div className="flex gap-2">
-                            {sortedDiseases.length > 0 ? (
-                                sortedDiseases
+
+                    {/* Disease Found - styled like the FarmCard */}
+                    <div className="flex flex-col gap-1.5">
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs font-medium flex items-center gap-1.5">
+                                <Bug className="h-3.5 w-3.5 text-destructive" />
+                                Disease Found
+                            </span>
+                            {sortedDiseases.length > 0 && (
+                                <Badge
+                                    variant="outline"
+                                    className="text-xs font-normal h-5 px-1.5"
+                                >
+                                    {sortedDiseases.length}{" "}
+                                    {sortedDiseases.length === 1
+                                        ? "type"
+                                        : "types"}
+                                </Badge>
+                            )}
+                        </div>
+
+                        {sortedDiseases.length > 0 ? (
+                            <div className="flex flex-wrap gap-1.5">
+                                {sortedDiseases
                                     .slice(0, 2)
-                                    .map(([disease, count], index) => {
-                                        return (
-                                            <div
-                                                key={disease}
-                                                className="flex items-center justify-between p-1 px-2 bg-destructive/5 border border-destructive/20 rounded hover:bg-destructive/10 transition-colors"
-                                            >
-                                                <div className="font-medium text-xs text-foreground capitalize truncate">
+                                    .map(([disease, count]) => (
+                                        <div
+                                            key={disease}
+                                            className="flex items-center justify-between p-1.5 px-2 bg-destructive/5 border border-destructive/20 rounded-md hover:bg-destructive/10 transition-colors"
+                                        >
+                                            <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                                                <div className="h-2 w-2 rounded-full bg-destructive"></div>
+                                                <div className="font-medium text-xs text-foreground capitalize truncate max-w-[80px]">
                                                     {disease
                                                         .replace(
                                                             /([A-Z])/g,
@@ -107,22 +155,50 @@ export const DashboardFarmCard = ({ farm }: { farm: FarmProps }) => {
                                                         .trim()}
                                                 </div>
                                             </div>
-                                        );
-                                    })
-                            ) : (
-                                <div className="flex items-center justify-between p-1 px-2 bg-muted/10 hover:bg-muted/20 border rounded transition-colors">
-                                    <div className="font-medium text-xs text-foreground capitalize truncate">
-                                        None
+                                            <div className="text-xs font-bold text-destructive ml-1.5">
+                                                {count}
+                                            </div>
+                                        </div>
+                                    ))}
+                                {sortedDiseases.length > 2 && (
+                                    <div className="flex items-center justify-between p-1.5 px-2 bg-muted/50 border rounded-md">
+                                        <span className="text-xs font-medium text-muted-foreground">
+                                            +{sortedDiseases.length - 2} more
+                                        </span>
                                     </div>
-                                </div>
-                            )}
-                            {sortedDiseases.length > 2 && (
-                                <div className="flex items-center justify-between p-1 px-2 bg-muted border rounded hover:bg-destructive/10 transition-colors">
-                                    <div className="font-medium text-xs text-foreground capitalize truncate">
-                                        +{sortedDiseases.length - 2}
-                                    </div>
-                                </div>
-                            )}
+                                )}
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-1.5 p-2 bg-primary/5 border border-primary/20 rounded-md">
+                                <CheckCircle className="h-3.5 w-3.5 text-primary" />
+                                <span className="text-xs font-medium">
+                                    No diseases detected
+                                </span>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Stats Summary - styled like the FarmCard */}
+                    <div className="flex justify-between items-center pt-3 border-t mt-2">
+                        <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1 text-xs">
+                                <span className="text-muted-foreground">
+                                    Total:
+                                </span>
+                                <span className="font-medium">
+                                    {farm.totalTrees || 0}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-1 text-xs">
+                                <AlertTriangle className="h-3 w-3 text-destructive" />
+                                <span className="font-medium">
+                                    {farm.diseasedTrees || 0}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="text-xs text-primary flex items-center gap-1 group-hover:underline">
+                            View details
+                            <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
                         </div>
                     </div>
                 </CardContent>

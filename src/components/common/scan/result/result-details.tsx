@@ -1,95 +1,95 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DiseaseColor } from "@/constant/color";
 import { ScanResult } from "@/types/types";
-import { TreeDeciduous, Trees, TreesIcon } from "lucide-react";
+import { AlertTriangle, CheckCircle, TreeDeciduous, Trees } from "lucide-react";
+import Link from "next/link";
 
 export default function ResultDetails({
     scanResult,
 }: {
     scanResult: ScanResult;
 }) {
+    const isHealthy = scanResult?.diseases[0].diseaseName === "Healthy";
     return (
         <div className="flex-1 flex flex-col gap-4">
-            {/* Farm and Tree Information */}
-            <Card className="border-0 p-0 space-y-2">
-                <CardContent className="space-y-4 p-0">
-                    <div className="flex gap-4">
-                        <Badge variant="outline" className="px-4 py-2 text-sm">
-                            <Trees className="h-4 w-4 mr-2 text-green-600" />
-                            {scanResult.farmName || "N/A"}
-                        </Badge>
-                        <Badge variant="outline" className="px-4 py-2 text-sm">
-                            <TreeDeciduous className="h-4 w-4 mr-2 text-green-600" />
-                            {scanResult.treeCode || "N/A"}
-                        </Badge>
+            <div className="flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-2">
+                    <span>Farm:</span>
+                    <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded">
+                        <Trees className="h-3.5 w-3.5 text-primary" />
+                        <span className="text-sm font-medium">
+                            {scanResult.farmName}
+                        </span>
                     </div>
-                </CardContent>
-            </Card>
-            <div className="flex flex-col gap-2 p-4 border rounded-lg">
-                <div className="flex items-center space-x-2">
-                    <span className="text-base font-medium">
-                        Assign Classification:
-                    </span>
                 </div>
-                <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
-                    {scanResult.diseases &&
-                        scanResult.diseases.length > 0 &&
-                        scanResult.diseases.map((disease, index) => {
-                            const color = DiseaseColor(disease.diseaseName);
-                            return (
-                                <div className="flex flex-col" key={index}>
-                                    <div className="flex justify-between text-sm mb-1">
-                                        <span>{disease.diseaseName}</span>
-                                        <span>
-                                            {disease.likelihoodScore.toFixed(1)}
-                                            %
-                                        </span>
-                                    </div>
-                                    <div className="bg-muted h-2 w-full overflow-hidden rounded">
-                                        <div
-                                            className={`${
-                                                disease.diseaseName ===
-                                                "Healthy"
-                                                    ? "bg-primary"
-                                                    : "bg-destructive"
-                                            } h-2`}
-                                            style={{
-                                                width: `${
-                                                    disease.likelihoodScore * 1
-                                                }%`,
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                                // <Card
-                                //     key={index}
-                                //     className={`border-0 ${"border-" + color}`}
-                                // >
-                                //     <div className="pb-2">
-                                //         <CardTitle className="text-lg font-semibold">
-                                //             {disease.diseaseName}
-                                //         </CardTitle>
-                                //         <CardDescription>
-                                //             Likelihood:{" "}
-                                //             {disease.likelihoodScore.toFixed(2)}
-                                //             %
-                                //         </CardDescription>
-                                //     </div>
-                                //     <div>
-                                //         <Progress
-                                //             value={
-                                //                 disease.likelihoodScore * 100
-                                //             }
-                                //             className="h-2"
-                                //         />
-                                //     </div>
-                                // </Card>
-                            );
-                        })}
+                <div className="flex items-center gap-2">
+                    <span>Tree:</span>
+                    <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded">
+                        <TreeDeciduous className="h-3.5 w-3.5 text-primary" />
+                        <span className="text-sm font-medium">
+                            {scanResult.treeCode}
+                        </span>
+                    </div>
                 </div>
+            </div>
+
+            {/* Disease Classification */}
+            <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">
+                            Analysis Result
+                        </span>
+                    </div>
+                    <Badge
+                        variant={isHealthy ? "default" : "outline"}
+                        className={`font-medium text-xs px-2 py-0.5 ${
+                            isHealthy
+                                ? ""
+                                : "text-destructive border-destructive/30"
+                        }`}
+                    >
+                        {isHealthy ? "Healthy" : "Disease Detected"}
+                    </Badge>
+                </div>
+
+                {scanResult.diseases && (
+                    <div className="flex flex-col gap-1.5 bg-muted/20 p-3 rounded-lg border">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                {isHealthy ? (
+                                    <CheckCircle className="h-4 w-4 text-primary" />
+                                ) : (
+                                    <AlertTriangle className="h-4 w-4 text-destructive" />
+                                )}
+                                <span className="text-sm font-medium capitalize">
+                                    {scanResult.diseases[0].diseaseName
+                                        .replace(/([A-Z])/g, " $1")
+                                        .trim()}
+                                </span>
+                            </div>
+                            <span className="text-sm font-bold">
+                                {scanResult.diseases[0].likelihoodScore}%
+                            </span>
+                        </div>
+                        <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
+                            <div
+                                className={`h-full ${
+                                    isHealthy ? "bg-primary" : "bg-destructive"
+                                } transition-all duration-300`}
+                                style={{
+                                    width: `${scanResult.diseases[0].likelihoodScore}%`,
+                                }}
+                            />
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                            {isHealthy
+                                ? "This leaf appears to be healthy with no signs of disease."
+                                : "Disease detected. Consider treatment options."}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
