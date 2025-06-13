@@ -8,6 +8,5 @@ export default function Page({
 }) {
     const unwrappedParams = React.use(params);
     const { imageID } = unwrappedParams;
-    console.log(imageID);
     return <ImageDetails imageID={imageID} />;
 }

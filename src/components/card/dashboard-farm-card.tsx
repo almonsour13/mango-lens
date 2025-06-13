@@ -71,10 +71,10 @@ export const DashboardFarmCard = ({ farm }: { farm: FarmProps }) => {
                         </div>
                         <div className="flex justify-between">
                             <span className="text-xs font-bold text-destructive">
-                                {(
+                                {farm.diseasedTrees?(
                                     (farm.diseasedTrees / farm.totalTrees) *
                                     100
-                                ).toFixed(1)}
+                                ).toFixed(1):"0"}
                                 %
                             </span>
                             

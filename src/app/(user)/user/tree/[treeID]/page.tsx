@@ -1,6 +1,6 @@
 "use client";
 import { CardContent } from "@/components/ui/card";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import {
     DropdownMenu,
@@ -10,35 +10,27 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import PageWrapper from "@/components/wrapper/page-wrapper";
-import { Farm, Image, Tree } from "@/types/types";
 
 import { TreeImageCard } from "@/components/card/tree-image-card";
 import { TreeImageSkeletonCard } from "@/components/skeleton/skeleton-card";
-import { TreeImagesTable } from "@/components/table/tree-images-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Toggle } from "@/components/ui/toggle";
-import { useAuth } from "@/context/auth-context";
 import { formatDate } from "date-fns";
 import {
     ArrowDownUp,
     ArrowLeft,
     Calendar,
     Edit,
-    Grid,
-    List,
     Plus,
     SlidersHorizontal,
     TreeDeciduous,
-    Trees,
+    Trees
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getTreeByID } from "@/stores/tree";
-import { getImageByImageID, getImagesByTreeID } from "@/stores/image";
 import { useTreeData } from "@/hooks/use-tree-data";
 
 export default function TreeProfile({

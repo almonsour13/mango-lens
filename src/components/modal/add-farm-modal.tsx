@@ -23,6 +23,7 @@ import { Input } from "../ui/input";
 import { addFarm } from "@/stores/farm";
 import { toast } from "@/hooks/use-toast";
 import { Farm } from "@/types/types";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
     farmName: z
@@ -35,11 +36,18 @@ const formSchema = z.object({
         .max(100, { message: "Location must not exceed 100 characters." }),
     description: z.string().optional(),
 });
+interface FarmProps extends Farm{
+    totalTrees: number;
+    healthyTrees: number;
+    diseasedTrees: number;
+    diseaseCount: {[diseaseName: string]: number},
+    farmHealth: number;
+}
 interface AddFarmModalProps {
     openDialog: boolean;
     setOpenDialog: (value: boolean) => void;
-    farm: Farm[] | null;
-    setFarm?: (farm: Farm[]) => void;
+    farm: FarmProps[] | null;
+    setFarm?: (farm: FarmProps[]) => void;
 }
 export default function AddFarmModal({
     openDialog,
@@ -49,7 +57,7 @@ export default function AddFarmModal({
 }: AddFarmModalProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
+    const router = useRouter();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -72,6 +80,7 @@ export default function AddFarmModal({
                 if (setFarm) {
                     setFarm([...(farm || []), res.data]);
                 }
+                router.push(`/user/scan/${res.data.farmID}`)
                 toast({
                     title: "Farm Added",
                     description: "Your farm has been successfully created.",

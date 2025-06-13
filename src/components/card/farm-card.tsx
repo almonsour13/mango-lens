@@ -119,7 +119,7 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
                     </div>
 
                     {farm.description && (
-                        <CardDescription className="mt-2 line-clamp-2">
+                        <CardDescription className="mt-2 line-clamp-2 text-xs">
                             {farm.description}
                         </CardDescription>
                     )}
@@ -159,7 +159,7 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <span className="text-sm font-medium">
-                                    Farm Health
+                                    Farm Health:
                                 </span>
                             </div>
                         </div>
@@ -168,18 +168,18 @@ export function FarmCard({ farm }: { farm: FarmProps }) {
                                 className="h-2 rounded-full transition-all duration-300 bg-destructive"
                                 style={{
                                     width: `${
-                                        (farm.diseasedTrees / farm.totalTrees) *
-                                        100
+                                        farm.diseaseCount?((farm.diseasedTrees / farm.totalTrees) *
+                                        100):0
                                     }%`,
                                 }}
                             />
                         </div>
                         <div className="flex justify-between">
                             <span className="text-sm font-bold text-destructive">
-                                {(
+                                {farm.diseasedTrees?(
                                     (farm.diseasedTrees / farm.totalTrees) *
                                     100
-                                ).toFixed(1)}
+                                ).toFixed(1):"0"}
                                 %
                             </span>
                             <span className="text-sm font-bold text-primary">
