@@ -16,6 +16,8 @@ interface FarmProps extends Farm {
     totalTrees: number;
     healthyTrees: number;
     diseasedTrees: number;
+    activeTrees: number;
+    inactiveTrees: number;
     diseaseCount: { [diseaseName: string]: number };
     farmHealth: number;
 }
@@ -23,11 +25,11 @@ interface FarmProps extends Farm {
 export const DashboardFarmCard = ({ farm }: { farm: FarmProps }) => {
     const isActive = farm.status === 1;
     const farmHealth = farm.farmHealth;
-    const healthPercentage = farm.totalTrees
-        ? (farm.healthyTrees / farm.totalTrees) * 100
+    const healthPercentage = farm.activeTrees
+        ? (farm.healthyTrees / farm.activeTrees) * 100
         : 100;
-    const diseasePercentage = farm.totalTrees
-        ? (farm.diseasedTrees / farm.totalTrees) * 100
+    const diseasePercentage = farm.activeTrees
+        ? (farm.diseasedTrees / farm.activeTrees) * 100
         : 0;
 
     const sortedDiseases = Object.entries(farm.diseaseCount || {})

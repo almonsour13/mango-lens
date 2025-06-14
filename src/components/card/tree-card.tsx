@@ -5,7 +5,7 @@ import type React from "react";
 import Link from "next/link";
 import { Card } from "../ui/card";
 import Image from "next/image";
-import { Leaf, TreeDeciduous } from "lucide-react";
+import { Leaf, ShieldCheck, TreeDeciduous, TriangleAlert } from "lucide-react";
 import type { Tree } from "@/types/types";
 import { TreeActionMenu } from "../action menu/tree-action-menu";
 import { Badge } from "../ui/badge";
@@ -70,8 +70,14 @@ export default function TreeCard({
                                     }
                                     className="font-medium text-xs px-2 py-0.5"
                                 >
-                                    {tree.recentImage.likelihoodScore}%{" "}
-                                    {isHealthy ? "Healthy" : "Diseased"}
+                                    {tree.recentImage.likelihoodScore}%
+                                    <span className="hidden md:block ml-1">{isHealthy ? "Healthy" : "Diseased"}</span>
+                                    {isHealthy ?(
+                                        <ShieldCheck className="h-4 w-3 ml-1 md:hidden"/>
+                                    ):(
+                                        <TriangleAlert className="h-3 w-3 ml-1 md:hidden"/>
+                                    )}
+                                    
                                 </Badge>
                             )}
                         </div>

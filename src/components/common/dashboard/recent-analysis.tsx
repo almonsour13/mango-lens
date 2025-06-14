@@ -10,8 +10,10 @@ import {
     Calendar,
     CheckCircle,
     Eye,
+    ShieldCheck,
     TreeDeciduous,
     Trees,
+    TriangleAlert,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -128,12 +130,19 @@ export const RecentAnalysis = () => {
                                                             ? "default"
                                                             : "destructive"
                                                     }
-                                                    className={`font-medium text-xs px-2 py-0.5 `}
+                                                    className="font-medium text-xs px-2 py-0.5"
                                                 >
                                                     {diseasePercentage}%{" "}
-                                                    {isHealthy
-                                                        ? "Healthy"
-                                                        : "Diseased"}
+                                                    <span className="hidden md:block ml-1">
+                                                        {isHealthy
+                                                            ? "Healthy"
+                                                            : "Diseased"}
+                                                    </span>
+                                                    {isHealthy ? (
+                                                        <ShieldCheck className="h-4 w-3 ml-1 md:hidden" />
+                                                    ) : (
+                                                        <TriangleAlert className="h-3 w-3 ml-1 md:hidden" />
+                                                    )}
                                                 </Badge>
                                             </div>
 
@@ -147,7 +156,6 @@ export const RecentAnalysis = () => {
                                                     )}
                                                 </div>
                                                 <div className="flex items-center gap-1.5">
-                                                    <Calendar className="h-3.5 w-3.5" />
                                                     <span>
                                                         {format(
                                                             new Date(
