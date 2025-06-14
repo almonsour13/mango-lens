@@ -11,7 +11,14 @@ import {
 import { Separator } from "@/components/ui/separator";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import { useFarmData } from "@/hooks/use-farm-data";
-import { ArrowLeft, Info, Plus, TreeDeciduous, Trees } from "lucide-react";
+import {
+    ArrowLeft,
+    Info,
+    Leaf,
+    Plus,
+    TreeDeciduous,
+    Trees,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -22,28 +29,33 @@ import {
 } from "@/components/ui/popover";
 import { addTree, generateTreeCode } from "@/stores/tree";
 import { toast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 
-export default function Page({ params }: { params: Promise<{ farmID: string }> }) {
+export default function Page({
+    params,
+}: {
+    params: Promise<{ farmID: string }>;
+}) {
     const unwrappedParams = React.use(params);
     const { farmID } = unwrappedParams;
     const { farm, setFarm, trees, loading } = useFarmData(farmID);
     const [isInfoOpen, setIsInfoOpen] = useState(false);
     const router = useRouter();
-  const [isAddingTree, setIsAddingTree] = useState(false)
+    const [isAddingTree, setIsAddingTree] = useState(false);
 
     const addNewTree = async () => {
-        setIsAddingTree(true)
+        setIsAddingTree(true);
         const newTreeCode = await generateTreeCode(farmID);
 
         if (newTreeCode) {
-            await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
+            await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 second delay
             const res = await addTree(farmID, newTreeCode, "");
             if (res.success) {
                 toast({
                     title: "Success",
                     description: "New tree code generated successfully",
                 });
-                router.push(`/user/scan/${farmID}/${res.data.treeID}`)
+                router.push(`/user/scan/${farmID}/${res.data.treeID}`);
             } else {
                 toast({
                     title: "Error",
@@ -51,7 +63,7 @@ export default function Page({ params }: { params: Promise<{ farmID: string }> }
                     variant: "destructive",
                 });
             }
-            setIsAddingTree(false)
+            setIsAddingTree(false);
         }
 
         // alert(res)
@@ -94,7 +106,8 @@ export default function Page({ params }: { params: Promise<{ farmID: string }> }
                             <div className="space-y-3">
                                 <p className="text-sm">
                                     When you add a new tree, a unique tree code
-                                    will be automatically generated. You {"don't"}
+                                    will be automatically generated. You{" "}
+                                    {"don't"}
                                     need to create one yourself.
                                 </p>
 
@@ -164,7 +177,7 @@ export default function Page({ params }: { params: Promise<{ farmID: string }> }
                 {farm && (
                     <div className="flex items-center gap-2">
                         <span className="text-sm">Farm:</span>
-                        <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded">
+                        <div className="flex items-center gap-2 bg-card/50 px-3 py-1.5 rounded border">
                             <Trees className="h-3.5 w-3.5 text-primary" />
                             <span className="text-sm font-medium">
                                 {farm.farmName}
@@ -176,24 +189,87 @@ export default function Page({ params }: { params: Promise<{ farmID: string }> }
                 <CardContent className="p-0 flex-1">
                     {trees && trees.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4">
-                            {trees.map((tree, index) => (
-                                <Link
-                                    href={`/user/scan/${farmID}/${tree.treeID}`}
-                                    key={index}
-                                >
-                                    <Card className="hover:border-primary/50 hover:bg-muted/50">
+                            {trees.map((tree, index) => {
+                                const isActive = tree.status === 1;
+
+                                const TreeCardContent = (
+                                    <Card
+                                        key={tree.treeID} // Added key property
+                                        className={`shadow-none bg-card/50 ${
+                                            isActive
+                                                ? "hover:border-primary hover:bg-muted/50 cursor-pointer"
+                                                : "opacity-60 cursor-not-allowed"
+                                        } transition-all relative`}
+                                    >
+                                        {!isActive && (
+                                            <div className="absolute inset-0 bg-background/50 backdrop-blur-[0.7px] rounded-lg flex items-center justify-center z-10">
+                                                <div className="text-center p-4">
+                                                    <h1 className="text-sm font-bold mb-1">
+                                                        Cannot be selected
+                                                    </h1>
+                                                    <div className="text-xs text-muted-foreground">
+                                                        This tree is currently inactive
+                                                    </div>
+                                                    <Link
+                                                       href={`/user/tree/${tree.treeID}/edit`}
+                                                       className="text-xs text-primary underline"
+                                                    >
+                                                        Click here to activate
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                        )}
                                         <CardHeader>
-                                            <CardTitle className="text-lg">
-                                                {tree.treeCode}
-                                            </CardTitle>
-                                            {/* <CardDescription className="flex items-center gap-1 text-xs">
-                                                <MapPin className="h-3 w-3" />
-                                                {tree.}
-                                            </CardDescription> */}
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex-1 min-w-0">
+                                                    <CardTitle className="text-lg font-semibold truncate">
+                                                        {tree.treeCode}
+                                                    </CardTitle>
+                                                    <div className="">
+                                                        <div className="flex items-center gap-1.5 text-muted-foreground mt-1">
+                                                            <Leaf className="w-3.5 h-3.5 flex-shrink-0" />
+                                                            <span className="text-xs truncate">
+                                                                {tree.imagesLength ||
+                                                                    0}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2 ml-3">
+                                                    <Badge
+                                                        variant={
+                                                            tree.status === 1
+                                                                ? "default"
+                                                                : "destructive"
+                                                        }
+                                                        className={`font-medium text-xs px-2 py-0.5`}
+                                                    >
+                                                        {tree.status === 1
+                                                            ? "Active"
+                                                            : "Inactive"}
+                                                    </Badge>
+                                                </div>
+                                            </div>
                                         </CardHeader>
                                     </Card>
-                                </Link>
-                            ))}
+                                );
+
+                                return isActive ? (
+                                    <Link
+                                        href={`/user/scan/${farmID}/${tree.treeID}`}
+                                        key={index}
+                                    >
+                                        {TreeCardContent}
+                                    </Link>
+                                ) : (
+                                    <div
+                                        key={index}
+                                        title="This tree is inactive and cannot be selected"
+                                    >
+                                        {TreeCardContent}
+                                    </div>
+                                );
+                            })}
                             <Button
                                 variant="outline"
                                 size="lg"
@@ -201,9 +277,13 @@ export default function Page({ params }: { params: Promise<{ farmID: string }> }
                                 onClick={addNewTree}
                             >
                                 <div className="flex">
-                                    {!isAddingTree && <Plus className="w-5 h-5 mr-3" />}
+                                    {!isAddingTree && (
+                                        <Plus className="w-5 h-5 mr-3" />
+                                    )}
                                     <span className="font-medium">
-                                        {!isAddingTree?"Add New Tree":"Generating tree code..."}
+                                        {!isAddingTree
+                                            ? "Add New Tree"
+                                            : "Generating tree code..."}
                                     </span>
                                 </div>
                             </Button>
@@ -236,9 +316,13 @@ export default function Page({ params }: { params: Promise<{ farmID: string }> }
                                     className="w-full h-full p-4 border-dashed border-2 hover:border-primary hover:bg-primary/5 transition-all duration-200"
                                     onClick={addNewTree}
                                 >
-                                    {!isAddingTree && <Plus className="w-5 h-5 mr-3" />}
+                                    {!isAddingTree && (
+                                        <Plus className="w-5 h-5 mr-3" />
+                                    )}
                                     <span className="font-medium">
-                                        {!isAddingTree?"Add Your First Tree":"Generating tree code..."}
+                                        {!isAddingTree
+                                            ? "Add Your First Tree"
+                                            : "Generating tree code..."}
                                     </span>
                                 </Button>
                             </CardContent>

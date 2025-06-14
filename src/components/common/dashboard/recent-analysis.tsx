@@ -65,7 +65,7 @@ export const RecentAnalysis = () => {
                             return (
                                 <div
                                     key={image.imageID}
-                                    className="relative overflow-hidden bg-card/50 border rounded-lg transition-all duration-200 hover:shadow-md hover:border-primary/30"
+                                    className="relative overflow-hidden bg-card/50 border rounded-lg transition-all duration-200 hover:border-primary"
                                     onMouseEnter={() => setHoveredIndex(index)}
                                     onMouseLeave={() => setHoveredIndex(null)}
                                     onClick={() =>
@@ -109,7 +109,6 @@ export const RecentAnalysis = () => {
                                                             height={56}
                                                             className="object-cover h-full w-full opacity-90"
                                                         />
-                                                        <Eye className="absolute h-5 w-5 text-white" />
                                                     </div>
                                                 )}
                                         </div>
@@ -131,11 +130,6 @@ export const RecentAnalysis = () => {
                                                     }
                                                     className={`font-medium text-xs px-2 py-0.5 `}
                                                 >
-                                                    {isHealthy ? (
-                                                        <CheckCircle className="h-3 w-3 mr-1" />
-                                                    ) : (
-                                                        <AlertTriangle className="h-3 w-3 mr-1" />
-                                                    )}
                                                     {diseasePercentage}%{" "}
                                                     {isHealthy
                                                         ? "Healthy"

@@ -36,7 +36,7 @@ export const DashboardFarmCard = ({ farm }: { farm: FarmProps }) => {
 
     return (
         <Link href={`/user/farm/${farm.farmID}`} className="block group">
-            <Card className="overflow-hidden border bg-card/50 transition-all duration-200 hover:shadow-md hover:border-primary/30">
+            <Card className="overflow-hidden border bg-card/50 transition-all duration-200 hover:border-primary">
                 {/* Status Bar with gradient - matching the FarmCard */}
                 {/* <div
                     className={`h-1.5 ${
@@ -87,7 +87,7 @@ export const DashboardFarmCard = ({ farm }: { farm: FarmProps }) => {
                                 {farmHealth}%
                             </span>
                         </div>
-                        <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                        <div className="w-full bg-muted-foreground/10 rounded-full h-2 overflow-hidden">
                             <div className="flex h-full">
                                 <div
                                     className="h-full bg-primary transition-all duration-300"
@@ -122,7 +122,7 @@ export const DashboardFarmCard = ({ farm }: { farm: FarmProps }) => {
                                 <Bug className="h-3.5 w-3.5 text-destructive" />
                                 Disease Found
                             </span>
-                            {sortedDiseases.length > 0 && (
+                            {sortedDiseases.length > 0 ? (
                                 <Badge
                                     variant="outline"
                                     className="text-xs font-normal h-5 px-1.5"
@@ -132,20 +132,25 @@ export const DashboardFarmCard = ({ farm }: { farm: FarmProps }) => {
                                         ? "type"
                                         : "types"}
                                 </Badge>
+                            ):(<Badge
+                                    variant="outline"
+                                    className="text-xs font-normal h-5 px-1.5"
+                                >
+                                    None
+                                </Badge>
                             )}
                         </div>
 
-                        {sortedDiseases.length > 0 ? (
-                            <div className="flex flex-wrap gap-1.5">
+                        {/* {sortedDiseases.length > 0 ? (
+                            <div className="flex gap-1.5">
                                 {sortedDiseases
                                     .slice(0, 2)
                                     .map(([disease, count]) => (
                                         <div
                                             key={disease}
-                                            className="flex items-center justify-between p-1.5 px-2 bg-destructive/5 border border-destructive/20 rounded-md hover:bg-destructive/10 transition-colors"
+                                            className="flex flex-1 items-center justify-between p-1.5 px-2 bg-destructive/5 border border-destructive/20 rounded-md hover:bg-destructive/10 transition-colors"
                                         >
                                             <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                                                <div className="h-2 w-2 rounded-full bg-destructive"></div>
                                                 <div className="font-medium text-xs text-foreground capitalize truncate max-w-[80px]">
                                                     {disease
                                                         .replace(
@@ -161,25 +166,22 @@ export const DashboardFarmCard = ({ farm }: { farm: FarmProps }) => {
                                         </div>
                                     ))}
                                 {sortedDiseases.length > 2 && (
-                                    <div className="flex items-center justify-between p-1.5 px-2 bg-muted/50 border rounded-md">
-                                        <span className="text-xs font-medium text-muted-foreground">
-                                            +{sortedDiseases.length - 2} more
-                                        </span>
+                                    <div className="border p-1.5 flex items-center justify-center text-xs rounded bg-muted/20">
+                                        +{sortedDiseases.length - 2}
                                     </div>
                                 )}
                             </div>
                         ) : (
                             <div className="flex items-center gap-1.5 p-2 bg-primary/5 border border-primary/20 rounded-md">
-                                <CheckCircle className="h-3.5 w-3.5 text-primary" />
                                 <span className="text-xs font-medium">
                                     No diseases detected
                                 </span>
                             </div>
-                        )}
+                        )} */}
                     </div>
 
                     {/* Stats Summary - styled like the FarmCard */}
-                    <div className="flex justify-between items-center pt-3 border-t mt-2">
+                    {/* <div className="flex justify-between items-center pt-3 border-t mt-2">
                         <div className="flex items-center gap-2">
                             <div className="flex items-center gap-1 text-xs">
                                 <span className="text-muted-foreground">
@@ -200,7 +202,7 @@ export const DashboardFarmCard = ({ farm }: { farm: FarmProps }) => {
                             View details
                             <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
                         </div>
-                    </div>
+                    </div> */}
                 </CardContent>
             </Card>
         </Link>

@@ -239,7 +239,7 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
                                             href={`/user/farm/${imageDetails.farmID}`}
                                             className="hover:underline"
                                         >
-                                            <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded">
+                                            <div className="flex items-center gap-2 bg-card/50 px-3 py-1.5 rounded border">
                                                 <Trees className="h-3.5 w-3.5 text-primary" />
                                                 <span className="text-sm font-medium">
                                                     {imageDetails.farmName}
@@ -253,7 +253,7 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
                                             href={`/user/tree/${imageDetails.treeID}`}
                                             className="hover:underline"
                                         >
-                                            <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded">
+                                            <div className="flex items-center gap-2 bg-card/50 px-3 py-1.5 rounded border">
                                                 <TreeDeciduous className="h-3.5 w-3.5 text-primary" />
                                                 <span className="text-sm font-medium">
                                                     {imageDetails.treeCode}
@@ -261,7 +261,7 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
                                             </div>
                                         </Link>
                                     </div>
-                                    <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded">
+                                    <div className="flex items-center gap-2 bg-card/50 px-3 py-1.5 rounded border">
                                         <Calendar className="h-3.5 w-3.5 text-primary" />
                                         <span className="text-sm font-medium">
                                             {format(
@@ -301,7 +301,7 @@ export default function ImageDetails({ imageID }: { imageID: string }) {
                                     </div>
 
                                     {imageDetails.disease && (
-                                        <div className="flex flex-col gap-1.5 bg-muted/20 p-3 rounded-lg border">
+                                        <div className="flex flex-col gap-1.5 bg-card/50 p-3 rounded-lg border">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-2">
                                                     {isHealthy ? (

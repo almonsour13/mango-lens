@@ -16,7 +16,7 @@ export default function ResultDetails({
             <div className="flex flex-wrap items-center gap-3">
                 <div className="flex items-center gap-2">
                     <span>Farm:</span>
-                    <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded">
+                    <div className="flex items-center gap-2 bg-card/50 px-3 py-1.5 rounded border">
                         <Trees className="h-3.5 w-3.5 text-primary" />
                         <span className="text-sm font-medium">
                             {scanResult.farmName}
@@ -25,7 +25,7 @@ export default function ResultDetails({
                 </div>
                 <div className="flex items-center gap-2">
                     <span>Tree:</span>
-                    <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded">
+                    <div className="flex items-center gap-2 bg-card/50 px-3 py-1.5 rounded border">
                         <TreeDeciduous className="h-3.5 w-3.5 text-primary" />
                         <span className="text-sm font-medium">
                             {scanResult.treeCode}
@@ -55,7 +55,7 @@ export default function ResultDetails({
                 </div>
 
                 {scanResult.diseases && (
-                    <div className="flex flex-col gap-1.5 bg-muted/20 p-3 rounded-lg border">
+                    <div className="flex flex-col gap-1.5 bg-card/50 p-3 rounded-lg border">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 {isHealthy ? (

@@ -163,16 +163,23 @@ export const getFarmByUser = async (): Promise<{
         const updatedFarms = farms.map((farm) => {
             // Filter trees for this farm with active status
             const farmTrees = trees.filter(
-                (tree) => tree.farmID === farm.farmID && tree.status === 1
+                (tree) => tree.farmID === farm.farmID && tree.status !== 3
             );
 
             const healthyTrees: any[] = [];
             const diseasedTrees: any[] = [];
+            const inactiveTrees:any[] = [];
+            const activeTrees:any[] = [];
             const diseaseCount: { [key: string]: number } = {};
 
             farmTrees.forEach((tree) => {
                 try {
                     // Get ALL images for this tree (not just recent)
+                    if(tree.status === 2){
+                        inactiveTrees.push(tree)
+                        return
+                    }
+                    activeTrees.push(tree)
                     const treeImages = images.filter(
                         (img) => img.treeID === tree.treeID && img.status === 1
                     );
@@ -262,7 +269,7 @@ export const getFarmByUser = async (): Promise<{
             const farmHealthPercentage =
                 totalProcessedTrees > 0
                     ? (
-                          (healthyTrees.length / totalProcessedTrees) *
+                          (healthyTrees.length / activeTrees.length) *
                           100
                       ).toFixed(1)
                     : "0";
@@ -272,6 +279,8 @@ export const getFarmByUser = async (): Promise<{
                 processedTrees: totalProcessedTrees,
                 healthyTrees: healthyTrees.length,
                 diseasedTrees: diseasedTrees.length,
+                activeTrees: activeTrees.length,
+                inactiveTrees: inactiveTrees.length,
                 diseaseCount: diseaseCount,
                 farmHealth: farmHealthPercentage,
             };
@@ -296,15 +305,21 @@ export const getFarmByID = async (farmID: string): Promise<any> => {
         const farm = farm$[farmID].get();
         if (!farm) throw new Error(`Farm with ID ${farmID} not found.`);
         const trees = Object.values(tree$.get() || {}).filter(
-            (tree) => tree.farmID === farmID
+            (tree) => tree.farmID === farmID && tree.status !== 3
         );
-        console.log(trees);
         const healthyTrees: any[] = [];
         const diseasedTrees: any[] = [];
+        const inactiveTrees:any[] = [];
+        const activeTrees:any[] = [];
         const diseaseCount: { [key: string]: number } = {};
 
         trees.forEach((tree) => {
             // Get the most recent image for this tree
+            if(tree.status === 2){
+                inactiveTrees.push(tree)
+                return
+            }
+            activeTrees.push(tree)
             const image: any = Object.values(image$.get() || {})
                 .filter((img) => img.treeID === tree.treeID)
                 .sort(
@@ -369,9 +384,11 @@ export const getFarmByID = async (farmID: string): Promise<any> => {
                 healthyTrees: healthyTrees.length,
                 diseasedTrees: diseasedTrees.length,
                 diseaseCount: diseaseCount,
+                activeTrees: activeTrees.length,
+                inactiveTrees: inactiveTrees.length,
                 farmHealth:
                     trees.length > 0
-                        ? ((healthyTrees.length / trees.length) * 100).toFixed(
+                        ? ((healthyTrees.length / activeTrees.length) * 100).toFixed(
                               1
                           )
                         : "0",

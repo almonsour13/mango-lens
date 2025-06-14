@@ -48,7 +48,7 @@ const Sidebar = ({ isOpen, toggleSidebar }: Sidebar) => {
             )}
             {/* Sidebar */}
             <div
-                className={`fixed bg-card border-r inset-y-0 left-0 z-30 w-72 lg:w-64 transform ${
+                className={`fixed bg-card/50 border-r inset-y-0 left-0 z-30 w-72 lg:w-64 transform ${
                     isOpen ? "translate-x-0" : "-translate-x-full "
                 } transition-all duration-300 ease-in-out lg:translate-x-0`}
             >

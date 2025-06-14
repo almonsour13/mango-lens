@@ -100,7 +100,7 @@ export const getTreeByUser = async (): Promise<{
         const analysis = Object.values(analysis$.get() || {});
         const diseaseidentified = Object.values(diseaseidentified$.get() || {});
 
-        const userTrees = trees.filter((tree) => tree.status === 1);
+        const userTrees = trees.filter((tree) => tree.status !== 3);
 
         if (userTrees.length === 0) {
             return { success: false, message: "No trees found for this user." };
@@ -230,16 +230,18 @@ export const getTreeByID = async (treeID: string) => {
     const treesimage = Object.values(treeimage$.get() || {});
     const images = Object.values(image$.get() || {});
     const farm = Object.values(farm$.get() || {});
-    if (!tree || tree.status !== 1) {
+
+    if (!tree || tree.status === 3) {
         return null;
     }
     const farmName =
-        farm.find((farm) => farm.farmID === tree.farmID && farm.status === 1)
+        farm.find((farm) => farm.farmID === tree.farmID && farm.status !== 3)
             ?.farmName || "Unknown Farm";
     const treeimage = treesimage.filter(
         (treeimage) =>
             treeimage.treeID === tree.treeID && treeimage.status === 1
     )[0];
+
     const relatedImages = images.filter(
         (image) => image.treeID === tree.treeID && image.status === 1
     );
@@ -396,7 +398,7 @@ export const getTreesByFarmID = async (
 
         // Filter trees by the specific farmID and active status
         const farmTrees = trees.filter(
-            (tree) => tree.farmID === farmID && tree.status === 1
+            (tree) => tree.farmID === farmID
         );
 
         if (farmTrees.length === 0) {

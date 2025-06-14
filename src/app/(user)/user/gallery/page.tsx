@@ -26,7 +26,7 @@ export default function Gallery() {
         new Set(images.map((img) => img.treeCode))
     ).sort((a, b) => a.localeCompare(b));
 
-    const filteredImages = images
+    const filteredImages = images && images
         .filter(
             (image) =>
                 filterTreeCode === null || image.treeCode === filterTreeCode
@@ -60,7 +60,7 @@ export default function Gallery() {
                 </div>
 
                 <Link href={`/user/scan`}>
-                    <Button variant="outline" className="w-10 md:w-auto">
+                    <Button variant="outline" className="w-10 md:w-auto bg-card/50">
                         <Plus className="h-5 w-5" />
                         <span className="hidden md:block text-sm">
                             Scan New Image
@@ -82,7 +82,7 @@ export default function Gallery() {
                                 <DropdownMenuTrigger asChild>
                                     <Button
                                         variant="outline"
-                                        className="gap-1 w-10 md:w-auto"
+                                        className="gap-1 w-10 md:w-auto bg-card/50"
                                     >
                                         <ArrowDownUp className="h-3.5 w-3.5" />
                                         <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -116,7 +116,7 @@ export default function Gallery() {
                                 <DropdownMenuTrigger asChild>
                                     <Button
                                         variant="outline"
-                                        className={`gap-1 w-10 md:w-auto ${
+                                        className={`gap-1 w-10 md:w-auto bg-card/50 ${
                                             (filterStatus != 0 ||
                                                 filterTreeCode != null) &&
                                             "border-primary"

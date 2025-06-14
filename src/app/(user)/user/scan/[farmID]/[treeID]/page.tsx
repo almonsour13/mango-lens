@@ -192,7 +192,7 @@ export default function TreeDetailsPage({
 
                 <Popover open={isProTipsOpen} onOpenChange={setIsProTipsOpen}>
                     <PopoverTrigger asChild>
-                        <Button variant="outline" size="sm" className="gap-2">
+                        <Button variant="outline" size="sm" className="gap-2 bg-card/50">
                             <Lightbulb className="h-4 w-4 text-primary" />
                             <span>Pro Tips</span>
                         </Button>
@@ -300,7 +300,7 @@ export default function TreeDetailsPage({
                     <div className="flex gap-4">
                         <div className="flex items-center gap-2">
                             <span>Farm:</span>
-                            <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded">
+                            <div className="flex items-center gap-2 bg-card/50 px-3 py-1.5 rounded border">
                                 <Trees className="h-3.5 w-3.5 text-primary" />
                                 <span className="text-sm font-medium">
                                     {farm.farmName}
@@ -309,7 +309,7 @@ export default function TreeDetailsPage({
                         </div>
                         <div className="flex items-center gap-2">
                             <span>Tree:</span>
-                            <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded">
+                            <div className="flex items-center gap-2 bg-card/50 px-3 py-1.5 rounded border">
                                 <TreeDeciduous className="h-3.5 w-3.5 text-primary" />
                                 <span className="text-sm font-medium">
                                     {tree.treeCode}

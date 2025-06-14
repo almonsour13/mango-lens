@@ -8,6 +8,7 @@ import Image from "next/image";
 import { Leaf, TreeDeciduous } from "lucide-react";
 import type { Tree } from "@/types/types";
 import { TreeActionMenu } from "../action menu/tree-action-menu";
+import { Badge } from "../ui/badge";
 
 interface TreeWithImage extends Tree {
     farmName: string;
@@ -31,6 +32,8 @@ export default function TreeCard({
         treeID: string
     ) => void;
 }) {
+    const isHealthy =
+        tree.recentImage && tree.recentImage.diseaseName === "Healthy";
     return (
         <Link href={`/user/tree/${tree.treeID}`}>
             <Card className="overflow-hidden group bg-card border shadow-none">
@@ -51,25 +54,35 @@ export default function TreeCard({
                         </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10 flex flex-col justify-between p-2 md:p-2">
-                        <div className="flex items-center justify-between w-full">
-                            <div
-                                className={`${
-                                    tree.status == 1
-                                        ? "bg-primary"
-                                        : "bg-destructive"
-                                } text-white px-2.5 py-0.5 rounded-full text-xs flex items-center flex-shrink-0`}
+                        <div className="flex flex-row-reverse items-center justify-between w-full">
+                            <Badge
+                                variant={
+                                    tree.status == 1 ? "default" : "destructive"
+                                }
+                                className="font-medium text-xs px-2 py-0.5"
                             >
                                 {tree.status == 1 ? "Active" : "Inactive"}
-                            </div>
-                            <div className="bg-muted-foreground text-white px-2.5 py-0.5 rounded-full text-xs flex items-center flex-shrink-0">
+                            </Badge>
+                            {tree.recentImage && (
+                                <Badge
+                                    variant={
+                                        isHealthy ? "default" : "destructive"
+                                    }
+                                    className="font-medium text-xs px-2 py-0.5"
+                                >
+                                    {tree.recentImage.likelihoodScore}%{" "}
+                                    {isHealthy ? "Healthy" : "Diseased"}
+                                </Badge>
+                            )}
+                        </div>
+                        <div className="flex flex-col  items-start gap-2 w-full min-w-0">
+                            <div className="bg-muted-foreground/50 text-white px-2.5 py-0.5 rounded-full text-xs flex items-center flex-shrink-0">
                                 <Leaf size={12} className="mr-1" />
                                 {tree.imagesLength}
                             </div>
-                        </div>
-                        <div className="flex h-8 items-center gap-2 w-full min-w-0">
-                            <div className="flex items-center justify-between gap-2 flex-1">
+                            <div className="flex w-full items-center justify-between gap-2 flex-1">
                                 <div className="flex items-center gap-2 min-w-0">
-                                    <div className="h-8 w-8 bg-card rounded flex items-center justify-center flex-shrink-0">
+                                    <div className="h-8 w-8 bg-muted rounded flex items-center justify-center flex-shrink-0">
                                         {tree.treeImage ? (
                                             <div className="relative w-8 h-8 rounded overflow-hidden flex-shrink-0">
                                                 <Image
@@ -87,11 +100,11 @@ export default function TreeCard({
                                         )}
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <h3 className="font-medium text-sm truncate">
+                                        <h3 className="font-medium text-sm truncate text-white">
                                             {tree.treeCode}
                                         </h3>
                                         {tree.farmName && (
-                                            <p className="text-xs text-muted-foreground truncate">
+                                            <p className="text-xs text-white/70 truncate">
                                                 {tree.farmName}
                                             </p>
                                         )}

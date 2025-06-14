@@ -52,7 +52,7 @@ export default function Farms() {
                 </div>
 
                 <Link href={`/user/farm/add`}>
-                    <Button variant="outline" className="w-10 md:w-auto">
+                    <Button variant="outline" className="w-10 md:w-auto bg-card/50">
                         <Plus className="h-5 w-5" />
                         <span className="hidden md:block text-sm">
                             Add New Farm
@@ -79,14 +79,14 @@ export default function Farms() {
                                 Get started by adding your first farm
                             </p>
                             <Link href="/user/farm/add">
-                                <Button>
+                                <Button className="bg-card/50">
                                     <Plus className="h-4 w-4 mr-2" />
                                     Add Farm
                                 </Button>
                             </Link>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4">
                             {farms.map((farm, index) => (
                                <FarmCard key={index} farm={farm} />
                             ))}

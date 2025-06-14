@@ -99,7 +99,7 @@ export default function TreePage() {
                     <h1 className="text-md">Tree</h1>
                 </div>
                 <Link href={`${pathname}/add`}>
-                    <Button variant="outline" className="w-10 md:w-auto">
+                    <Button variant="outline" className="w-10 md:w-auto bg-card/50">
                         <Plus className="h-5 w-5" />
                         <span className="hidden md:block text-sm">
                             Add New Tree
@@ -121,7 +121,7 @@ export default function TreePage() {
                                 <DropdownMenuTrigger asChild>
                                     <Button
                                         variant="outline"
-                                        className="gap-1 w-10 md:w-auto"
+                                        className="gap-1 w-10 md:w-auto bg-card/50"
                                     >
                                         <ArrowDownUp className="h-3.5 w-3.5" />
                                         <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -155,7 +155,7 @@ export default function TreePage() {
                                 <DropdownMenuTrigger asChild>
                                     <Button
                                         variant="outline"
-                                        className={`gap-1 w-10 md:w-auto ${
+                                        className={`gap-1 w-10 md:w-auto bg-card/50 ${
                                             filterStatus != 0 &&
                                             "border-primary"
                                         }`}
@@ -205,7 +205,7 @@ export default function TreePage() {
                                 <DropdownMenuTrigger asChild>
                                     <Button
                                         variant="outline"
-                                        className="gap-1 w-10 md:w-auto"
+                                        className="gap-1 w-10 md:w-auto bg-card/50"
                                     >
                                         <SlidersHorizontal className="h-3.5 w-3.5" />
                                         <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">

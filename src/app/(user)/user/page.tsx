@@ -24,9 +24,14 @@ import {
     BarChart3,
     Leaf,
     LucideIcon,
+    Moon,
+    Sun,
     TreeDeciduous,
 } from "lucide-react";
 import Link from "next/link";
+import { useTheme } from "next-themes"
+import { Button } from "@/components/ui/button";
+
 
 export default function Dashboard() {
     const { userInfo, resetToken } = useAuth();
@@ -58,6 +63,7 @@ export default function Dashboard() {
                         </h1>
                     </div>
                     <div className="flex items-center justify-between gap-2">
+                        <ThemeToggle />
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Avatar className="cursor-pointer h-8 w-8 border">
@@ -141,6 +147,22 @@ export default function Dashboard() {
         </>
     );
 }
+const ThemeToggle = () => {
+  const { theme, setTheme } = useTheme()
+
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+      className="h-9 w-9 px-0 hover:bg-accent"
+    >
+      <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+      <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      <span className="sr-only">Toggle theme</span>
+    </Button>
+  )
+}
 const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "Morning";
@@ -176,6 +198,7 @@ const Metrics = () => {
     // Enhanced metrics with appropriate icons
     const enhancedMetrics = metrics.map((metric) => {
         let icon = metric.icon;
+        const link = "";
         // Assign appropriate icons based on metric name if not already set
         if (!metric.icon) {
             if (metric.name.toLowerCase().includes("tree"))

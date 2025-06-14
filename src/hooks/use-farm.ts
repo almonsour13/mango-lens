@@ -9,6 +9,8 @@ interface FarmProps extends Farm{
     totalTrees: number;
     healthyTrees: number;
     diseasedTrees: number;
+    activeTrees: number;
+    inactiveTrees: number;
     diseaseCount: {[diseaseName: string]: number},
     farmHealth: number;
 }

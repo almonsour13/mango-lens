@@ -163,6 +163,7 @@ export default function Page({
                 status: values.status,
                 treeImage: values.treeImage,
             });
+            router.back()
         } catch (error) {
             console.log(error);
             setError("Failed to add tree. Please try again.");
@@ -355,8 +356,8 @@ export default function Page({
                                                         }
                                                     >
                                                         {field.value === 1
-                                                            ? "Farm is currently active"
-                                                            : "Farm is currently inactive"}
+                                                            ? "Tree is currently active"
+                                                            : "Tree is currently inactive"}
                                                     </FormDescription>
                                                     <FormControl>
                                                         <Switch
