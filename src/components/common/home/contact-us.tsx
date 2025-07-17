@@ -65,7 +65,7 @@ export default function ContactSection() {
             icon: Phone,
             title: "Phone Support",
             description: "Speak with our team",
-            contact: "+1 (555) 123-4567",
+            contact: "+639569932496",
             responseTime: "Mon-Fri, 9AM-6PM EST",
         }
     ];

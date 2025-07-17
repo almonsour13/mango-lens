@@ -21,35 +21,35 @@ export default function HowToUse() {
             description:
                 "Register an account to securely store and manage data related to your mango trees.",
             icon: UserPlus,
-            gif: "/assets/how-to-use/create-account.gif",
+            gif: "/assets/how-to-use/create-account.png",
         },
         {
             title: "Add a Farm",
             description:
                 "Register your farm details including location, size, and environmental conditions.",
             icon: Home,
-            gif: "/assets/how-to-use/add-farm.gif",
+            gif: "/assets/how-to-use/add-farm.png",
         },
         {
             title: "Add a Tree",
             description:
                 "Enter details such as tree code and description to start tracking its health.",
             icon: TreeDeciduous,
-            gif: "/assets/how-to-use/add-tree.gif",
+            gif: "/assets/how-to-use/add-tree.png",
         },
         {
             title: "Upload an Image",
             description:
                 "Upload the photo of the leaf under the specific tree record. For best results, we recommend using a plain white background.",
             icon: Upload,
-            gif: "/assets/how-to-use/upload-image.gif",
+            gif: "/assets/how-to-use/upload-image.png",
         },
         {
-            title: "Export Results",
+            title: "Get and Export Results",
             description:
                 "View the diagnosis result and export it for documentation or further review.",
             icon: FileText,
-            gif: "/assets/how-to-use/export-results.gif",
+            gif: "/assets/how-to-use/get-result.png",
         },
     ];
 
@@ -77,72 +77,41 @@ export default function HowToUse() {
 
                 {/* Steps Section */}
                 <div className="relative">
-                    {/* Connecting Line (Desktop) */}
-                    {/* <div className="hidden lg:block absolute top-32 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/20 via-primary to-primary/20 z-0"></div> */}
-
-                    {/* Steps */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6 relative z-10">
+                    <div className="flex flex-wrap gap-4 justify-center">
                         {steps.map((step, index) => (
-                            <div key={index} className="flex flex-col h-full">
-                                {/* Step Number */}
-                                <div className="hidden lg:flex items-center justify-center mb-8">
-                                    <div className="relative">
-                                        {/* <div className="absolute inset-0 bg-primary/20 rounded-full blur-md"></div> */}
-                                        <div className="relative w-16 h-16 bg-card/50 rounded-full border border-primary flex items-center justify-center">
-                                            <span className="text-2xl font-bold text-primary">
-                                                {index + 1}
-                                            </span>
-                                        </div>
-                                    </div>
+                            <div
+                                key={index}
+                                className="w-full md:w-[410px] relative rounded border bg-card shadow-none transition-all duration-300"
+                            >
+                                {/* Image Container */}
+                                <div className="w-full h-auto">
+                                    <Image
+                                        src={
+                                            step.gif ||
+                                            "/placeholder.svg?height=300&width=500"
+                                        }
+                                        alt={`How to ${step.title.toLowerCase()}`}
+                                        width={500}
+                                        height={300}
+                                        className="w-full h-auto object-contain"
+                                        unoptimized // Preserve GIF animation
+                                    />
                                 </div>
 
-                                {/* Card */}
-                                <Card className="flex-1 overflow-hidden rounded shadow-none bg-card/50 border  transition-all duration-300 group">
-                                    <CardContent className="p-0">
-                                        {/* Image Container */}
-                                        <div className="relative w-full aspect-video bg-muted overflow-hidden border-b">
-                                            <Image
-                                                src={
-                                                    step.gif ||
-                                                    "/placeholder.svg?height=300&width=500"
-                                                }
-                                                alt={`How to ${step.title.toLowerCase()}`}
-                                                fill
-                                                className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                                unoptimized // For GIFs to maintain animation
-                                            />
-
-                                            {/* Mobile Step Number */}
-                                            <div className="lg:hidden absolute top-4 left-4 w-10 h-10 bg-card/90 backdrop-blur-sm rounded-full border-2 border-primary flex items-center justify-center shadow-md">
-                                                <span className="text-lg font-bold text-primary">
-                                                    {index + 1}
-                                                </span>
-                                            </div>
-
-                                            {/* Icon Badge */}
-                                            <div className="absolute bottom-4 right-4 w-12 h-12 bg-card rounded-full shadow-lg flex items-center justify-center">
-                                                <step.icon className="h-6 w-6 text-primary" />
-                                            </div>
+                                {/* Optional Content Section */}
+                                <div className="p-4">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <div className="w-8 h-8 rounded flex items-center justify-center border bg-primary/10 font-semibold text-primary">
+                                            {index + 1}
                                         </div>
-
-                                        {/* Content */}
-                                        <div className="p-6">
-                                            <h3 className="text-xl font-semibold text-foreground mb-3">
-                                                {step.title}
-                                            </h3>
-                                            <p className="text-muted-foreground leading-relaxed">
-                                                {step.description}
-                                            </p>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-
-                                {/* Arrow (except for last item) */}
-                                {index < steps.length - 1 && (
-                                    <div className="hidden lg:flex justify-center mt-8">
-                                        <ArrowRight className="text-primary h-6 w-6" />
+                                        <h3 className="text-lg font-semibold text-foreground">
+                                            {step.title}
+                                        </h3>
                                     </div>
-                                )}
+                                    <p className="text-sm text-muted-foreground leading-relaxed">
+                                        {step.description}
+                                    </p>
+                                </div>
                             </div>
                         ))}
                     </div>
