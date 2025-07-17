@@ -64,7 +64,7 @@ export default function GetStarted() {
                         <Link href="/signup">
                             <Button
                                 size="lg"
-                                className="px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group"
+                                className="px-8 py-3 rounded font-semibold transition-all duration-300 group"
                             >
                                 Get Started
                                 <ArrowRight
@@ -77,7 +77,7 @@ export default function GetStarted() {
                             <Button
                                 variant="outline"
                                 size="lg"
-                                className="px-8 py-3 rounded-lg font-semibold"
+                                className="px-8 py-3 bg-card rounded font-semibold"
                             >
                                 Sign In
                             </Button>
@@ -90,7 +90,7 @@ export default function GetStarted() {
                     {benefits.map((benefit, index) => (
                         <Card
                             key={index}
-                            className="text-center border bg-card/50 transition-shadow"
+                            className="text-center border bg-card rounded transition-shadow"
                         >
                             <CardContent className="p-6">
                                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">

@@ -20,13 +20,12 @@ export default function Banner() {
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-grid-muted [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:[mask-image:linear-gradient(0deg,black,rgba(0,0,0,0.6))] -z-10" />
 
-            {/* Floating Elements */}
-            <div className="absolute top-20 left-10 w-20 h-20 bg-primary/10 rounded-full blur-xl opacity-60 animate-pulse" />
-            <div className="absolute bottom-20 right-10 w-32 h-32 bg-secondary/10 rounded-full blur-xl opacity-40 animate-pulse delay-1000" />
+            <div className="absolute top-20 left-10 w-20 h-20 bg-primary/50 rounded-full blur-xl opacity-60 animate-pulse" />
+            <div className="absolute bottom-20 right-10 w-32 h-32 bg-secondary/50 rounded-full blur-xl opacity-40 animate-pulse delay-1000" />
 
             <SectionWrapper
                 id="Home"
-                className="min-h-screen h-auto flex w-full py-20 bg-transparent relative z-10"
+                className="min-h-screen h-auto flex w-full py-0 bg-transparent relative z-10"
             >
                 <div className="max-w-7xl mx-auto flex-1 flex flex-col lg:flex-row items-center gap-24 md:gap-16 mt-8 md:mt-16">
                     {/* Left Content */}
@@ -79,11 +78,11 @@ export default function Banner() {
                         </div>
 
                         {/* CTA Buttons */}
-                        <div className="flex gap-4 pt-4">
+                        <div className="flex gap-4 ">
                             <Link href="#get-started">
                                 <Button
                                     size="lg"
-                                    className="px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group"
+                                    className="px-8 py-3 rounded font-semibold transition-all duration-300 group"
                                 >
                                     Get Started
                                 </Button>
@@ -92,24 +91,24 @@ export default function Banner() {
                     </div>
 
                     {/* Right Content */}
-                    <div className="flex-1 flex justify-center items-center relative">
+                    <div className="flex justify-center items-center relative">
                         <div className="relative">
                             {/* Main Image Container */}
-                            <div className="relative bg-card rounded-2xl shadow-2xl p-8 border">
-                                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-2xl opacity-50" />
+                            <div className="relative bg-card rounded-md p-8 border">
+                                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-md opacity-50" />
                                 <div className="relative">
                                     <Image
                                         src="/assets/webiste-qr.png"
                                         alt="MangoPro Disease Detection Platform"
                                         width={350}
                                         height={350}
-                                        className="rounded-xl"
+                                        className="rounded-md"
                                     />
                                 </div>
                             </div>
 
                             {/* Floating Cards */}
-                            <div className="absolute -top-4 -left-4 bg-card rounded-lg shadow-lg p-4 border animate-bounce">
+                            {/* <div className="absolute -top-4 -left-4 bg-card rounded-lg shadow-lg p-4 border animate-bounce">
                                 <div className="flex items-center gap-2">
                                     <div className="w-3 h-3 bg-primary rounded-full"></div>
                                     <span className="text-sm font-medium text-foreground">
@@ -131,10 +130,8 @@ export default function Banner() {
                                 <div className="text-xs text-muted-foreground mt-1">
                                     Results in 2.3 seconds
                                 </div>
-                            </div>
+                            </div> */}
 
-                            {/* Background Decoration */}
-                            <div className="absolute -z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-3xl opacity-20" />
                         </div>
                     </div>
                 </div>

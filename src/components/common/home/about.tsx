@@ -80,7 +80,7 @@ export default function About() {
                         <div className="absolute -top-6 -left-6 w-24 h-24 bg-primary/10 rounded-full opacity-70" />
                         <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-secondary/10 rounded-full opacity-70" />
 
-                        <div className="relative bg-card rounded-2xl shadow-xl overflow-hidden border">
+                        <div className="relative bg-card rounded-md overflow-hidden border">
                             <div className="aspect-video relative">
                                 <Image
                                     src="/assets/mango-lens-team.jpg"
@@ -164,9 +164,9 @@ export default function About() {
                         {features.map((feature, index) => (
                             <div
                                 key={index}
-                                className="bg-card/50 p-6 rounded-xl border"
+                                className="bg-card/50 p-6 rounded-md border"
                             >
-                                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                                <div className="w-12 h-12 bg-primary/10 rounded flex items-center justify-center mb-4">
                                     <feature.icon
                                         size={24}
                                         className="text-primary"

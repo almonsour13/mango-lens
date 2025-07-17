@@ -41,7 +41,7 @@ export default function HomeHeader({
     const { theme, setTheme } = useTheme();
     const { userInfo } = useAuth(); // Declare useAuth hook
 
-     useEffect(() => {
+    useEffect(() => {
         setMounted(true);
         const handleScroll = () => {
             setScrolling(window.scrollY === 0);
@@ -63,7 +63,7 @@ export default function HomeHeader({
                     : "bg-transparent"
             }`}
         >
-            <div className="max-w-7xl mx-auto px-4 h-16 md:h-20 flex items-center justify-between">
+            <div className="max-w-7xl mx-auto h-16 md:h-20 flex items-center justify-between">
                 {/* Left side - Logo and Mobile Menu */}
                 <div className="flex items-center gap-4">
                     <button
@@ -74,8 +74,8 @@ export default function HomeHeader({
                         <MenuIcon className="h-5 w-5 text-foreground" />
                     </button>
 
-                    <Link href="/" className="flex items-center group">
-                        <div className="relative w-8 h-8 mr-3 overflow-hidden rounded-lg flex items-center justify-center">
+                    <Link href="/" className="flex gap-2 items-center group">
+                        <div className="relative overflow-hidden rounded-lg flex items-center justify-center">
                             <Image
                                 src="/assets/icon/icon.png"
                                 alt="MangoCare icon"
@@ -123,46 +123,19 @@ export default function HomeHeader({
 
                 {/* Right side - Theme Toggle and Auth */}
                 <div className="flex items-center gap-3">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="w-9 h-9 rounded border"
-                            >
-                                {ThemeIcon && (
-                                    <ThemeIcon className="h-4 w-4 text-foreground" />
-                                )}
-                                <span className="sr-only">Toggle theme</span>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                            align="end"
-                            className="w-36 bg-card border"
-                        >
-                            <DropdownMenuItem
-                                onClick={() => setTheme("light")}
-                                className="hover:bg-muted cursor-pointer"
-                            >
-                                <Sun className="mr-2 h-4 w-4 text-amber-500" />
-                                <span className="text-foreground">Light</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={() => setTheme("dark")}
-                                className="hover:bg-muted cursor-pointer"
-                            >
-                                <Moon className="mr-2 h-4 w-4 text-indigo-500" />
-                                <span className="text-foreground">Dark</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={() => setTheme("system")}
-                                className="hover:bg-muted cursor-pointer"
-                            >
-                                <LayoutDashboard className="mr-2 h-4 w-4 text-muted-foreground" />
-                                <span className="text-foreground">System</span>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-9 h-9 rounded border bg-card"
+                        onClick={() => {
+                            setTheme(theme === "dark" ? "light" : "dark");
+                        }}
+                    >
+                        {ThemeIcon && (
+                            <ThemeIcon className="h-4 w-4 text-foreground" />
+                        )}
+                        <span className="sr-only">Toggle theme</span>
+                    </Button>
 
                     {userInfo ? (
                         <Button variant="default" className="gap-2 h-9">
@@ -172,7 +145,11 @@ export default function HomeHeader({
                             </Link>
                         </Button>
                     ) : (
-                        <Button variant="default" size="sm" className="gap-2 h-9">
+                        <Button
+                            variant="default"
+                            size="sm"
+                            className="gap-2 h-9 rounded"
+                        >
                             <Link href="/signin" className="flex items-center">
                                 <User className="h-4 w-4 sm:mr-1" />
                                 <span className="hidden sm:inline">

@@ -97,7 +97,7 @@ export default function HowToUse() {
                                 </div>
 
                                 {/* Card */}
-                                <Card className="flex-1 overflow-hidden bg-card/50 border  transition-all duration-300 group">
+                                <Card className="flex-1 overflow-hidden rounded shadow-none bg-card/50 border  transition-all duration-300 group">
                                     <CardContent className="p-0">
                                         {/* Image Container */}
                                         <div className="relative w-full aspect-video bg-muted overflow-hidden border-b">
@@ -149,7 +149,7 @@ export default function HowToUse() {
                 </div>
 
                 {/* Tips Section */}
-                <div className="mt-16 bg-primary/5 border border-primary/20 rounded-xl p-6 md:p-8">
+                <div className="mt-16 bg-primary/5 border border-primary/20 rounded-md p-6 md:p-8">
                     <div className="pb-2">
                         <div className="flex items-center gap-2 mb-1">
                             <Lightbulb className="h-5 w-5 text-primary" />

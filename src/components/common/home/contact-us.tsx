@@ -128,7 +128,7 @@ export default function ContactSection() {
                     {contactMethods.map((method, index) => (
                         <Card
                             key={index}
-                            className="text-center border bg-card/50 "
+                            className="text-center border rounded bg-card "
                         >
                             <CardContent className="p-6">
                                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
@@ -174,7 +174,7 @@ export default function ContactSection() {
                             {supportOptions.map((option, index) => (
                                 <div
                                     key={index}
-                                    className="flex items-start gap-4 p-4 bg-card/50 rounded-lg border hover:border-primary/20 transition-colors"
+                                    className="flex items-start gap-4 p-4 bg-card rounded-lg border hover:border-primary/20 transition-colors"
                                 >
                                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                                         <option.icon
@@ -197,7 +197,7 @@ export default function ContactSection() {
                     </div>
 
                     {/* Right Column - Contact Form */}
-                    <Card className="border bg-card/50">
+                    <Card className="border bg-card">
                         <CardContent className="p-8">
                             <div className="mb-6">
                                 <h3 className="text-2xl font-bold text-foreground mb-2">

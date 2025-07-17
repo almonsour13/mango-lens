@@ -87,8 +87,8 @@ export function HomeFooter() {
     ];
 
     return (
-        <footer className="bg-card border-t border-border">
-            <div className="max-w-7xl mx-auto px-4 py-12 ">
+        <footer className="border-t border-border">
+            <div className="max-w-7xl mx-auto px-4 md:px-0 py-12 ">
 
                 {/* Bottom Section */}
                 <div className="border-border">
