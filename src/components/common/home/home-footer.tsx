@@ -65,26 +65,28 @@ export function HomeFooter() {
         { name: "GitHub", icon: Github, href: "https://github.com/mangolens" },
     ];
 
-    const contactInfo = [
-        {
-            icon: Mail,
-            label: "Email",
-            value: "support@mangolens.com",
-            href: "mailto:support@mangolens.com",
-        },
-        {
-            icon: Phone,
-            label: "Phone",
-            value: "+1 (555) 123-4567",
-            href: "tel:+15551234567",
-        },
-        {
-            icon: MapPin,
-            label: "Address",
-            value: "123 Agriculture Tech Drive, San Francisco, CA 94105",
-            href: "https://maps.google.com/?q=123+Agriculture+Tech+Drive+San+Francisco+CA",
-        },
-    ];
+     const socials = [
+  {
+    name: "Facebook",
+    icon: Facebook,
+    link: "https://www.facebook.com/almonsour.salida",
+  },
+  {
+    name: "LinkedIn",
+    icon: Linkedin,
+    link: "https://www.linkedin.com/in/almonsour-salida-5354011ba/",
+  },
+  {
+    name: "Instagram",
+    icon: Instagram,
+    link: "https://www.instagram.com/al_mnsr13/",
+  },
+  {
+    name: "GitHub",
+    icon: Github,
+    link: "https://github.com/almonsour13",
+  },
+];
 
     return (
         <footer className="border-t border-border">
@@ -109,13 +111,13 @@ export function HomeFooter() {
                         {/* Social Links */}
                         <div className="flex items-center gap-4">
                             <span className="text-sm text-muted-foreground">
-                                Follow us:
+                               Developed by Al-Monsour Salida
                             </span>
                             <div className="flex items-center gap-3">
-                                {socialLinks.map((social, index) => (
+                                {socials.map((social, index) => (
                                     <Link
                                         key={index}
-                                        href={social.href}
+                                        href={social.link}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="w-8 h-8 bg-muted hover:bg-primary/10 rounded-lg flex items-center justify-center transition-colors group"

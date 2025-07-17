@@ -44,7 +44,7 @@ export default function GetStarted() {
             <div className="max-w-7xl mx-auto mt-20">
                 {/* Header Section */}
                 <div className="text-center max-w-4xl mx-auto mb-16">
-                    <div className="inline-flex items-center justify-center px-4 py-1.5 mb-6 text-sm font-medium rounded-full bg-primary/10 text-primary">
+                    <div className="inline-flex items-center border border-primary/20 justify-center px-4 py-1.5 mb-6 text-sm font-medium rounded-full bg-primary/10 text-primary">
                         Join Farmers Worldwide
                     </div>
                     <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground">

@@ -108,7 +108,7 @@ export default function ContactSection() {
             <div className="max-w-7xl mx-auto">
                 {/* Header Section */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
-                    <div className="inline-flex items-center justify-center px-4 py-1.5 mb-6 text-sm font-medium rounded-full bg-primary/10 text-primary">
+                    <div className="inline-flex border border-primary/20 items-center justify-center px-4 py-1.5 mb-6 text-sm font-medium rounded-full bg-primary/10 text-primary">
                         {"We're"} Here to Help
                     </div>
                     <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
