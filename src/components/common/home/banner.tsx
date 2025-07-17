@@ -14,7 +14,6 @@ export default function Banner() {
         { icon: Users, text: "Trusted by farmers" },
     ];
 
-
     return (
         <div className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted/30">
             {/* Background Pattern */}
@@ -25,11 +24,11 @@ export default function Banner() {
 
             <SectionWrapper
                 id="Home"
-                className="min-h-screen h-auto flex w-full py-0 bg-transparent relative z-10"
+                className="min-h-screen h-auto flex w-full py-20 md:py-0 bg-transparent relative z-10"
             >
                 <div className="max-w-7xl mx-auto flex-1 flex flex-col lg:flex-row items-center gap-24 md:gap-16 mt-8 md:mt-16">
                     {/* Left Content */}
-                    <div className="flex-1 flex flex-col items-start justify-center space-y-8">
+                    <div className="flex-1 flex flex-col items-start justify-center space-y-4 md:space-y-8">
                         {/* Trust Badge */}
                         <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 text-sm font-medium text-primary">
                             <CheckCircle size={16} className="text-primary" />
@@ -44,7 +43,7 @@ export default function Banner() {
                                 </span>
                                 <br />
                                 <span className="text-foreground">
-                                    Detect Mango Diseases Instantly 
+                                    Detect Mango Diseases Instantly
                                 </span>
                                 <br />
                             </h1>
@@ -91,48 +90,18 @@ export default function Banner() {
                     </div>
 
                     {/* Right Content */}
-                    <div className="flex justify-center items-center relative">
-                        <div className="relative">
-                            {/* Main Image Container */}
-                            <div className="relative bg-card rounded-md p-8 border">
-                                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-md opacity-50" />
-                                <div className="relative">
-                                    <Image
-                                        src="/assets/webiste-qr.png"
-                                        alt="MangoPro Disease Detection Platform"
-                                        width={350}
-                                        height={350}
-                                        className="rounded-md"
-                                    />
-                                </div>
+                    <div className="w-full md:w-auto flex justify-center items-center relative">
+                        <div className="w-full flex items-center justify-center aspect-square relative bg-card rounded-md p-8 border">
+                           
+                                <Image
+                                    src="/assets/webiste-qr.png"
+                                    alt="MangoPro Disease Detection Platform"
+
+                                    width={350}
+                                    height={350}
+                                    className="rounded-md"
+                                />
                             </div>
-
-                            {/* Floating Cards */}
-                            {/* <div className="absolute -top-4 -left-4 bg-card rounded-lg shadow-lg p-4 border animate-bounce">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 bg-primary rounded-full"></div>
-                                    <span className="text-sm font-medium text-foreground">
-                                        Disease Detected
-                                    </span>
-                                </div>
-                                <div className="text-xs text-muted-foreground mt-1">
-                                    Anthracnose - 94% confidence
-                                </div>
-                            </div>
-
-                            <div className="absolute -bottom-4 -right-4 bg-card rounded-lg shadow-lg p-4 border animate-pulse">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 bg-secondary rounded-full"></div>
-                                    <span className="text-sm font-medium text-foreground">
-                                        Analysis Complete
-                                    </span>
-                                </div>
-                                <div className="text-xs text-muted-foreground mt-1">
-                                    Results in 2.3 seconds
-                                </div>
-                            </div> */}
-
-                        </div>
                     </div>
                 </div>
             </SectionWrapper>

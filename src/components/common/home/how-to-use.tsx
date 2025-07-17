@@ -1,17 +1,15 @@
 import SectionWrapper from "@/components/wrapper/section-wrapper";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-    Upload,
-    UserPlus,
-    TreeDeciduous,
-    FileText,
-    ArrowRight,
-    Home,
-    Lightbulb,
-    CheckCircle2,
-    Info,
-} from "lucide-react";
 import { MetaData } from "@/constant/metaData";
+import {
+    CheckCircle2,
+    FileText,
+    Home,
+    Info,
+    Lightbulb,
+    TreeDeciduous,
+    Upload,
+    UserPlus
+} from "lucide-react";
 import Image from "next/image";
 
 export default function HowToUse() {

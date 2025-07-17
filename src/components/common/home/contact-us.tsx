@@ -1,19 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import {
-    Loader2,
-    Mail,
-    MapPin,
-    Phone,
-    Clock,
-    MessageCircle,
-    Users,
-    Headphones,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -26,9 +12,21 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
 import SectionWrapper from "@/components/wrapper/section-wrapper";
 import { MetaData } from "@/constant/metaData";
+import { useToast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+    Headphones,
+    Loader2,
+    Mail,
+    MapPin,
+    Phone,
+    Users
+} from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 const contactFormSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),

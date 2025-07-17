@@ -57,13 +57,13 @@ export default function HomeHeader({
 
     return (
         <header
-            className={`fixed z-30 top-0 w-full transition-all duration-300 ${
+            className={`fixed z-30 top-0 w-full transition-all duration-300 px-4 ${
                 !isScrolling
                     ? "backdrop-blur-lg bg-background/90 border-b border-border shadow-sm"
                     : "bg-transparent"
             }`}
         >
-            <div className="max-w-7xl mx-auto h-16 md:h-20 flex items-center justify-between">
+            <div className="max-w-7xl mx-auto h-16 md:h-20 p flex items-center justify-between">
                 {/* Left side - Logo and Mobile Menu */}
                 <div className="flex items-center gap-4">
                     <button
